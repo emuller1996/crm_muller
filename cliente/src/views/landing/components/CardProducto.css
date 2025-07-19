@@ -1,0 +1,32 @@
+.ss {
+    background-color: #b3cef5;
+}
+
+.card-product {
+    border-color: #d9e8f8;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    overflow: hidden;
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.card-product:hover {
+    border-color: #7da9d8;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    background-color: #f3f9ff;
+
+}
+
+
+.card-product .card-img-top {
+    transition: transform 0.5s ease;
+    object-fit: cover;
+    /* Para mantener la proporción de la imagen */
+}
+
+.card-product:hover .card-img-top {
+    transform: scale(1.1);
+    /* Aumenta un 5% el tamaño */
+}

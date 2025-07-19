@@ -1,0 +1,9 @@
+.form-search-eco{
+    background-color: white;
+}
+
+.form-search-eco:focus{
+    background-color: white;
+    border-color: rgb(151, 193, 255);
+    box-shadow: rgba(3, 94, 214, 0.164) 0px 0px 0px 3px;
+}

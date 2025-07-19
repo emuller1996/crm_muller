@@ -1,0 +1,4 @@
+.table th,
+.table td {
+    color: rgba(40, 45, 54, 0.95) !important;
+}

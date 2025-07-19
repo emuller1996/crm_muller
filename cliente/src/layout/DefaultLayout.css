@@ -1,0 +1,10 @@
+
+
+
+.mullnavbar {
+  background: rgb(74, 222, 128);
+  background: -moz-linear-gradient(25deg, rgba(74, 222, 128, 1) 26%, rgba(24, 115, 58, 1) 79%, rgba(22, 171, 77, 1) 91%);
+  background: -webkit-linear-gradient(25deg, rgba(74, 222, 128, 1) 26%, rgba(24, 115, 58, 1) 79%, rgba(22, 171, 77, 1) 91%);
+  background: linear-gradient(25deg, rgba(74, 222, 128, 1) 26%, rgba(24, 115, 58, 1) 79%, rgba(22, 171, 77, 1) 91%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#4ade80", endColorstr="#16ab4d", GradientType=1);
+}

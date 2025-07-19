@@ -1,0 +1,110 @@
+.brad_product {
+  padding: 0.4em 0.6em;
+  border: 1px solid rgb(146, 146, 146);
+  border-radius: 0.4em;
+  margin-top: 1em;
+}
+
+.brad_product:hover {
+  border: 1px solid rgb(104, 104, 104);
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+.StockSizeContainer {
+  background-color: rgb(233, 235, 255);
+  padding: 0.4em 0.6em;
+  border-radius: 0.4em;
+  border: 1px solid rgb(199, 176, 255);
+  color: rgb(54, 54, 54);
+  cursor: pointer;
+  transition: box-shadow .35s;
+
+
+
+}
+.StockSizeContainer_selected {
+  background-color: rgb(233, 235, 255);
+  padding: 0.4em 0.6em;
+  border-radius: 0.4em;
+  border: 1px solid rgb(105, 46, 255);
+  color: rgb(54, 54, 54);
+  cursor: pointer;
+  transition: box-shadow .35s;
+}
+.StockSizeContainer:hover {
+  border: 1px solid rgb(120, 118, 255);
+
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+.disabled-stock > *{
+  opacity: 0.5;
+  cursor: none;
+
+}
+.mi_input_group{
+  overflow: hidden;
+  border-radius: 0.4em;
+}
+.input_stock {
+  width: 50px;
+  height: 30px;
+  padding: 0.2rem 0.5rem;
+  text-align: center;
+  border: 1px solid rgb(182, 182, 182);
+  border-radius: 0;
+  outline: none;
+  background-color: transparent;
+  color: #0d0c22;
+  transition: .5s ease;
+}
+
+
+/* CSS */
+.button-29 {
+  align-items: center;
+  appearance: none;
+  background-image: radial-gradient(100% 100% at 100% 0, #5adaff 0, #5468ff 100%);
+  border: 0;
+  border-radius: 0px;
+  box-shadow: rgba(45, 35, 66, .4) 0 2px 4px, rgba(45, 35, 66, .3) 0 7px 13px -3px, rgba(58, 65, 111, .5) 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "JetBrains Mono", monospace;
+  height: 30px;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow .15s, transform .15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow, transform;
+  font-size: 18px;
+}
+
+.button-29:focus {
+  box-shadow: #3c4fe0 0 0 0 1.5px inset, rgba(45, 35, 66, .4) 0 2px 4px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+}
+
+.button-29:hover {
+  box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+}
+
+.button-29:active {
+  box-shadow: #3c4fe0 0 3px 7px inset;
+  transform: translateY(1px);
+}
+
+.button-29:disabled {
+
+  opacity: 0.3;
+}
