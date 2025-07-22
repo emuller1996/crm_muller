@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Modal, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import DataTable from 'react-data-table-component'
 import { paginationComponentOptions } from '../../../utils/optionsConfig'
@@ -7,10 +7,18 @@ import { ViewDollar } from '../../../utils'
 import { useState } from 'react'
 import FormCotizacion from './components/FormCotizacion'
 import FormProductoCotizacion from './components/FormProductoCotizacion'
-export default function CotizacionPage(second) {
-  const [show, setShow] = useState(true)
-
+import { useCotizacion } from '../../../hooks/useCotizacion'
+export default function CotizacionPage() {
+  const [show, setShow] = useState(false)
+  const [draw, setDraw] = useState(1)
   const [ProductoCotizacion, setProductoCotizacion] = useState([])
+
+  const { getAllCotizacion, data: ListCotizaciones } = useCotizacion()
+
+  useEffect(() => {
+    getAllCotizacion()
+  }, [draw])
+
   return (
     <>
       <div className="my-2">
@@ -73,16 +81,15 @@ export default function CotizacionPage(second) {
             { name: 'Cliente', selector: (row) => row?.name ?? '', width: '250px' },
 
             {
-              name: 'Precio',
+              name: 'Total',
               selector: (row) => row?.price ?? '',
-              format: (row) => ViewDollar(row?.price) ?? '',
+              format: (row) => ViewDollar(row?.total_monto) ?? '',
               width: '150px',
             },
-            { name: 'Valor', selector: (row) => ViewDollar(row?.cost) ?? '', width: '150px' },
             {
               name: 'Estado',
-              selector: (row) => row?.price ?? '',
-              format: (row) => row?.price ?? '',
+              selector: (row) => row?.status ?? '',
+              format: (row) => row?.status ?? '',
               width: '150px',
             },
             {
@@ -100,7 +107,7 @@ export default function CotizacionPage(second) {
 
             { name: '', selector: (row) => row?.city ?? '' },
           ]}
-          data={[{}]}
+          data={ListCotizaciones ? ListCotizaciones : []}
           pagination
           paginationServer
           //progressPending={loading}
@@ -140,7 +147,13 @@ export default function CotizacionPage(second) {
         <Modal.Body>
           <div className="row g-4">
             <div className="col-md-6">
-              <FormCotizacion ProductoCotizacion={ProductoCotizacion} />
+              <FormCotizacion
+                getAllCotizacion={() => {
+                  setShow(false)
+                  setDraw((status) => ++status)
+                }}
+                ProductoCotizacion={ProductoCotizacion}
+              />
             </div>
             <div className="col-md-6">
               <FormProductoCotizacion setProductoCotizacion={setProductoCotizacion} />

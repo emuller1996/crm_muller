@@ -8,7 +8,7 @@ export default function FacturasMainPage(second) {
     <>
       <div className="card">
         <div className="card-body">
-          <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example" className="">
+          <Tabs defaultActiveKey="Facturas" id="uncontrolled-tab-example" className="">
             <Tab eventKey="Facturas" title="Facturas">
               Tab content for Home
             </Tab>

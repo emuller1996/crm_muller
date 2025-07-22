@@ -13,6 +13,7 @@ import ConsultasRouters from "./consultas.routes.js";
 import OrdenesRouters from "./ordenes.routes.js";
 import PuntoVentaRouters from "./punto_venta.routes.js";
 import PagosRouters from "./pagos.routes.js";
+import CotizacionRouters from "./cotizacion.routes.js";
 
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
@@ -32,6 +33,8 @@ router.use("/auth", AuthRouters);
 router.use("/ordenes", OrdenesRouters);
 router.use("/punto_venta", PuntoVentaRouters);
 router.use("/pagos", PagosRouters);
+router.use("/cotizacion", CotizacionRouters);
+
 
 
 

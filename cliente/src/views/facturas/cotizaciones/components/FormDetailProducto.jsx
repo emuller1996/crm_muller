@@ -23,6 +23,8 @@ export default function FormDetailProducto({ ProductoSelecionado, setProductoSel
   const onSubmit = async (data) => {
     data.product_id = ProductoSelecionado._id
     data.product_name = ProductoSelecionado.name
+    data.cantidad = parseFloat(data.cantidad)
+
 
     console.log(data);
 

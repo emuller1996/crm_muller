@@ -8,12 +8,18 @@ import { useClientes } from '../../../../hooks/useClientes'
 import { stylesSelect, themeSelect } from '../../../../utils/optionsConfig'
 import DataTable from 'react-data-table-component'
 import { ViewDollar } from '../../../../utils'
+import PropTypes from 'prop-types'
+import toast from 'react-hot-toast'
+import { useCotizacion } from '../../../../hooks/useCotizacion'
 
-export default function FormCotizacion({ ProductoCotizacion }) {
+export default function FormCotizacion({ ProductoCotizacion, getAllCotizacion }) {
+  FormCotizacion.propTypes = {
+    ProductoCotizacion: PropTypes.array,
+    getAllCotizacion: PropTypes.func,
+  }
   const { getAllClientesPaginationPromise } = useClientes()
 
-  console.log(ProductoCotizacion)
-
+  const { crearCotizacion } = useCotizacion()
   const {
     register,
     handleSubmit,
@@ -24,7 +30,22 @@ export default function FormCotizacion({ ProductoCotizacion }) {
   } = useForm()
 
   const onSubmit = async (data) => {
+    if (ProductoCotizacion.length === 0) {
+      toast.error(`Selecione al menos un producto a la Cotización`)
+      return
+    }
     data.productos = ProductoCotizacion
+    data.total_monto = ProductoCotizacion?.reduce((preVal, currentVal) => {
+      return preVal + currentVal.price * currentVal.cantidad
+    }, 0)
+
+    try {
+      await crearCotizacion(data)
+      toast.success(`Cotizacion Creada`)
+      getAllCotizacion()
+    } catch (error) {
+      console.log(error)
+    }
     console.log(data)
   }
 
@@ -121,13 +142,25 @@ export default function FormCotizacion({ ProductoCotizacion }) {
                   {
                     name: 'Precio',
                     selector: (row) => row?.price ?? '',
-                    format: (row) => ViewDollar(row?.price *row?.cantidad ) ?? '',
+                    format: (row) => ViewDollar(row?.price * row?.cantidad) ?? '',
                     width: '150px',
                   },
                 ]}
                 noDataComponent={<p className="my-4">No hay Productos en la Cotización.</p>}
                 data={ProductoCotizacion}
               />
+            </div>
+
+            <div className="d-flex justify-content-between mt-2">
+              <span>Total</span>
+              <span>
+                {ProductoCotizacion &&
+                  ViewDollar(
+                    ProductoCotizacion?.reduce((preVal, currentVal) => {
+                      return preVal + currentVal.price * currentVal.cantidad
+                    }, 0),
+                  )}
+              </span>
             </div>
 
             <div className="mt-5 d-flex gap-4 justify-content-center">
