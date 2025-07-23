@@ -92,7 +92,7 @@ export default function FormCotizacion({ getAllCotizacion, CotiSelecionada }) {
                     name="client_id"
                     rules={{ required: true }}
                     control={control}
-                    defaultValue={CotiSelecionada ? CotiSelecionada.client_id : null}
+                    defaultValue={CotiSelecionada ? CotiSelecionada.client_id : undefined}                    
                     render={({ field: { name, onChange, ref } }) => {
                       return (
                         <AsyncSelect
