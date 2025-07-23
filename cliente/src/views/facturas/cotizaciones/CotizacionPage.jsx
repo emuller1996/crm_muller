@@ -8,12 +8,17 @@ import { useState } from 'react'
 import FormCotizacion from './components/FormCotizacion'
 import FormProductoCotizacion from './components/FormProductoCotizacion'
 import { useCotizacion } from '../../../hooks/useCotizacion'
+import toast from 'react-hot-toast'
 export default function CotizacionPage() {
   const [show, setShow] = useState(false)
-  const [draw, setDraw] = useState(1)
-  const [ProductoCotizacion, setProductoCotizacion] = useState([])
+  const [showView, setShowView] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
 
-  const { getAllCotizacion, data: ListCotizaciones } = useCotizacion()
+  const [CotiSelecionada, setCotiSelecionada] = useState(null)
+
+  const [draw, setDraw] = useState(1)
+
+  const { getAllCotizacion, data: ListCotizaciones, actualizarCotizacion } = useCotizacion()
 
   useEffect(() => {
     getAllCotizacion()
@@ -24,7 +29,10 @@ export default function CotizacionPage() {
       <div className="my-2">
         <button
           type="button"
-          onClick={() => setShow(true)}
+          onClick={() => {
+            setCotiSelecionada(null)
+            setShow(true)
+          }}
           className="btn btn-primary"
           aria-pressed="false"
         >
@@ -41,44 +49,44 @@ export default function CotizacionPage() {
               cell: (row) => {
                 return (
                   <>
-                    <button
-                      onClick={() => {
-                        setProductoSelecionado(row)
-                        handleShow()
-                      }}
-                      title="Editar Producto."
-                      className="btn btn-primary btn-sm me-2"
-                    >
-                      <i className="fa-solid fa-pen-to-square"></i>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setProductoSelecionado(row)
-                        setShowSize(true)
-                      }}
-                      title="Editar Producto."
-                      className="btn btn-info btn-sm me-2"
-                    >
-                      <i className="text-white fa-regular fa-images"></i>
-                    </button>
-                    <button
-                      to={`${row._id}/gestion-tallas`}
-                      onClick={() => {
-                        setProductoSelecionado(row)
-                        setShowSizeTallas(true)
-                        //handleShow()
-                      }}
-                      title="Gestion de Tallas del Producto."
-                      className="btn btn-secondary btn-sm"
-                    >
-                      <i className="fa-solid fa-tags"></i>
-                    </button>
+                    <div className="btn-group" role="group" aria-label="Basic outlined example">
+                      <button
+                        onClick={() => {
+                          setShowView(true)
+                          setCotiSelecionada(row)
+                        }}
+                        title="Ver Cotización"
+                        className="btn btn-outline-primary btn-sm"
+                      >
+                        <i className="fa-solid fa-eye"></i>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShow(true)
+                          setCotiSelecionada(row)
+                        }}
+                        type="button"
+                        className="btn btn-outline-info  btn-sm"
+                      >
+                        <i className="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowDelete(true)
+                          setCotiSelecionada(row)
+                        }}
+                        type="button"
+                        className="btn btn-outline-danger  btn-sm"
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
                   </>
                 )
               },
             },
             //{ name: 'Id', selector: (row) => row._id, width: '100px' },
-            { name: 'Cliente', selector: (row) => row?.name ?? '', width: '250px' },
+            { name: 'Cliente', selector: (row) => row?.client?.name ?? '', width: '250px' },
 
             {
               name: 'Total',
@@ -145,18 +153,120 @@ export default function CotizacionPage() {
           <Modal.Title>Crear Cotización</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="row g-4">
-            <div className="col-md-6">
-              <FormCotizacion
-                getAllCotizacion={() => {
-                  setShow(false)
-                  setDraw((status) => ++status)
-                }}
-                ProductoCotizacion={ProductoCotizacion}
+          <FormCotizacion
+            CotiSelecionada={CotiSelecionada}
+            getAllCotizacion={() => {
+              setShow(false)
+              setDraw((status) => ++status)
+            }}
+            //ProductoCotizacion={ProductoCotizacion}
+          />
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        backdrop={'static'}
+        size="xl"
+        centered
+        show={showView}
+        onHide={() => setShowView(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Cotización Detalle <span className="fw-bold">#{CotiSelecionada?._id}</span>{' '}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="px-3">
+            <div className="row">
+              <div className="col-md-6">
+                <p className="m-0">Datos Cliente.</p>
+                <p className="m-0 fs-5">{CotiSelecionada?.client?.name}</p>
+              </div>
+              <div className="col-md-6">
+                <p className="m-0">Fecha Generada.</p>
+                <p className="m-0 fs-5">
+                  {new Date(CotiSelecionada?.createdTime).toLocaleDateString()}{' '}
+                  {new Date(CotiSelecionada?.createdTime).toLocaleTimeString()}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="px-3">
+            <div className="rounded overflow-hidden border border-ligth shadow-sm mt-3">
+              <DataTable
+                className="MyDataTableEvent"
+                striped
+                columns={[
+                  {
+                    name: 'Nombre Producto',
+                    selector: (row) => row?.product_name ?? '',
+                  },
+                  {
+                    name: 'Cant.',
+                    selector: (row) => row?.cantidad ?? '',
+                  },
+                  {
+                    name: 'Precio',
+                    selector: (row) => row?.price ?? '',
+                    format: (row) => ViewDollar(row?.price) ?? '',
+                  },
+                  {
+                    name: 'Precio',
+                    selector: (row) => row?.price ?? '',
+                    format: (row) => ViewDollar(row?.price * row?.cantidad) ?? '',
+                  },
+                ]}
+                noDataComponent={<p className="my-4">No hay Productos en la Cotización.</p>}
+                data={CotiSelecionada?.productos}
               />
             </div>
-            <div className="col-md-6">
-              <FormProductoCotizacion setProductoCotizacion={setProductoCotizacion} />
+            <div className="text-center mt-2">
+              <span className="me-2">Total </span>
+              <span className="fw-bold fs-4">{ViewDollar(CotiSelecionada?.total_monto)}</span>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        backdrop={'static'}
+        size="md"
+        centered
+        show={showDelete}
+        onHide={() => setShowDelete(false)}
+      >
+        <Modal.Body>
+          <div className="px-3 text-center">
+            <p className="m-0">Seguro Quieres Borrar la Cotizacion #{CotiSelecionada?._id}?</p>
+            <p className="m-0">Cliente : {CotiSelecionada?.client?.name}?</p>
+            <p className="m-0">Total : {CotiSelecionada?.total_monto}?</p>
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await actualizarCotizacion({ type: 'cotizacion_deleted' }, CotiSelecionada._id)
+                    setDraw((status) => ++status)
+                    setShowDelete(false)
+                    toast.success(`Se Elimino la Cotizaicion.`)
+                  } catch (error) {
+                    console.log(error)
+                  }
+                }}
+                className="btn btn-primary me-2"
+              >
+                SI, Borrar
+              </button>
+              <button
+                onClick={() => {
+                  setCotiSelecionada(null)
+                  setShowDelete(false)
+                }}
+                type="button"
+                className="btn btn-danger text-white"
+              >
+                No, Cancelar
+              </button>
             </div>
           </div>
         </Modal.Body>

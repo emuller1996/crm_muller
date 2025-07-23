@@ -56,7 +56,7 @@ const _nav = [
     component: CNavItem,
     name: 'Entregas / Pedidos',
     to: '/pedidos',
-    icon: <i style={{ width: '30px' }} className="fa-solid fa-receipt nav-icon"></i>,
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-truck-ramp-box nav-icon"></i>,
   },
   {
     component: CNavItem,
@@ -76,10 +76,10 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Representante de Ventas',
+    name: 'Rep. de Ventas',
     to: '/representantes-venta',
 
-    icon: <i className="fa-solid fa-shop nav-icon"></i>,
+    icon: <i className="fa-solid fa-people-line nav-icon"></i>,
   },
   {
     component: CNavItem,
