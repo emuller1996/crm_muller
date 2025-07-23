@@ -8,14 +8,17 @@ import { useState } from 'react'
 import FormCotizacion from './components/FormCotizacion'
 import FormProductoCotizacion from './components/FormProductoCotizacion'
 import { useCotizacion } from '../../../hooks/useCotizacion'
+import toast from 'react-hot-toast'
 export default function CotizacionPage() {
   const [show, setShow] = useState(false)
   const [showView, setShowView] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
+
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
 
   const [draw, setDraw] = useState(1)
 
-  const { getAllCotizacion, data: ListCotizaciones } = useCotizacion()
+  const { getAllCotizacion, data: ListCotizaciones, actualizarCotizacion } = useCotizacion()
 
   useEffect(() => {
     getAllCotizacion()
@@ -67,7 +70,14 @@ export default function CotizacionPage() {
                       >
                         <i className="fa-solid fa-pen-to-square"></i>
                       </button>
-                      <button type="button" className="btn btn-outline-danger  btn-sm">
+                      <button
+                        onClick={() => {
+                          setShowDelete(true)
+                          setCotiSelecionada(row)
+                        }}
+                        type="button"
+                        className="btn btn-outline-danger  btn-sm"
+                      >
                         <i className="fa-solid fa-trash"></i>
                       </button>
                     </div>
@@ -214,6 +224,49 @@ export default function CotizacionPage() {
             <div className="text-center mt-2">
               <span className="me-2">Total </span>
               <span className="fw-bold fs-4">{ViewDollar(CotiSelecionada?.total_monto)}</span>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        backdrop={'static'}
+        size="md"
+        centered
+        show={showDelete}
+        onHide={() => setShowDelete(false)}
+      >
+        <Modal.Body>
+          <div className="px-3 text-center">
+            <p className="m-0">Seguro Quieres Borrar la Cotizacion #{CotiSelecionada?._id}?</p>
+            <p className="m-0">Cliente : {CotiSelecionada?.client?.name}?</p>
+            <p className="m-0">Total : {CotiSelecionada?.total_monto}?</p>
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await actualizarCotizacion({ type: 'cotizacion_deleted' }, CotiSelecionada._id)
+                    setDraw((status) => ++status)
+                    setShowDelete(false)
+                    toast.success(`Se Elimino la Cotizaicion.`)
+                  } catch (error) {
+                    console.log(error)
+                  }
+                }}
+                className="btn btn-primary me-2"
+              >
+                SI, Borrar
+              </button>
+              <button
+                onClick={() => {
+                  setCotiSelecionada(null)
+                  setShowDelete(false)
+                }}
+                type="button"
+                className="btn btn-danger text-white"
+              >
+                No, Cancelar
+              </button>
             </div>
           </div>
         </Modal.Body>
