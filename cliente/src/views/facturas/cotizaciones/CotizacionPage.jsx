@@ -10,6 +10,9 @@ import FormProductoCotizacion from './components/FormProductoCotizacion'
 import { useCotizacion } from '../../../hooks/useCotizacion'
 export default function CotizacionPage() {
   const [show, setShow] = useState(false)
+  const [showView, setShowView] = useState(false)
+  const [CotiSelecionada, setCotiSelecionada] = useState(null)
+
   const [draw, setDraw] = useState(1)
   const [ProductoCotizacion, setProductoCotizacion] = useState([])
 
@@ -41,44 +44,30 @@ export default function CotizacionPage() {
               cell: (row) => {
                 return (
                   <>
-                    <button
-                      onClick={() => {
-                        setProductoSelecionado(row)
-                        handleShow()
-                      }}
-                      title="Editar Producto."
-                      className="btn btn-primary btn-sm me-2"
-                    >
-                      <i className="fa-solid fa-pen-to-square"></i>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setProductoSelecionado(row)
-                        setShowSize(true)
-                      }}
-                      title="Editar Producto."
-                      className="btn btn-info btn-sm me-2"
-                    >
-                      <i className="text-white fa-regular fa-images"></i>
-                    </button>
-                    <button
-                      to={`${row._id}/gestion-tallas`}
-                      onClick={() => {
-                        setProductoSelecionado(row)
-                        setShowSizeTallas(true)
-                        //handleShow()
-                      }}
-                      title="Gestion de Tallas del Producto."
-                      className="btn btn-secondary btn-sm"
-                    >
-                      <i className="fa-solid fa-tags"></i>
-                    </button>
+                    <div className="btn-group" role="group" aria-label="Basic outlined example">
+                      <button
+                        onClick={() => {
+                          setShowView(true)
+                          setCotiSelecionada(row)
+                        }}
+                        title="Ver Cotización"
+                        className="btn btn-outline-primary btn-sm"
+                      >
+                        <i className="fa-solid fa-eye"></i>
+                      </button>
+                      <button type="button" className="btn btn-outline-info  btn-sm">
+                        <i className="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <button type="button" className="btn btn-outline-danger  btn-sm">
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
                   </>
                 )
               },
             },
             //{ name: 'Id', selector: (row) => row._id, width: '100px' },
-            { name: 'Cliente', selector: (row) => row?.name ?? '', width: '250px' },
+            { name: 'Cliente', selector: (row) => row?.client?.name ?? '', width: '250px' },
 
             {
               name: 'Total',
@@ -157,6 +146,71 @@ export default function CotizacionPage() {
             </div>
             <div className="col-md-6">
               <FormProductoCotizacion setProductoCotizacion={setProductoCotizacion} />
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        backdrop={'static'}
+        size="xl"
+        centered
+        show={showView}
+        onHide={() => setShowView(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Cotización Detalle <span className="fw-bold">#{CotiSelecionada?._id}</span>{' '}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="px-3">
+            <div className="row">
+              <div className="col-md-6">
+                <p className="m-0">Datos Cliente.</p>
+                <p className="m-0 fs-5">{CotiSelecionada?.client?.name}</p>
+              </div>
+              <div className="col-md-6">
+                <p className="m-0">Fecha Generada.</p>
+                <p className="m-0 fs-5">
+                  {new Date(CotiSelecionada?.createdTime).toLocaleDateString()}{' '}
+                  {new Date(CotiSelecionada?.createdTime).toLocaleTimeString()}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="px-3">
+            <div className="rounded overflow-hidden border border-ligth shadow-sm mt-3">
+              <DataTable
+                className="MyDataTableEvent"
+                striped
+                columns={[
+                  {
+                    name: 'Nombre Producto',
+                    selector: (row) => row?.product_name ?? '',
+                  },
+                  {
+                    name: 'Cant.',
+                    selector: (row) => row?.cantidad ?? '',
+                  },
+                  {
+                    name: 'Precio',
+                    selector: (row) => row?.price ?? '',
+                    format: (row) => ViewDollar(row?.price) ?? '',
+                  },
+                  {
+                    name: 'Precio',
+                    selector: (row) => row?.price ?? '',
+                    format: (row) => ViewDollar(row?.price * row?.cantidad) ?? '',
+                  },
+                ]}
+                noDataComponent={<p className="my-4">No hay Productos en la Cotización.</p>}
+                data={CotiSelecionada?.productos}
+              />
+            </div>
+            <div className="text-center mt-2">
+              <span className='me-2'>Total </span>
+              <span className='fw-bold fs-4'>{ViewDollar(CotiSelecionada?.total_monto)}</span>
             </div>
           </div>
         </Modal.Body>
