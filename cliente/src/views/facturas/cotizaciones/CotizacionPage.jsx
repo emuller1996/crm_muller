@@ -14,7 +14,6 @@ export default function CotizacionPage() {
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
 
   const [draw, setDraw] = useState(1)
-  const [ProductoCotizacion, setProductoCotizacion] = useState([])
 
   const { getAllCotizacion, data: ListCotizaciones } = useCotizacion()
 
@@ -27,7 +26,10 @@ export default function CotizacionPage() {
       <div className="my-2">
         <button
           type="button"
-          onClick={() => setShow(true)}
+          onClick={() => {
+            setCotiSelecionada(null)
+            setShow(true)
+          }}
           className="btn btn-primary"
           aria-pressed="false"
         >
@@ -55,7 +57,14 @@ export default function CotizacionPage() {
                       >
                         <i className="fa-solid fa-eye"></i>
                       </button>
-                      <button type="button" className="btn btn-outline-info  btn-sm">
+                      <button
+                        onClick={() => {
+                          setShow(true)
+                          setCotiSelecionada(row)
+                        }}
+                        type="button"
+                        className="btn btn-outline-info  btn-sm"
+                      >
                         <i className="fa-solid fa-pen-to-square"></i>
                       </button>
                       <button type="button" className="btn btn-outline-danger  btn-sm">
@@ -134,20 +143,14 @@ export default function CotizacionPage() {
           <Modal.Title>Crear Cotización</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="row g-4">
-            <div className="col-md-6">
-              <FormCotizacion
-                getAllCotizacion={() => {
-                  setShow(false)
-                  setDraw((status) => ++status)
-                }}
-                ProductoCotizacion={ProductoCotizacion}
-              />
-            </div>
-            <div className="col-md-6">
-              <FormProductoCotizacion setProductoCotizacion={setProductoCotizacion} />
-            </div>
-          </div>
+          <FormCotizacion
+            CotiSelecionada={CotiSelecionada}
+            getAllCotizacion={() => {
+              setShow(false)
+              setDraw((status) => ++status)
+            }}
+            //ProductoCotizacion={ProductoCotizacion}
+          />
         </Modal.Body>
       </Modal>
 
@@ -209,8 +212,8 @@ export default function CotizacionPage() {
               />
             </div>
             <div className="text-center mt-2">
-              <span className='me-2'>Total </span>
-              <span className='fw-bold fs-4'>{ViewDollar(CotiSelecionada?.total_monto)}</span>
+              <span className="me-2">Total </span>
+              <span className="fw-bold fs-4">{ViewDollar(CotiSelecionada?.total_monto)}</span>
             </div>
           </div>
         </Modal.Body>
