@@ -2,6 +2,7 @@
 import { Tab, Tabs } from 'react-bootstrap'
 import React from 'react'
 import CotizacionPage from './cotizaciones/CotizacionPage'
+import FacturaPage from './facturas/FacturaPage'
 
 export default function FacturasMainPage(second) {
   return (
@@ -10,7 +11,7 @@ export default function FacturasMainPage(second) {
         <div className="card-body">
           <Tabs defaultActiveKey="Facturas" id="uncontrolled-tab-example" className="">
             <Tab eventKey="Facturas" title="Facturas">
-              Tab content for Home
+              <FacturaPage />
             </Tab>
             <Tab eventKey="cotizacion" title="Cotización">
               <CotizacionPage />
@@ -18,7 +19,6 @@ export default function FacturasMainPage(second) {
           </Tabs>
         </div>
       </div>
-      <p>FacturasMainPage</p>
     </>
   )
 }

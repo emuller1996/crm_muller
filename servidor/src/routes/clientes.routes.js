@@ -2,12 +2,12 @@ import { Router } from "express";
 import xlsx from "xlsx";
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
-import pkg from "express-fileupload";
 import { client } from "../db.js";
 import {
   buscarElasticByType,
   crearElasticByType,
   crearLogsElastic,
+  createInMasaDocumentByType,
   getDocumentById,
   updateElasticByType,
 } from "../utils/index.js";
@@ -21,7 +21,6 @@ import {
 import { INDEX_ES_MAIN } from "../config.js";
 import { jwtDecode } from "jwt-decode";
 import { sendVerificationEmail } from "../services/mailService.js";
-const fileUpload = pkg;
 const ClienteRouters = Router();
 
 ClienteRouters.get("/", validateTokenMid, async (req, res) => {
@@ -395,143 +394,6 @@ ClienteRouters.put(
   }
 );
 
-ClienteRouters.get("/get/address", validateTokenClientMid, async (req, res) => {
-  try {
-    const decoded = jwtDecode(req.headers.authorization);
-    let perPage = req.query.perPage ?? 10;
-    let page = req.query.page ?? 1;
-    var direccion_cliente = await buscarElasticByType("direccion_cliente");
-
-    var consulta = {
-      index: INDEX_ES_MAIN,
-      size: perPage,
-      from: (page - 1) * perPage,
-      body: {
-        query: {
-          bool: {
-            must: [
-              {
-                term: {
-                  "client_id.keyword": {
-                    value: decoded._id,
-                  },
-                },
-              },
-            ],
-            filter: [
-              {
-                term: {
-                  type: "direccion_cliente",
-                },
-              },
-            ],
-          },
-        },
-        sort: [
-          { createdTime: { order: "desc" } }, // Reemplaza con el campo por el que quieres ordenar
-        ],
-      },
-    };
-
-    const searchResult = await client.search(consulta);
-
-    var data = searchResult.body.hits.hits.map((c) => {
-      return {
-        ...c._source,
-        _id: c._id,
-      };
-    });
-
-    return res.status(200).json(data);
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-});
-
-ClienteRouters.get(
-  "/get/shopping",
-  validateTokenClientMid,
-  async (req, res) => {
-    try {
-      const decoded = jwtDecode(req.headers.authorization);
-      let perPage = req.query.perPage ?? 10;
-      let page = req.query.page ?? 1;
-      var consulta = {
-        index: INDEX_ES_MAIN,
-        size: perPage,
-        from: (page - 1) * perPage,
-        body: {
-          query: {
-            bool: {
-              must: [
-                {
-                  term: {
-                    "cliente.client_id.keyword": {
-                      value: decoded._id,
-                    },
-                  },
-                },
-              ],
-              filter: [
-                {
-                  term: {
-                    type: "orden",
-                  },
-                },
-              ],
-            },
-          },
-          sort: [
-            { createdTime: { order: "desc" } }, // Reemplaza con el campo por el que quieres ordenar
-          ],
-        },
-      };
-
-      const searchResult = await client.search(consulta);
-
-      var data = searchResult.body.hits.hits.map((c) => {
-        return {
-          ...c._source,
-          _id: c._id,
-        };
-      });
-
-      return res.status(200).json(data);
-    } catch (error) {
-      return res.status(500).json({ message: error.message });
-    }
-  }
-);
-
-ClienteRouters.get(
-  "/get/shopping/:id",
-  validateTokenClientMid,
-  async (req, res) => {
-    try {
-      var orden = await getDocumentById(req.params.id);
-      if (orden.address_id) {
-        let temp = await getDocumentById(orden.address_id);
-        orden.address = temp;
-      }
-      var productosData = orden.products.map(async (c) => {
-        //console.log(await getDocumentById(c.product_id));
-        let image_id = (await getDocumentById(c.product_id)).image_id;
-        return {
-          ...c,
-          producto_data: await getDocumentById(c.product_id),
-          stock_data: await getDocumentById(c.stock_id),
-          image_id,
-          image: (await getDocumentById(image_id)).image,
-        };
-      });
-      productosData = await Promise.all(productosData);
-      orden.products = productosData;
-      return res.status(200).json(orden);
-    } catch (error) {
-      return res.status(500).json({ message: error.message });
-    }
-  }
-);
 
 
 ClienteRouters.post("/:id/comments", /* validateTokenMid, */ async (req, res) => {
@@ -589,5 +451,28 @@ ClienteRouters.get("/:id/comments", /* validateTokenMid,  */async (req, res) => 
     return res.status(500).json({ message: error.message });
   }
 });
+
+ClienteRouters.post(
+  "/import-excel",
+  async (req, res) => {
+    try {
+      const { file } = req.files;
+      console.log(file);
+      if (!file) {
+        return res.status(400).send("No se ha seleccionado ningún archivo");
+      }
+      const workbook = xlsx.readFile(file.tempFilePath);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const data = xlsx.utils.sheet_to_json(worksheet);
+      /* console.log(data); */
+      const r = await createInMasaDocumentByType(data, "cliente");
+      console.log(r);
+
+      return res.status(200).json({ message: "Importada Realizada" });
+    } catch (error) {
+      res.status(500).send("Error al procesar el archivo: " + error.message);
+    }
+  }
+);
 
 export default ClienteRouters;

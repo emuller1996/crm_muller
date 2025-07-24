@@ -9,12 +9,14 @@ import FormCotizacion from './components/FormCotizacion'
 import { useCotizacion } from '../../../hooks/useCotizacion'
 import toast from 'react-hot-toast'
 import FormSignedCotizacion from './components/FormSignedCotizacion'
+import FormFacturaCotizacion from './components/FormFacturaCotizacion'
 
 export default function CotizacionPage() {
   const [show, setShow] = useState(false)
   const [showView, setShowView] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showFirma, setShowFirma] = useState(false)
+  const [showFactura, setShowFactura] = useState(false)
 
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
 
@@ -48,6 +50,7 @@ export default function CotizacionPage() {
           columns={[
             {
               name: 'Acciones',
+              width: '150px',
               cell: (row) => {
                 return (
                   <>
@@ -96,12 +99,23 @@ export default function CotizacionPage() {
                           </button>
                         </>
                       )}
+                      {row.signature  && !row.factura_id && (
+                        <button
+                          onClick={() => {
+                            setShowFactura(true)
+                            setCotiSelecionada(row)
+                          }}
+                          title="Generar Factura"
+                          className="btn btn-outline-success btn-sm"
+                        >
+                          <i className="fa-solid fa-file-invoice-dollar"></i>
+                        </button>
+                      )}
                     </div>
                   </>
                 )
               },
             },
-            //{ name: 'Id', selector: (row) => row._id, width: '100px' },
             { name: 'Cliente', selector: (row) => row?.client?.name ?? '', width: '250px' },
 
             {
@@ -133,7 +147,7 @@ export default function CotizacionPage() {
           ]}
           data={ListCotizaciones ? ListCotizaciones : []}
           pagination
-          paginationServer
+          //paginationServer
           //progressPending={loading}
           progressComponent={
             <div className="d-flex justify-content-center my-5">
@@ -151,17 +165,17 @@ export default function CotizacionPage() {
           noDataComponent={
             <div className="d-flex justify-content-center my-5">No hay Cotizaciones.</div>
           }
-          onChangeRowsPerPage={(perPage, page) => {
+          /* onChangeRowsPerPage={(perPage, page) => {
             console.log(perPage, page)
             setdataFilter((status) => {
               return { ...status, perPage }
             })
-          }}
-          onChangePage={(page) => {
+          }} */
+          /* onChangePage={(page) => {
             setdataFilter((status) => {
               return { ...status, page }
             })
-          }}
+          }} */
         />
       </div>
       <Modal backdrop={'static'} size="xl" centered show={show} onHide={() => setShow(false)}>
@@ -250,6 +264,10 @@ export default function CotizacionPage() {
                     <img src={CotiSelecionada?.signature} alt="FIMRA_COTIZACION" />
                   </div>
                 </div>
+                <span>
+                  Fecha Firma {new Date(CotiSelecionada.signature_date).toLocaleDateString()} -{' '}
+                  {new Date(CotiSelecionada.signature_date).toLocaleTimeString()}
+                </span>
               </>
             )}
           </div>
@@ -312,6 +330,24 @@ export default function CotizacionPage() {
               setDraw((status) => ++status)
             }}
             CotiSelecionada={CotiSelecionada}
+          />
+        </Modal.Body>
+      </Modal>
+      <Modal centered show={showFactura} size="xl" onHide={() => setShowFactura(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Cotización
+            <b> ⇾</b>
+            <span className="fw-bold">Factura</span>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormFacturaCotizacion
+            CotiSelecionada={CotiSelecionada}
+            getAllCotizacion={() => {
+              setShowFactura(false)
+              setDraw((status) => ++status)
+            }}
           />
         </Modal.Body>
       </Modal>
