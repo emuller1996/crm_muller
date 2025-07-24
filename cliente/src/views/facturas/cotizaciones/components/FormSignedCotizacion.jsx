@@ -22,7 +22,7 @@ export default function FormSignedCotizacion({ CotiSelecionada, getAllCotizacion
       console.log(firmaBase64) // Ej: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
       try {
         await actualizarCotizacion(
-          { status: 'Aprobada', signature: firmaBase64 },
+          { status: 'Aprobada', signature: firmaBase64, signature_date: new Date().getTime() },
           CotiSelecionada._id,
         )
         toast.success(`Firma Guardada.`)
