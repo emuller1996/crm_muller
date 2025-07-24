@@ -1,18 +1,20 @@
 /* eslint-disable prettier/prettier */
 import React, { useEffect } from 'react'
-import { Modal, OverlayTrigger, Tooltip } from 'react-bootstrap'
+import { Modal } from 'react-bootstrap'
 import DataTable from 'react-data-table-component'
 import { paginationComponentOptions } from '../../../utils/optionsConfig'
 import { ViewDollar } from '../../../utils'
 import { useState } from 'react'
 import FormCotizacion from './components/FormCotizacion'
-import FormProductoCotizacion from './components/FormProductoCotizacion'
 import { useCotizacion } from '../../../hooks/useCotizacion'
 import toast from 'react-hot-toast'
+import FormSignedCotizacion from './components/FormSignedCotizacion'
+
 export default function CotizacionPage() {
   const [show, setShow] = useState(false)
   const [showView, setShowView] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
+  const [showFirma, setShowFirma] = useState(false)
 
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
 
@@ -60,26 +62,40 @@ export default function CotizacionPage() {
                       >
                         <i className="fa-solid fa-eye"></i>
                       </button>
-                      <button
-                        onClick={() => {
-                          setShow(true)
-                          setCotiSelecionada(row)
-                        }}
-                        type="button"
-                        className="btn btn-outline-info  btn-sm"
-                      >
-                        <i className="fa-solid fa-pen-to-square"></i>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowDelete(true)
-                          setCotiSelecionada(row)
-                        }}
-                        type="button"
-                        className="btn btn-outline-danger  btn-sm"
-                      >
-                        <i className="fa-solid fa-trash"></i>
-                      </button>
+                      {!row.signature && (
+                        <>
+                          <button
+                            onClick={() => {
+                              setShow(true)
+                              setCotiSelecionada(row)
+                            }}
+                            type="button"
+                            className="btn btn-outline-info  btn-sm"
+                          >
+                            <i className="fa-solid fa-pen-to-square"></i>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setShowFirma(true)
+                              setCotiSelecionada(row)
+                            }}
+                            type="button"
+                            className="btn btn-outline-secondary  btn-sm"
+                          >
+                            <i className="fa-solid fa-signature"></i>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setShowDelete(true)
+                              setCotiSelecionada(row)
+                            }}
+                            type="button"
+                            className="btn btn-outline-danger  btn-sm"
+                          >
+                            <i className="fa-solid fa-trash"></i>
+                          </button>
+                        </>
+                      )}
                     </div>
                   </>
                 )
@@ -225,6 +241,17 @@ export default function CotizacionPage() {
               <span className="me-2">Total </span>
               <span className="fw-bold fs-4">{ViewDollar(CotiSelecionada?.total_monto)}</span>
             </div>
+            {CotiSelecionada?.signature && (
+              <>
+                <hr />
+                <p className="text-center mb-0">Firma Cliente </p>
+                <div className="d-flex justify-content-center overflow-auto">
+                  <div style={{ border: '1px solid #c2c2c2', width: '450px', borderRadius: 8 }}>
+                    <img src={CotiSelecionada?.signature} alt="FIMRA_COTIZACION" />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </Modal.Body>
       </Modal>
@@ -269,6 +296,23 @@ export default function CotizacionPage() {
               </button>
             </div>
           </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal centered show={showFirma} size="xl" onHide={() => setShowFirma(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Firmar y Aceptar Cotización <span className="fw-bold">#{CotiSelecionada?._id}</span>{' '}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormSignedCotizacion
+            getAllCotizacion={() => {
+              setShowFirma(false)
+              setDraw((status) => ++status)
+            }}
+            CotiSelecionada={CotiSelecionada}
+          />
         </Modal.Body>
       </Modal>
     </>
