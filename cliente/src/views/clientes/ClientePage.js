@@ -6,6 +6,7 @@ import DataTable from 'react-data-table-component'
 import { paginationComponentOptions } from '../../utils/optionsConfig'
 import FormClientes from './components/FormClientes'
 import ComentariosCliente from './components/ComentariosCliente/ComentariosCliente'
+import { ViewDollar } from '../../utils'
 
 const ClientePage = () => {
   const [show, setShow] = useState(false)
@@ -23,7 +24,7 @@ const ClientePage = () => {
     draw: 1,
   })
 
-  const { getAllClientesPagination, dataP } = useClientes()
+  const { getAllClientesPagination, dataP, loading } = useClientes()
 
   useEffect(() => {
     getAllClientesPagination(dataFilter)
@@ -79,87 +80,99 @@ const ClientePage = () => {
           </div>
         </div>
         <div className="rounded overflow-hidden border border-ligth shadow-sm mt-3">
-          {dataP && (
-            <DataTable
-              className="MyDataTableEvent"
-              striped
-              columns={[
-                {
-                  cell: (row) => {
-                    return (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setClienteS(row)
-                            handleShow()
-                          }}
-                          className="btn btn-info btn-sm text-white"
-                        >
-                          <i className="fa-solid fa-pen-to-square"></i>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setClienteS(row)
-                            setShow2(true)
-                          }}
-                          type="button"
-                          className="btn btn-dark btn-sm ms-2"
-                        >
-                          <i className="fa-solid fa-comments"></i>
-                        </button>
-                      </>
-                    )
-                  },
+          <DataTable
+            className="MyDataTableEvent"
+            striped
+            columns={[
+              {
+                cell: (row) => {
+                  return (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setClienteS(row)
+                          handleShow()
+                        }}
+                        className="btn btn-info btn-sm text-white"
+                      >
+                        <i className="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setClienteS(row)
+                          setShow2(true)
+                        }}
+                        type="button"
+                        className="btn btn-dark btn-sm ms-2"
+                      >
+                        <i className="fa-solid fa-comments"></i>
+                      </button>
+                    </>
+                  )
                 },
-                { name: 'Nombre', selector: (row) => row?.name ?? '', width: '200px' },
-                { name: 'Alias/Apodo', selector: (row) => row?.alias ?? '', width: '200px' },
-                { name: 'Correo', selector: (row) => row?.email ?? '', width: '200px' },
-                { name: 'Telefono', selector: (row) => row?.telefono ?? '', width: '150px' },
-                {
-                  name: 'Direccion',
-                  selector: (row) => `${row?.direccion ?? ''}`,
-                  width: '150px',
-                },
-                {
-                  name: 'Barrio',
-                  selector: (row) => `${row?.barrio ?? ''}`,
-                  width: '150px',
-                },
-                {
-                  name: 'Fecha Creacion.',
-                  selector: (row) =>
-                    `${new Date(row?.createdTime).toISOString().split('T')[0] ?? ''} ${new Date(row?.createdTime).toLocaleTimeString() ?? ''}`,
-                  width: '250px',
-                },
-                {
-                  name: 'Fecha Actualizacion',
-                  selector: (row) =>
-                    `${new Date(row?.updatedTime).toISOString().split('T')[0] ?? ''} ${new Date(row?.updatedTime).toLocaleTimeString() ?? ''}`,
-                  width: '250px',
-                },
-                { name: '', selector: (row) => row?.city ?? '' },
-              ]}
-              paginationServer
-              data={dataP.data ?? []}
-              pagination
-              paginationComponentOptions={paginationComponentOptions}
-              paginationPerPage={dataFilter.perPage}
-              noDataComponent="No hay datos para mostrar"
-              paginationTotalRows={dataP?.total}
-              onChangeRowsPerPage={(perPage, page) => {
-                console.log(perPage, page)
-                setdataFilter((status) => {
-                  return { ...status, perPage }
-                })
-              }}
-              onChangePage={(page) => {
-                setdataFilter((status) => {
-                  return { ...status, page }
-                })
-              }}
-            />
-          )}
+              },
+              { name: 'Nombre', selector: (row) => row?.name ?? '', width: '200px' },
+              { name: 'Alias/Apodo', selector: (row) => row?.alias ?? '', width: '200px' },
+              { name: 'Correo', selector: (row) => row?.email ?? '', width: '200px' },
+              { name: 'Telefono', selector: (row) => row?.telefono ?? '', width: '150px' },
+              {
+                name: 'Direccion',
+                selector: (row) => `${row?.direccion ?? ''}`,
+                width: '150px',
+              },
+              {
+                name: 'Barrio',
+                selector: (row) => `${row?.barrio ?? ''}`,
+                width: '150px',
+              },
+              {
+                name: 'Fecha Creacion.',
+                selector: (row) =>
+                  `${new Date(row?.createdTime).toISOString().split('T')[0] ?? ''} ${new Date(row?.createdTime).toLocaleTimeString() ?? ''}`,
+                width: '250px',
+              },
+              {
+                name: 'Fecha Actualizacion',
+                selector: (row) =>
+                  `${new Date(row?.updatedTime).toISOString().split('T')[0] ?? ''} ${new Date(row?.updatedTime).toLocaleTimeString() ?? ''}`,
+                width: '250px',
+              },
+              { name: '', selector: (row) => row?.city ?? '' },
+            ]}
+            progressPending={loading}
+            data={dataP?.data}
+            pagination
+            paginationServer
+            paginationComponentOptions={paginationComponentOptions}
+            paginationPerPage={dataFilter.perPage}
+            noDataComponent="No hay datos para mostrar"
+            paginationTotalRows={dataP?.total}
+            progressComponent={
+              <div className="d-flex justify-content-center my-5">
+                <div
+                  className="spinner-border text-primary"
+                  style={{ width: '3em', height: '3em' }}
+                  role="status"
+                >
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            }
+            onChangeRowsPerPage={(perPage, page) => {
+              console.log(perPage, page)
+              setdataFilter((status) => {
+                return { ...status, perPage }
+              })
+            }}
+            onChangePage={(page) => {
+              console.log(page)
+
+              setdataFilter((status) => {
+                return { ...status, page }
+              })
+            }}
+          />
         </div>
         <Modal backdrop={'static'} size="lg" centered show={show} onHide={handleClose}>
           <Modal.Body>
