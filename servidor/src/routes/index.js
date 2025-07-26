@@ -29,7 +29,7 @@ router.use("/consultas", ConsultasRouters);
 router.use("/categoria", CategoriasRouters);
 router.use("/productos", ProductosRouters);
 router.use("/images/", ImagesRouters);
-router.use("/clientes/", ClienteRouters);
+router.use("/clientes/",validateTokenMid, ClienteRouters);
 router.use("/auth", AuthRouters);
 router.use("/ordenes", OrdenesRouters);
 router.use("/punto_venta", PuntoVentaRouters);
