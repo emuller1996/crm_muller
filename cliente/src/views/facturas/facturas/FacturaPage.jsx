@@ -7,8 +7,13 @@ import { ViewDollar } from '../../../utils'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useFacturas } from '../../../hooks/useFacturas'
+import PropTypes from 'prop-types'
 
-export default function FacturaPage() {
+export default function FacturaPage({ draw, setDraw }) {
+  FacturaPage.propTypes = {
+      setDraw: PropTypes.func,
+      draw: PropTypes.number,
+    }
   const [show, setShow] = useState(false)
   const [showView, setShowView] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
@@ -17,9 +22,9 @@ export default function FacturaPage() {
 
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
 
-  const [draw, setDraw] = useState(1)
+  //const [draw, setDraw] = useState(1)
 
-  const { getAllFactura, data: ListFacturas, actualizarFactura } = useFacturas()
+  const { getAllFactura, data: ListFacturas, actualizarFactura, loading } = useFacturas()
 
   useEffect(() => {
     getAllFactura()
@@ -62,46 +67,10 @@ export default function FacturaPage() {
                       >
                         <i className="fa-solid fa-eye"></i>
                       </button>
-                      {!row.signature && (
-                        <>
-                          <button
-                            onClick={() => {
-                              setShow(true)
-                              setCotiSelecionada(row)
-                            }}
-                            type="button"
-                            className="btn btn-outline-info  btn-sm"
-                          >
-                            <i className="fa-solid fa-pen-to-square"></i>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setShowFirma(true)
-                              setCotiSelecionada(row)
-                            }}
-                            type="button"
-                            className="btn btn-outline-secondary  btn-sm"
-                          >
-                            <i className="fa-solid fa-signature"></i>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setShowDelete(true)
-                              setCotiSelecionada(row)
-                            }}
-                            type="button"
-                            className="btn btn-outline-danger  btn-sm"
-                          >
-                            <i className="fa-solid fa-trash"></i>
-                          </button>
-                        </>
-                      )}
+
                       {row.signature && (
                         <button
-                          onClick={() => {
-                            setShowFactura(true)
-                            setCotiSelecionada(row)
-                          }}
+                          onClick={() => {}}
                           title="Generar Factura"
                           className="btn btn-outline-success btn-sm"
                         >
@@ -128,6 +97,20 @@ export default function FacturaPage() {
               width: '150px',
             },
             {
+              name: 'Creado por',
+              selector: (row) => row?.user_create ?? '',
+              format: (row) => (
+                <>
+                  <div>
+                    <span className="text-muted">
+                      <i className=" fa-solid fa-user me-1"></i>
+                      {row?.user_create?.name ?? ' No registrado '}
+                    </span>
+                  </div>
+                </>
+              ),
+            },
+            {
               name: 'Fecha de Creacion.',
               selector: (row) =>
                 `${new Date(row?.createdTime).toLocaleDateString() ?? ''} ${new Date(row?.createdTime).toLocaleTimeString() ?? ''}`,
@@ -145,7 +128,7 @@ export default function FacturaPage() {
           data={ListFacturas ? ListFacturas : []}
           pagination
           //paginationServer
-          //progressPending={loading}
+          progressPending={loading}
           progressComponent={
             <div className="d-flex justify-content-center my-5">
               <div
@@ -175,9 +158,6 @@ export default function FacturaPage() {
           }} */
         />
       </div>
-    
-
- 
     </>
   )
 }

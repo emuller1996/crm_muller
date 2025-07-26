@@ -6,6 +6,7 @@ import {
 } from "../utils/index.js";
 
 import md5 from "md5";
+import { jwtDecode } from "jwt-decode";
 
 const UsuariosRouters = Router();
 
@@ -33,7 +34,7 @@ UsuariosRouters.post("/", async (req, res) => {
   try {
     var recinto = {};
     const data = req.body;
-
+    data.user_create_id = jwtDecode(req.headers[`access-token`])?._id;
     data.password = md5(data.password);
     const response = await crearElasticByType(data, "usuario");
     //recinto = response.body;

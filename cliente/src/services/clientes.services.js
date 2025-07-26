@@ -76,7 +76,7 @@ export const getClientesSearchPaginationServices = async (token, ...params) => {
 
   return await axios.get(`/clientes/pagination/?${searchs.toString()}`, {
     headers: {
-      Authorization: `Bearer ${token}`,
+     'access-token': `${token}`,
     },
   });
 };

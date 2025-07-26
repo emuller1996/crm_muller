@@ -127,6 +127,20 @@ const ClientePage = () => {
                 width: '150px',
               },
               {
+                name: 'Creado por',
+                selector: (row) => row?.user_create ?? '',
+                format: (row) => (
+                  <>
+                    <div>
+                      <span className="text-muted">
+                        <i className=" fa-solid fa-user me-1"></i>
+                        {row?.user_create?.name ?? ' No registrado '}
+                      </span>
+                    </div>
+                  </>
+                ),
+              },
+              {
                 name: 'Fecha Creacion.',
                 selector: (row) =>
                   `${new Date(row?.createdTime).toISOString().split('T')[0] ?? ''} ${new Date(row?.createdTime).toLocaleTimeString() ?? ''}`,

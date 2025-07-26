@@ -124,7 +124,7 @@ ClienteRouters.get("/pagination_old", async (req, res) => {
   }
 });
 
-ClienteRouters.get("/pagination",  async (req, res) => {
+ClienteRouters.get("/pagination", async (req, res) => {
   let perPage = req.query.perPage ?? 10;
   let page = req.query.page ?? 1;
   let search = req.query.search ?? "";
@@ -161,7 +161,11 @@ ClienteRouters.get("/pagination",  async (req, res) => {
       });
     }
     const searchResult = await client.search(consulta);
-    var data = searchResult.body.hits.hits.map((c) => {
+    var data = searchResult.body.hits.hits.map(async (c) => {
+      if (c._source.user_create_id && c._source.user_create_id !== "") {
+        const user_create_data = await getDocumentById(c._source.user_create_id);
+        c._source.user_create = { name: user_create_data?.name ?? null };
+      }
       return {
         ...c._source,
         _id: c._id,
@@ -184,35 +188,41 @@ ClienteRouters.get("/pagination",  async (req, res) => {
   }
 });
 
-ClienteRouters.post("/",/*  validateTokenMid, */ async (req, res) => {
-  try {
-    var customer = {};
-    const data = req.body;
-    //validacion usuario.
-
-    data.createdTime = new Date().getTime();
-    const response = await crearElasticByType(data, "cliente");
-    customer = response.body;
-    return res.status(200).json({
-      message: "Cliente Creado.",
-      customer,
-    });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-});
-
-ClienteRouters.put("/:id", /* validateTokenMid, */ async (req, res) => {
-  try {
-    const r = await updateElasticByType(req.params.id, req.body);
-    if (r.body.result === "updated") {
-      await client.indices.refresh({ index: INDEX_ES_MAIN });
-      return res.json({ message: "Cliente Actualizado" });
+ClienteRouters.post(
+  "/",
+  /*  validateTokenMid, */ async (req, res) => {
+    try {
+      var customer = {};
+      const data = req.body;
+      //validacion usuario.
+      data.user_create_id = jwtDecode(req.headers[`access-token`])?._id;
+      data.createdTime = new Date().getTime();
+      const response = await crearElasticByType(data, "cliente");
+      customer = response.body;
+      return res.status(200).json({
+        message: "Cliente Creado.",
+        customer,
+      });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
     }
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
   }
-});
+);
+
+ClienteRouters.put(
+  "/:id",
+  /* validateTokenMid, */ async (req, res) => {
+    try {
+      const r = await updateElasticByType(req.params.id, req.body);
+      if (r.body.result === "updated") {
+        await client.indices.refresh({ index: INDEX_ES_MAIN });
+        return res.json({ message: "Cliente Actualizado" });
+      }
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+);
 /* ClienteRouters.post("/", async (req, res) => {
   try {
     var customer = {};
@@ -280,7 +290,8 @@ ClienteRouters.put("/:id", validateTokenClientMid, async (req, res) => {
       delete clienteData.hash;
       return res.json({
         message: "Cliente Actualizado",
-        detail: "Se ha Actualizado tu informacion basica correctamente. Los cambios seran visibles cuando inicias seccion nuevamente.",
+        detail:
+          "Se ha Actualizado tu informacion basica correctamente. Los cambios seran visibles cuando inicias seccion nuevamente.",
         clienteData,
       });
     }
@@ -394,85 +405,86 @@ ClienteRouters.put(
   }
 );
 
-
-
-ClienteRouters.post("/:id/comments", /* validateTokenMid, */ async (req, res) => {
-  const dataComentarioCliente = req.body;
-  const resElasCreate = await crearElasticByType(
-    dataComentarioCliente,
-    "comentario"
-  );
-  return res.status(200).json({
-    message: "Se creo el comentario correctamente. ",
-    resElasCreate,
-  });
-});
-  
-ClienteRouters.get("/:id/comments", /* validateTokenMid,  */async (req, res) => {
-  try {
-    const searchResult = await client.search({
-      index: INDEX_ES_MAIN,
-      size: 1000,
-      body: {
-        query: {
-          bool: {
-            must: [
-              {
-                term: {
-                  "type.keyword": {
-                    value: "comentario",
-                  },
-                },
-              },
-              {
-                term: {
-                  "clien_id.keyword": {
-                    value: req.params.id,
-                  },
-                },
-              },
-            ],
-          },
-        },
-        sort: [
-          { createdTime: { order: "desc" } }, // Reemplaza con el campo por el que quieres ordenar
-        ],
-      },
-    });
-
-    const dataFuncion = searchResult.body.hits.hits.map((c) => {
-      return {
-        ...c._source,
-        _id: c._id,
-      };
-    });
-    return res.status(200).json(dataFuncion);
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-});
-
 ClienteRouters.post(
-  "/import-excel",
-  async (req, res) => {
-    try {
-      const { file } = req.files;
-      console.log(file);
-      if (!file) {
-        return res.status(400).send("No se ha seleccionado ningún archivo");
-      }
-      const workbook = xlsx.readFile(file.tempFilePath);
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const data = xlsx.utils.sheet_to_json(worksheet);
-      /* console.log(data); */
-      const r = await createInMasaDocumentByType(data, "cliente");
-      console.log(r);
+  "/:id/comments",
+  /* validateTokenMid, */ async (req, res) => {
+    const dataComentarioCliente = req.body;
+    const resElasCreate = await crearElasticByType(
+      dataComentarioCliente,
+      "comentario"
+    );
+    return res.status(200).json({
+      message: "Se creo el comentario correctamente. ",
+      resElasCreate,
+    });
+  }
+);
 
-      return res.status(200).json({ message: "Importada Realizada" });
+ClienteRouters.get(
+  "/:id/comments",
+  /* validateTokenMid,  */ async (req, res) => {
+    try {
+      const searchResult = await client.search({
+        index: INDEX_ES_MAIN,
+        size: 1000,
+        body: {
+          query: {
+            bool: {
+              must: [
+                {
+                  term: {
+                    "type.keyword": {
+                      value: "comentario",
+                    },
+                  },
+                },
+                {
+                  term: {
+                    "clien_id.keyword": {
+                      value: req.params.id,
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          sort: [
+            { createdTime: { order: "desc" } }, // Reemplaza con el campo por el que quieres ordenar
+          ],
+        },
+      });
+
+      const dataFuncion = searchResult.body.hits.hits.map((c) => {
+        return {
+          ...c._source,
+          _id: c._id,
+        };
+      });
+      return res.status(200).json(dataFuncion);
     } catch (error) {
-      res.status(500).send("Error al procesar el archivo: " + error.message);
+      return res.status(500).json({ message: error.message });
     }
   }
 );
+
+ClienteRouters.post("/import-excel", async (req, res) => {
+  try {
+    const { file } = req.files;
+    console.log(file);
+    if (!file) {
+      return res.status(400).send("No se ha seleccionado ningún archivo");
+    }
+    const workbook = xlsx.readFile(file.tempFilePath);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data = xlsx.utils.sheet_to_json(worksheet);
+    /* console.log(data); */
+    const r = await createInMasaDocumentByType(data, "cliente");
+    console.log(r);
+
+    return res.status(200).json({ message: "Importada Realizada" });
+  } catch (error) {
+    res.status(500).send("Error al procesar el archivo: " + error.message);
+  }
+});
 
 export default ClienteRouters;

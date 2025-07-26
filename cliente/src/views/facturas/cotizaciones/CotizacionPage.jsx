@@ -10,8 +10,12 @@ import { useCotizacion } from '../../../hooks/useCotizacion'
 import toast from 'react-hot-toast'
 import FormSignedCotizacion from './components/FormSignedCotizacion'
 import FormFacturaCotizacion from './components/FormFacturaCotizacion'
-
-export default function CotizacionPage() {
+import PropTypes from 'prop-types'
+export default function CotizacionPage({ draw, setDraw }) {
+  CotizacionPage.propTypes = {
+    setDraw: PropTypes.func,
+    draw: PropTypes.number,
+  }
   const [show, setShow] = useState(false)
   const [showView, setShowView] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
@@ -20,9 +24,14 @@ export default function CotizacionPage() {
 
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
 
-  const [draw, setDraw] = useState(1)
+  // const [draw, setDraw] = useState(1)
 
-  const { getAllCotizacion, data: ListCotizaciones, actualizarCotizacion } = useCotizacion()
+  const {
+    getAllCotizacion,
+    data: ListCotizaciones,
+    actualizarCotizacion,
+    loading,
+  } = useCotizacion()
 
   useEffect(() => {
     getAllCotizacion()
@@ -99,7 +108,7 @@ export default function CotizacionPage() {
                           </button>
                         </>
                       )}
-                      {row.signature  && !row.factura_id && (
+                      {row.signature && !row.factura_id && (
                         <button
                           onClick={() => {
                             setShowFactura(true)
@@ -131,6 +140,20 @@ export default function CotizacionPage() {
               width: '150px',
             },
             {
+              name: 'Creado por',
+              selector: (row) => row?.user_create ?? '',
+              format: (row) => (
+                <>
+                  <div>
+                    <span className="text-muted">
+                      <i className=" fa-solid fa-user me-1"></i>
+                      {row?.user_create?.name ?? ' No registrado '}
+                    </span>
+                  </div>
+                </>
+              ),
+            },
+            {
               name: 'Fecha de Creacion.',
               selector: (row) =>
                 `${new Date(row?.createdTime).toLocaleDateString() ?? ''} ${new Date(row?.createdTime).toLocaleTimeString() ?? ''}`,
@@ -148,7 +171,7 @@ export default function CotizacionPage() {
           data={ListCotizaciones ? ListCotizaciones : []}
           pagination
           //paginationServer
-          //progressPending={loading}
+          progressPending={loading}
           progressComponent={
             <div className="d-flex justify-content-center my-5">
               <div
