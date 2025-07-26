@@ -99,7 +99,7 @@ export default function CotizacionPage() {
                           </button>
                         </>
                       )}
-                      {row.signature  && !row.factura_id && (
+                      {row.signature && !row.factura_id && (
                         <button
                           onClick={() => {
                             setShowFactura(true)
@@ -129,6 +129,20 @@ export default function CotizacionPage() {
               selector: (row) => row?.status ?? '',
               format: (row) => row?.status ?? '',
               width: '150px',
+            },
+            {
+              name: 'Creado por',
+              selector: (row) => row?.user_create ?? '',
+              format: (row) => (
+                <>
+                  <div>
+                    <span className="text-muted">
+                      <i  className=" fa-solid fa-user me-1"></i>
+                      {row?.user_create?.name ?? " No registrado "}
+                    </span>
+                  </div>
+                </>
+              ),
             },
             {
               name: 'Fecha de Creacion.',

@@ -34,8 +34,8 @@ router.use("/auth", AuthRouters);
 router.use("/ordenes", OrdenesRouters);
 router.use("/punto_venta", PuntoVentaRouters);
 router.use("/pagos", PagosRouters);
-router.use("/cotizacion", CotizacionRouters);
-router.use("/factura", FacturaRouters);
+router.use("/cotizacion", validateTokenMid,  CotizacionRouters);
+router.use("/factura", validateTokenMid, FacturaRouters);
 
 
 

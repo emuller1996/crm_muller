@@ -26,14 +26,14 @@ AuthRouters.post("/login", async (req, res) => {
           must: [
             {
               term: {
-                "type": {
+                "type.keyword": {
                   value: "usuario",
                 },
               },
             },
             {
               term: {
-                "email": {
+                "email.keyword": {
                   value: req.body.email,
                 },
               },

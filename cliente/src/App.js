@@ -59,9 +59,9 @@ const App = () => {
               path="/*"
               name="Home"
               element={
-                /*   <LoginProtected> */
-                <DefaultLayout />
-                /*  </LoginProtected> */
+                <LoginProtected>
+                  <DefaultLayout />
+                </LoginProtected>
               }
             />
             <Route path="/*" element={<>404 PAGE</>} />
