@@ -41,6 +41,15 @@ FacturaRouters.get("/", async (req, res) => {
   }
 });
 
+FacturaRouters.get("/:id", async (req, res) => {
+  try {
+    var funcion = await getDocumentById(req.params.id);
+    return res.status(200).json(funcion);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
 FacturaRouters.post(
   "/",
   /* validateTokenMid, */ async (req, res) => {

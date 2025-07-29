@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 import { useFacturas } from '../../../hooks/useFacturas'
 import PropTypes from 'prop-types'
 import FormFactura from './components/FormFactura'
+import DetalleFactura from './components/DetalleFactura'
 
 export default function FacturaPage({ draw, setDraw }) {
   FacturaPage.propTypes = {
@@ -170,6 +171,21 @@ export default function FacturaPage({ draw, setDraw }) {
             }}
             //ProductoCotizacion={ProductoCotizacion}
           />
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        backdrop={'static'}
+        size="xl"
+        centered
+        show={showView}
+        onHide={() => setShowView(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Detalle Factura</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <DetalleFactura Factura={CotiSelecionada} />
         </Modal.Body>
       </Modal>
     </>

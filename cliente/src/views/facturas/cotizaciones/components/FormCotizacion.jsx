@@ -162,7 +162,7 @@ export default function FormCotizacion({ getAllCotizacion, CotiSelecionada }) {
                         width: '150px',
                       },
                       {
-                        name: 'Precio',
+                        name: 'Total',
                         selector: (row) => row?.price ?? '',
                         format: (row) => ViewDollar(row?.price * row?.cantidad) ?? '',
                         width: '150px',
