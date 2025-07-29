@@ -47,7 +47,9 @@ FacturaRouters.post(
     try {
       var recinto = {};
       const data = req.body;
-      data.status = "Pendiente";
+      if(!data.status){
+        data.status = "Pendiente";
+      }
       data.user_create_id = jwtDecode(req.headers[`access-token`])?._id;
       const response = await crearElasticByType(data, "factura");
       if (data.cotizacion_id) {

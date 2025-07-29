@@ -8,17 +8,16 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useFacturas } from '../../../hooks/useFacturas'
 import PropTypes from 'prop-types'
+import FormFactura from './components/FormFactura'
 
 export default function FacturaPage({ draw, setDraw }) {
   FacturaPage.propTypes = {
-      setDraw: PropTypes.func,
-      draw: PropTypes.number,
-    }
+    setDraw: PropTypes.func,
+    draw: PropTypes.number,
+  }
   const [show, setShow] = useState(false)
   const [showView, setShowView] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
-  const [showFirma, setShowFirma] = useState(false)
-  const [showFactura, setShowFactura] = useState(false)
 
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
 
@@ -158,6 +157,21 @@ export default function FacturaPage({ draw, setDraw }) {
           }} */
         />
       </div>
+
+      <Modal backdrop={'static'} size="xl" centered show={show} onHide={() => setShow(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Crear Factura</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormFactura
+            getAllFactura={() => {
+              setShow(false)
+              setDraw((status) => ++status)
+            }}
+            //ProductoCotizacion={ProductoCotizacion}
+          />
+        </Modal.Body>
+      </Modal>
     </>
   )
 }
