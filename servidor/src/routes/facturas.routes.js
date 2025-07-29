@@ -41,13 +41,24 @@ FacturaRouters.get("/", async (req, res) => {
   }
 });
 
+FacturaRouters.get("/:id", async (req, res) => {
+  try {
+    var funcion = await getDocumentById(req.params.id);
+    return res.status(200).json(funcion);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
 FacturaRouters.post(
   "/",
   /* validateTokenMid, */ async (req, res) => {
     try {
       var recinto = {};
       const data = req.body;
-      data.status = "Pendiente";
+      if(!data.status){
+        data.status = "Pendiente";
+      }
       data.user_create_id = jwtDecode(req.headers[`access-token`])?._id;
       const response = await crearElasticByType(data, "factura");
       if (data.cotizacion_id) {

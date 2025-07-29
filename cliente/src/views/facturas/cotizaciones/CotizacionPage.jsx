@@ -265,7 +265,7 @@ export default function CotizacionPage({ draw, setDraw }) {
                     format: (row) => ViewDollar(row?.price) ?? '',
                   },
                   {
-                    name: 'Precio',
+                    name: 'Total',
                     selector: (row) => row?.price ?? '',
                     format: (row) => ViewDollar(row?.price * row?.cantidad) ?? '',
                   },
