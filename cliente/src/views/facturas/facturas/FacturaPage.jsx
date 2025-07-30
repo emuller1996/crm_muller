@@ -10,6 +10,7 @@ import { useFacturas } from '../../../hooks/useFacturas'
 import PropTypes from 'prop-types'
 import FormFactura from './components/FormFactura'
 import DetalleFactura from './components/DetalleFactura'
+import FormPagosFactura from './components/FormPagosFactura'
 
 export default function FacturaPage({ draw, setDraw }) {
   FacturaPage.propTypes = {
@@ -19,6 +20,7 @@ export default function FacturaPage({ draw, setDraw }) {
   const [show, setShow] = useState(false)
   const [showView, setShowView] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
+  const [showPago, setShowPago] = useState(false)
 
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
 
@@ -67,14 +69,15 @@ export default function FacturaPage({ draw, setDraw }) {
                       >
                         <i className="fa-solid fa-eye"></i>
                       </button>
-
-                      {row.signature && (
+                      {row.status === 'Pendiente' && (
                         <button
-                          onClick={() => {}}
-                          title="Generar Factura"
+                          onClick={() => {
+                            setShowPago(true)
+                          }}
+                          title="Registrar Pagos"
                           className="btn btn-outline-success btn-sm"
                         >
-                          <i className="fa-solid fa-file-invoice-dollar"></i>
+                          <i className="fa-solid fa-comment-dollar"></i>
                         </button>
                       )}
                     </div>
@@ -158,7 +161,6 @@ export default function FacturaPage({ draw, setDraw }) {
           }} */
         />
       </div>
-
       <Modal backdrop={'static'} size="xl" centered show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Crear Factura</Modal.Title>
@@ -173,7 +175,7 @@ export default function FacturaPage({ draw, setDraw }) {
           />
         </Modal.Body>
       </Modal>
-
+      
       <Modal
         backdrop={'static'}
         size="xl"
@@ -186,6 +188,20 @@ export default function FacturaPage({ draw, setDraw }) {
         </Modal.Header>
         <Modal.Body>
           <DetalleFactura Factura={CotiSelecionada} />
+        </Modal.Body>
+      </Modal>
+      <Modal
+        backdrop={'static'}
+        size="xl"
+        centered
+        show={showPago}
+        onHide={() => setShowPago(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Pagos de Factura</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormPagosFactura />
         </Modal.Body>
       </Modal>
     </>
