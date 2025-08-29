@@ -135,7 +135,11 @@ export default function FormCotizacion({ getAllCotizacion, CotiSelecionada }) {
                                 onClick={() => {
                                   console.log(row.price)
                                   //setProductoSelecionado(row)
+                                  setProductoCotizacion((status) => {
+                                    return status.filter((ele) => ele.product_id !== row.product_id)
+                                  })
                                 }}
+                                type='button'
                                 title="Editar Producto."
                                 className="btn btn-danger btn-sm me-2"
                               >
