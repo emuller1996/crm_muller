@@ -3,8 +3,14 @@ import React from 'react'
 import { Alert, Button, Form } from 'react-bootstrap'
 import CurrencyInput from 'react-currency-input-field'
 import { Controller, useForm } from 'react-hook-form'
+import { ViewDollar } from '../../../../utils'
+import PropTypes from 'prop-types'
 
-export default function FormPagosFactura() {
+export default function FormPagosFactura({ Factura }) {
+  FormPagosFactura.propTypes = {
+    Factura: PropTypes.object,
+  }
+
   const {
     register,
     handleSubmit,
@@ -14,7 +20,7 @@ export default function FormPagosFactura() {
   } = useForm()
 
   console.log(watch().metodo_pago)
-  console.log(errors)
+  console.log(Factura)
 
   const onSubmit = async (data) => {
     console.log(data)
@@ -23,6 +29,31 @@ export default function FormPagosFactura() {
   return (
     <>
       <div className="row g-4">
+        <div className="col-12">
+          <div className="row">
+            <div className="col-md-6">
+              <div className="d-flex justify-content-between">
+                <span>Cliente</span>
+                <span>{Factura?.client?.name}</span>
+              </div>
+              <div className="d-flex justify-content-between">
+                <span>Monto</span>
+                <span>{ViewDollar(Factura?.total_monto)}</span>
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="d-flex justify-content-between">
+                <span>Estado</span>
+                <span>{Factura?.status}</span>
+              </div>
+              <div className="d-flex justify-content-between">
+                <span>Fecha de Vencimiento</span>
+                <span>{Factura?.fecha_vencimiento}</span>
+              </div>
+            </div>
+          </div>
+          <hr />
+        </div>
         <div className="col-md-6">
           <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
             <div>
@@ -139,12 +170,29 @@ export default function FormPagosFactura() {
           </form>
         </div>
         <div className="col-md-6">
-          <p className='text-center mb-2'>Pagos Realizados</p>
+          <p className="text-center mb-2">Pagos Realizados</p>
           <div className="row">
             <div className="col-12">
               <div className="card">
                 <div className="card-body">
-                  <p className="card-text">Text</p>
+                  <div className="d-flex justify-content-between">
+                    <span>Monto</span>
+                    <span style={{ fontWeight: '600', color: 'green' }}>1.500.000</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span>Fecha Y Hora</span>
+                    <span>04/09/2025 : 10:04 </span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span>Metodo de Pago</span>
+                    <span>
+                      Tarjeta Credito/Debito <i className="fa-xl fa-solid fa-credit-card ms-2"></i>{' '}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <span>Registrado por</span>
+                    <span>Estefano Muller </span>
+                  </div>
                 </div>
               </div>
             </div>
