@@ -5,6 +5,7 @@ import { createContext, useState, useEffect } from 'react'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import PropTypes from 'prop-types'
 import { jwtDecode } from 'jwt-decode'
+import { useNavigate } from 'react-router-dom'
 
 const AuthContext = createContext()
 
@@ -35,11 +36,14 @@ export const AuthProvider = ({ children }) => {
     cartEcommerceAmerican ? cartEcommerceAmerican : null,
   )
 
+  const navigate = useNavigate()
+
   const cerrarSessionAdmin = () => {
     setTokenAccess(null)
     setToken(null)
     setClient(null)
     localStorage.removeItem("tokenAccessAmericanShop")
+    navigate("/login")
   }
 
   let contextData = {
