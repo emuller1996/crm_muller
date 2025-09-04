@@ -138,6 +138,18 @@ export default function FormPagosFactura() {
             </div>
           </form>
         </div>
+        <div className="col-md-6">
+          <p className='text-center mb-2'>Pagos Realizados</p>
+          <div className="row">
+            <div className="col-12">
+              <div className="card">
+                <div className="card-body">
+                  <p className="card-text">Text</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   )
