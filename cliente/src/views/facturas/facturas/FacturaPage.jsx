@@ -73,6 +73,7 @@ export default function FacturaPage({ draw, setDraw }) {
                         <button
                           onClick={() => {
                             setShowPago(true)
+                            setCotiSelecionada(row)
                           }}
                           title="Registrar Pagos"
                           className="btn btn-outline-success btn-sm"
@@ -201,7 +202,7 @@ export default function FacturaPage({ draw, setDraw }) {
           <Modal.Title>Pagos de Factura</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FormPagosFactura />
+          <FormPagosFactura Factura={CotiSelecionada} />
         </Modal.Body>
       </Modal>
     </>
