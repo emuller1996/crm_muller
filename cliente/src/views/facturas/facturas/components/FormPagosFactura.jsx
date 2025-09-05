@@ -6,6 +6,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { ViewDollar } from '../../../../utils'
 import PropTypes from 'prop-types'
 import { useFacturas } from '../../../../hooks/useFacturas'
+import toast from 'react-hot-toast'
 
 export default function FormPagosFactura({ Factura }) {
   FormPagosFactura.propTypes = {
@@ -13,7 +14,7 @@ export default function FormPagosFactura({ Factura }) {
   }
 
   const [Pagos, setPagos] = useState(null)
-  
+
   const {
     register,
     handleSubmit,
@@ -40,6 +41,15 @@ export default function FormPagosFactura({ Factura }) {
 
   const onSubmit = async (data) => {
     console.log(data)
+    try {
+      const result = await crearPagoByFactura(data, Factura._id)
+      console.log(result)
+      toast.success(result?.data?.message)
+      await getPagos(Factura._id)
+    } catch (error) {
+      console.log(error)
+      toast.error(`Error : ${error?.message}`)
+    }
   }
 
   return (
@@ -195,30 +205,48 @@ export default function FormPagosFactura({ Factura }) {
                 </div>
               </div>
             )}
-            <div className="col-12">
-              <div className="card">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between">
-                    <span>Monto</span>
-                    <span style={{ fontWeight: '600', color: 'green' }}>1.500.000</span>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <span>Fecha Y Hora</span>
-                    <span>04/09/2025 : 10:04 </span>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <span>Metodo de Pago</span>
-                    <span>
-                      Tarjeta Credito/Debito <i className="fa-xl fa-solid fa-credit-card ms-2"></i>{' '}
-                    </span>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <span>Registrado por</span>
-                    <span>Estefano Muller </span>
+            {Pagos &&
+              Array.isArray(Pagos) &&
+              Pagos.map((pay) => (
+                <div key={pay._id} className="col-12">
+                  <div className="card">
+                    <div className="card-body">
+                      <div className="d-flex justify-content-between">
+                        <span>Monto</span>
+                        <span style={{ fontWeight: '600', color: 'green' }}>
+                          {ViewDollar(pay.monto)}
+                        </span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span>Fecha Y Hora</span>
+                        <span>
+                          {new Date(pay.createdTime).toLocaleDateString()} -{' '}
+                          {new Date(pay.createdTime).toLocaleTimeString()}{' '}
+                        </span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span>Metodo de Pago</span>
+                        <span className="text-capitalize">
+                          {pay.metodo_pago}
+                          {pay.metodo_pago === 'tarjeta' && (
+                            <i className="fa-xl fa-solid fa-credit-card ms-2"></i>
+                          )}
+                          {pay.metodo_pago === 'efectivo' && (
+                            <i className="ms-2 fa-xl fa-solid fa-money-bill"></i>
+                          )}
+                          {pay.metodo_pago === 'Transferencia' && (
+                            <i className="fa-xl fa-solid fa-money-bill-transfer ms-2"></i>
+                          )}
+                        </span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span>Registrado por</span>
+                        <span>{pay.user_create.name}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              ))}
           </div>
         </div>
       </div>

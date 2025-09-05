@@ -125,13 +125,30 @@ FacturaRouters.get(
         },
       });
 
-      const dataFuncion = searchResult.body.hits.hits.map((c) => {
+      var data = searchResult.body.hits.hits.map((c) => {
         return {
           ...c._source,
           _id: c._id,
         };
       });
-      return res.status(200).json(dataFuncion);
+
+      console.log(data);
+      
+      data = data.map(async (c) => {
+        try {
+          if (c.user_create_id && c.user_create_id !== "") {
+            const user_create_data = await getDocumentById(c.user_create_id);
+            c.user_create = { name: user_create_data?.name ?? null };
+          }
+          delete c.user_create_id;
+        } catch (error) {
+          console.log(error);
+        }
+        return c;
+      });
+      data = await Promise.all(data);
+
+      return res.status(200).json(data);
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
