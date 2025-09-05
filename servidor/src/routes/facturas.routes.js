@@ -56,7 +56,7 @@ FacturaRouters.post(
     try {
       var recinto = {};
       const data = req.body;
-      if(!data.status){
+      if (!data.status) {
         data.status = "Pendiente";
       }
       data.user_create_id = jwtDecode(req.headers[`access-token`])?._id;
@@ -70,6 +70,85 @@ FacturaRouters.post(
       return res
         .status(201)
         .json({ message: "Factura Creada.", recinto, data });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+);
+
+FacturaRouters.post("/:id/pagos", async (req, res) => {
+  try {
+    var data = req.body;
+    data.user_create_id = jwtDecode(req.headers[`access-token`])?._id;
+    data.factura_id = req.params.id;
+    await crearElasticByType(data, "pago_factura");
+    return res
+      .status(201)
+      .json({ message: "Pago de la Factura Creada con Exito." });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+FacturaRouters.get(
+  "/:id/pagos",
+  /* validateTokenMid,  */ async (req, res) => {
+    try {
+      const searchResult = await client.search({
+        index: INDEX_ES_MAIN,
+        size: 1000,
+        body: {
+          query: {
+            bool: {
+              must: [
+                {
+                  term: {
+                    "type.keyword": {
+                      value: "pago_factura",
+                    },
+                  },
+                },
+                {
+                  term: {
+                    "factura_id.keyword": {
+                      value: req.params.id,
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          sort: [
+            { createdTime: { order: "desc" } }, // Reemplaza con el campo por el que quieres ordenar
+          ],
+        },
+      });
+
+      var data = searchResult.body.hits.hits.map((c) => {
+        return {
+          ...c._source,
+          _id: c._id,
+        };
+      });
+
+      console.log(data);
+      
+      data = data.map(async (c) => {
+        try {
+          if (c.user_create_id && c.user_create_id !== "") {
+            const user_create_data = await getDocumentById(c.user_create_id);
+            c.user_create = { name: user_create_data?.name ?? null };
+          }
+          delete c.user_create_id;
+        } catch (error) {
+          console.log(error);
+        }
+        return c;
+      });
+      data = await Promise.all(data);
+
+      return res.status(200).json(data);
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }

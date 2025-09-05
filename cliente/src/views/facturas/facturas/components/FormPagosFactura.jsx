@@ -1,15 +1,19 @@
 /* eslint-disable prettier/prettier */
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert, Button, Form } from 'react-bootstrap'
 import CurrencyInput from 'react-currency-input-field'
 import { Controller, useForm } from 'react-hook-form'
 import { ViewDollar } from '../../../../utils'
 import PropTypes from 'prop-types'
+import { useFacturas } from '../../../../hooks/useFacturas'
+import toast from 'react-hot-toast'
 
 export default function FormPagosFactura({ Factura }) {
   FormPagosFactura.propTypes = {
     Factura: PropTypes.object,
   }
+
+  const [Pagos, setPagos] = useState(null)
 
   const {
     register,
@@ -19,11 +23,33 @@ export default function FormPagosFactura({ Factura }) {
     formState: { errors },
   } = useForm()
 
-  console.log(watch().metodo_pago)
-  console.log(Factura)
+  const { crearPagoByFactura, getPagosByFactura } = useFacturas()
+
+  useEffect(() => {
+    getPagos(Factura._id)
+  }, [Factura?._id])
+
+  const getPagos = async (id) => {
+    try {
+      const result = await getPagosByFactura(id)
+      console.log(result.data)
+      setPagos(result.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const onSubmit = async (data) => {
     console.log(data)
+    try {
+      const result = await crearPagoByFactura(data, Factura._id)
+      console.log(result)
+      toast.success(result?.data?.message)
+      await getPagos(Factura._id)
+    } catch (error) {
+      console.log(error)
+      toast.error(`Error : ${error?.message}`)
+    }
   }
 
   return (
@@ -172,30 +198,55 @@ export default function FormPagosFactura({ Factura }) {
         <div className="col-md-6">
           <p className="text-center mb-2">Pagos Realizados</p>
           <div className="row">
-            <div className="col-12">
-              <div className="card">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between">
-                    <span>Monto</span>
-                    <span style={{ fontWeight: '600', color: 'green' }}>1.500.000</span>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <span>Fecha Y Hora</span>
-                    <span>04/09/2025 : 10:04 </span>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <span>Metodo de Pago</span>
-                    <span>
-                      Tarjeta Credito/Debito <i className="fa-xl fa-solid fa-credit-card ms-2"></i>{' '}
-                    </span>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <span>Registrado por</span>
-                    <span>Estefano Muller </span>
-                  </div>
+            {Pagos && Array.isArray(Pagos) && Pagos.length === 0 && (
+              <div>
+                <div className="alert alert-secondary" role="alert">
+                  <strong>No hay Pagos Registrado en esta Facturas.</strong>
                 </div>
               </div>
-            </div>
+            )}
+            {Pagos &&
+              Array.isArray(Pagos) &&
+              Pagos.map((pay) => (
+                <div key={pay._id} className="col-12">
+                  <div className="card">
+                    <div className="card-body">
+                      <div className="d-flex justify-content-between">
+                        <span>Monto</span>
+                        <span style={{ fontWeight: '600', color: 'green' }}>
+                          {ViewDollar(pay.monto)}
+                        </span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span>Fecha Y Hora</span>
+                        <span>
+                          {new Date(pay.createdTime).toLocaleDateString()} -{' '}
+                          {new Date(pay.createdTime).toLocaleTimeString()}{' '}
+                        </span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span>Metodo de Pago</span>
+                        <span className="text-capitalize">
+                          {pay.metodo_pago}
+                          {pay.metodo_pago === 'tarjeta' && (
+                            <i className="fa-xl fa-solid fa-credit-card ms-2"></i>
+                          )}
+                          {pay.metodo_pago === 'efectivo' && (
+                            <i className="ms-2 fa-xl fa-solid fa-money-bill"></i>
+                          )}
+                          {pay.metodo_pago === 'Transferencia' && (
+                            <i className="fa-xl fa-solid fa-money-bill-transfer ms-2"></i>
+                          )}
+                        </span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span>Registrado por</span>
+                        <span>{pay.user_create.name}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       </div>
