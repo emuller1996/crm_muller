@@ -1,16 +1,19 @@
 /* eslint-disable prettier/prettier */
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert, Button, Form } from 'react-bootstrap'
 import CurrencyInput from 'react-currency-input-field'
 import { Controller, useForm } from 'react-hook-form'
 import { ViewDollar } from '../../../../utils'
 import PropTypes from 'prop-types'
+import { useFacturas } from '../../../../hooks/useFacturas'
 
 export default function FormPagosFactura({ Factura }) {
   FormPagosFactura.propTypes = {
     Factura: PropTypes.object,
   }
 
+  const [Pagos, setPagos] = useState(null)
+  
   const {
     register,
     handleSubmit,
@@ -19,8 +22,21 @@ export default function FormPagosFactura({ Factura }) {
     formState: { errors },
   } = useForm()
 
-  console.log(watch().metodo_pago)
-  console.log(Factura)
+  const { crearPagoByFactura, getPagosByFactura } = useFacturas()
+
+  useEffect(() => {
+    getPagos(Factura._id)
+  }, [Factura?._id])
+
+  const getPagos = async (id) => {
+    try {
+      const result = await getPagosByFactura(id)
+      console.log(result.data)
+      setPagos(result.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const onSubmit = async (data) => {
     console.log(data)
@@ -172,6 +188,13 @@ export default function FormPagosFactura({ Factura }) {
         <div className="col-md-6">
           <p className="text-center mb-2">Pagos Realizados</p>
           <div className="row">
+            {Pagos && Array.isArray(Pagos) && Pagos.length === 0 && (
+              <div>
+                <div className="alert alert-secondary" role="alert">
+                  <strong>No hay Pagos Registrado en esta Facturas.</strong>
+                </div>
+              </div>
+            )}
             <div className="col-12">
               <div className="card">
                 <div className="card-body">

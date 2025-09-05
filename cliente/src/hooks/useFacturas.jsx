@@ -2,7 +2,7 @@
 
 import { useContext, useState } from 'react'
 import AuthContext from '../context/AuthContext'
-import { getAllFacturaService, postCreateFacturaService, putUpdateFacturaService } from '../services/factura.services'
+import { getAllFacturaService, getAllPagosByFacturaService, postCreateFacturaService, postCreatePagoFacturaService, putUpdateFacturaService } from '../services/factura.services'
 
 export const useFacturas = () => {
   const [data, setData] = useState(null)
@@ -50,6 +50,15 @@ export const useFacturas = () => {
     return putUpdateFacturaService(Token,id,data)
   }
 
+  const crearPagoByFactura = async (data,id) => {
+    return postCreatePagoFacturaService(Token,data,id)
+  }
+
+  const getPagosByFactura = async (id) =>{
+    return getAllPagosByFacturaService(Token, signal, id)
+
+  }
+
   return {
     data,
     error,
@@ -57,6 +66,8 @@ export const useFacturas = () => {
     getAllFactura,
     abortController,
     crearFactura,
-    actualizarFactura
+    actualizarFactura,
+    crearPagoByFactura,
+    getPagosByFactura
   }
 }
