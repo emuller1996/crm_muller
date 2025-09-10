@@ -1,6 +1,7 @@
 import React from 'react'
 import FacturasMainPage from './views/facturas'
 
+const EntregasPages = React.lazy(() => import('./views/entregas-pedidos/EntregasPages'))
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const UsuariosPage = React.lazy(() => import('./views/usuarios/UsuariosPage'))
 const ProductosPage = React.lazy(() => import('./views/productos/Productos'))
@@ -21,6 +22,7 @@ const routes = [
   { path: '/categorias', name: 'Categorias', element: CategoriasPage },
   { path: '/clientes', name: 'Clientes', element: ClientePage },
   { path: '/facturas', name: 'FacturasMainPage', element: FacturasMainPage },
+  { path: '/pedidos', name: 'Entregas Page', element: EntregasPages },
   { path: '/ordenes', name: 'Ordenes', element: PedidosPage },
   { path: '/ordenes/:idOrder/detalle', name: 'Ordenes', element: PedidoDetallesPage },
   { path: '/productos/:idProduct/images', name: 'ImagesPage', element: ImagesPage },

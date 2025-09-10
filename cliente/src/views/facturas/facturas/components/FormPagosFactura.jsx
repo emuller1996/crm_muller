@@ -66,6 +66,14 @@ export default function FormPagosFactura({ Factura }) {
                 <span>Monto</span>
                 <span>{ViewDollar(Factura?.total_monto)}</span>
               </div>
+              <div className="d-flex justify-content-between">
+                <span>Saldo a Pagar</span>
+                {Pagos && (
+                  <span className="text-center">
+                    {ViewDollar(Factura?.total_monto - Pagos?.suma?.value)}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="col-md-6">
               <div className="d-flex justify-content-between">
@@ -206,9 +214,9 @@ export default function FormPagosFactura({ Factura }) {
               </div>
             )}
             {Pagos &&
-              Array.isArray(Pagos) &&
-              Pagos.map((pay) => (
-                <div key={pay._id} className="col-12">
+              Array.isArray(Pagos.pagos) &&
+              Pagos.pagos.map((pay) => (
+                <div key={pay._id} className="col-12 mb-2">
                   <div className="card">
                     <div className="card-body">
                       <div className="d-flex justify-content-between">
@@ -247,6 +255,14 @@ export default function FormPagosFactura({ Factura }) {
                   </div>
                 </div>
               ))}
+            {Pagos && (
+              <p className="text-center">
+                Total Pagos :{' '}
+                <span className="fw-semibold text-success fs-4">
+                  {ViewDollar(Pagos?.suma?.value)}
+                </span>
+              </p>
+            )}
           </div>
         </div>
       </div>
