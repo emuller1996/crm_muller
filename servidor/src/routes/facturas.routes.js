@@ -122,6 +122,13 @@ FacturaRouters.get(
           sort: [
             { createdTime: { order: "desc" } }, // Reemplaza con el campo por el que quieres ordenar
           ],
+          aggs: {
+            suma_pagos: {
+              sum: {
+                field: "monto",
+              },
+            },
+          },
         },
       });
 
@@ -133,7 +140,7 @@ FacturaRouters.get(
       });
 
       console.log(data);
-      
+
       data = data.map(async (c) => {
         try {
           if (c.user_create_id && c.user_create_id !== "") {
@@ -148,7 +155,9 @@ FacturaRouters.get(
       });
       data = await Promise.all(data);
 
-      return res.status(200).json(data);
+      return res
+        .status(200)
+        .json({ pagos: data, suma: searchResult.body.aggregations.suma_pagos });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
