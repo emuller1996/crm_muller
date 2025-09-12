@@ -7,6 +7,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
 import { paginationComponentOptions } from '../../utils/optionsConfig'
+import FormPedidos from './components/FormPedidos'
 
 
 export default function EntregasPages({ draw, setDraw }) {
@@ -150,12 +151,13 @@ export default function EntregasPages({ draw, setDraw }) {
           }} */
         />
       </div>
-      <Modal backdrop={'static'} size="xl" centered show={show} onHide={() => setShow(false)}>
+      <Modal backdrop={'static'} size="xl" fullscreen centered show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Crear Pedido</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>Formulario Pedido</p>
+          <FormPedidos />
         </Modal.Body>
       </Modal>
     
