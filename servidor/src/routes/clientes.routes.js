@@ -49,6 +49,8 @@ ClienteRouters.get("/", validateTokenMid, async (req, res) => {
   }
 });
 
+
+
 ClienteRouters.get("/pagination_old", async (req, res) => {
   let perPage = req.query.perPage ?? 10;
   let page = req.query.page ?? 1;
@@ -183,6 +185,15 @@ ClienteRouters.get("/pagination", async (req, res) => {
       total_pages: Math.ceil(searchResult.body.hits.total.value / perPage),
       consulta,
     });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+ClienteRouters.get("/:id", async (req, res) => {
+  try {
+    var cliente = await getDocumentById(req.params.id);
+    return res.status(200).json(cliente);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

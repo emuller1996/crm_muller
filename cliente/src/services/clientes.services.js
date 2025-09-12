@@ -13,6 +13,9 @@ export const  getComentarioClientesService = (token, id) => {
   return axios.get(`/clientes/${id}/comments`,  { headers: { 'access-token': token } })
 }
 
+export const  getClientesByIdService = (token, id) => {
+  return axios.get(`/clientes/${id}`,  { headers: { 'access-token': token } })
+}
 
 export const postLoginClientesService = (data) => {
   return axios.post('/clientes/login', data)
