@@ -9,7 +9,6 @@ const CategoriasPage = React.lazy(() => import('./views/categorias/Categorias'))
 const ImagesPage = React.lazy(() => import('./views/productos/ImagesPage/ImagesPage'))
 const ClientePage = React.lazy(() => import('./views/clientes/ClientePage'))
 const TallasPage = React.lazy(() => import('./views/productos/TallasPage/TallasPage'))
-const PedidosPage = React.lazy(() => import('./views/pedidos/PedidosPage'))
 const PedidoDetallesPage = React.lazy(
   () => import('./views/pedidos/PedidoDetallesPage/PedidoDetallesPage'),
 )
