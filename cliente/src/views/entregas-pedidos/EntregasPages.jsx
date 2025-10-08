@@ -8,7 +8,7 @@ import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
 import { paginationComponentOptions } from '../../utils/optionsConfig'
 import FormPedidos from './components/FormPedidos'
-
+import { usePedidos } from '../../hooks/usePedidos'
 
 export default function EntregasPages({ draw, setDraw }) {
   EntregasPages.propTypes = {
@@ -17,10 +17,11 @@ export default function EntregasPages({ draw, setDraw }) {
   }
   const [show, setShow] = useState(false)
 
+  const { getAllPedidos, data: ListPedidos, loading } = usePedidos()
 
-
-
-
+  useEffect(() => {
+    getAllPedidos()
+  }, [])
 
   return (
     <>
@@ -91,6 +92,7 @@ export default function EntregasPages({ draw, setDraw }) {
             },
             {
               name: 'Creado por',
+              width: '150px',
               selector: (row) => row?.user_create ?? '',
               format: (row) => (
                 <>
@@ -102,6 +104,11 @@ export default function EntregasPages({ draw, setDraw }) {
                   </div>
                 </>
               ),
+            },
+            {
+              name: 'Fecha de Entrega.',
+              selector: (row) => row?.fecha_entrega,
+              width: '160px',
             },
             {
               name: 'Fecha de Creacion.',
@@ -118,7 +125,7 @@ export default function EntregasPages({ draw, setDraw }) {
 
             { name: '', selector: (row) => row?.city ?? '' },
           ]}
-          data={[]}
+          data={ListPedidos ?? []}
           pagination
           //paginationServer
           //progressPending={loading}
@@ -151,7 +158,14 @@ export default function EntregasPages({ draw, setDraw }) {
           }} */
         />
       </div>
-      <Modal backdrop={'static'} size="xl" fullscreen centered show={show} onHide={() => setShow(false)}>
+      <Modal
+        backdrop={'static'}
+        size="xl"
+        fullscreen
+        centered
+        show={show}
+        onHide={() => setShow(false)}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Crear Pedido</Modal.Title>
         </Modal.Header>
@@ -160,7 +174,6 @@ export default function EntregasPages({ draw, setDraw }) {
           <FormPedidos />
         </Modal.Body>
       </Modal>
-    
     </>
   )
 }

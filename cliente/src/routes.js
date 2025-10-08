@@ -23,7 +23,6 @@ const routes = [
   { path: '/clientes', name: 'Clientes', element: ClientePage },
   { path: '/facturas', name: 'FacturasMainPage', element: FacturasMainPage },
   { path: '/pedidos', name: 'Entregas Page', element: EntregasPages },
-  { path: '/ordenes', name: 'Ordenes', element: PedidosPage },
   { path: '/ordenes/:idOrder/detalle', name: 'Ordenes', element: PedidoDetallesPage },
   { path: '/productos/:idProduct/images', name: 'ImagesPage', element: ImagesPage },
   { path: '/productos/:idProduct/gestion-tallas', name: 'ImagesPage', element: TallasPage },

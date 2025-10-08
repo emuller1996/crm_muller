@@ -15,6 +15,7 @@ import PuntoVentaRouters from "./punto_venta.routes.js";
 import PagosRouters from "./pagos.routes.js";
 import CotizacionRouters from "./cotizacion.routes.js";
 import FacturaRouters from "./facturas.routes.js";
+import PedidosRouters from "./pedidos.routes.js";
 
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
@@ -31,10 +32,10 @@ router.use("/productos", ProductosRouters);
 router.use("/images/", ImagesRouters);
 router.use("/clientes/",validateTokenMid, ClienteRouters);
 router.use("/auth", AuthRouters);
-router.use("/ordenes", OrdenesRouters);
 router.use("/punto_venta", PuntoVentaRouters);
 router.use("/pagos", PagosRouters);
 router.use("/cotizacion", validateTokenMid,  CotizacionRouters);
+router.use("/pedidos", validateTokenMid,  PedidosRouters);
 router.use("/factura", validateTokenMid, FacturaRouters);
 
 
