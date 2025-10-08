@@ -12,16 +12,18 @@ import { useClientes } from '../../../hooks/useClientes'
 import { stylesSelect, themeSelect } from '../../../utils/optionsConfig'
 import { ViewDollar } from '../../../utils'
 import FormProductoCotizacion from '../../facturas/cotizaciones/components/FormProductoCotizacion'
+import { usePedidos } from '../../../hooks/usePedidos'
 
-export default function FormPedidos({ getAllFactura, FacturaSelect }) {
+export default function FormPedidos({ getAllPedido, PedidoSelect }) {
   FormPedidos.propTypes = {
-    getAllFactura: PropTypes.func,
-    FacturaSelect: PropTypes.object,
+    getAllPedido: PropTypes.func,
+    PedidoSelect: PropTypes.object,
   }
   const { getAllClientesPaginationPromise, getClientesById } = useClientes()
+  const { crearPedidos, actualizarPedidos } = usePedidos()
 
   const [ProductoCotizacion, setProductoCotizacion] = useState(
-    FacturaSelect ? FacturaSelect.productos : [],
+    PedidoSelect ? PedidoSelect.productos : [],
   )
 
   const {
@@ -36,7 +38,7 @@ export default function FormPedidos({ getAllFactura, FacturaSelect }) {
 
   const [isPending, setPending] = useState(false)
   const onSubmit = async (data) => {
-    if (ProductoCotizacion.length === 0) {
+    if (ProductoCotizacion?.length === 0) {
       toast.error(`Selecione al menos un producto al Pedido!`)
       return
     }
@@ -45,13 +47,23 @@ export default function FormPedidos({ getAllFactura, FacturaSelect }) {
       return preVal + currentVal.price * currentVal.cantidad
     }, 0)
     console.log(data)
-    /* try {
-      await crearFactura(data)
-      toast.success(`Factura Creada`)
-      getAllFactura()
-    } catch (error) {
-      console.log(error)
-    } */
+    if (PedidoSelect) {
+      try {
+        await actualizarPedidos(data, PedidoSelect._id)
+        toast.success(`Pedido Actualizado`)
+        //getAllCotizacion()
+      } catch (error) {
+        console.log(error)
+      }
+    } else {
+      try {
+        await crearPedidos(data)
+        toast.success(`Pedido Creado`)
+        //getAllFactura()
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 
   const searchLeadOptions = async (value) => {
@@ -84,7 +96,7 @@ export default function FormPedidos({ getAllFactura, FacturaSelect }) {
                     name="client_id"
                     rules={{ required: true }}
                     control={control}
-                    defaultValue={FacturaSelect ? FacturaSelect.client_id : undefined}
+                    defaultValue={PedidoSelect ? PedidoSelect.client_id : undefined}
                     render={({ field: { name, onChange, ref } }) => {
                       return (
                         <AsyncSelect
@@ -106,9 +118,9 @@ export default function FormPedidos({ getAllFactura, FacturaSelect }) {
                           }}
                           name={name}
                           defaultValue={
-                            FacturaSelect && {
-                              value: FacturaSelect?.client.id,
-                              label: FacturaSelect?.client.name,
+                            PedidoSelect && {
+                              value: PedidoSelect?.client.id,
+                              label: PedidoSelect?.client.name,
                             }
                           }
                           ref={ref}
@@ -220,7 +232,7 @@ export default function FormPedidos({ getAllFactura, FacturaSelect }) {
                 </div>
                 <div className="col-12">
                   <Form.Group className="mb-3 mt-3" controlId="exampleForm.ControlTextarea1">
-                    <Form.Label className='text-center w-100'>Notas</Form.Label>
+                    <Form.Label className="text-center w-100">Notas</Form.Label>
                     <Form.Control
                       {...register('nota')}
                       as="textarea"
