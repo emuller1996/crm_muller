@@ -43,7 +43,7 @@ export const getAllClientesPaginationService = async (token, ...params) => {
 
 
 export const putUpdateClientesService = (token, id, data) => {
-  return axios.put(`/clientes/${id}`, data, { headers: { 'Authorization': token } })
+  return axios.put(`/clientes/${id}`, data, { headers: { 'access-token': token } })
 }
 
 export const postNewAddressClientesService = (token, data) => {
