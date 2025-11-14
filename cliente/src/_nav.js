@@ -76,6 +76,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Empresa',
+    to: '/empresa',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-building nav-icon"></i>,
+  },
+  {
+    component: CNavItem,
     name: 'Rep. de Ventas',
     to: '/representantes-venta',
 

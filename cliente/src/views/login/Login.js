@@ -45,7 +45,7 @@ const Login = () => {
       setTokenAccess(r.data.token)
       setToken(r.data.token)
       setUser(jwtDecode(r.data.token))
-      navigate('/d/dashboard')
+      navigate('/dashboard')
     } catch (error) {
       console.log(error)
       if (error.response.status === 400) {
