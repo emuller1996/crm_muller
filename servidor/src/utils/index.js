@@ -42,7 +42,7 @@ export async function buscarElasticByType(type) {
     body: {
       query: {
         term: {
-          type: type, // Consulta keyword para el atributo type igual a "clientes"
+          "type.keyword": type, // Consulta keyword para el atributo type igual a "clientes"
         },
       },
       sort: [
@@ -112,7 +112,7 @@ export async function crearElasticByType(data, type) {
   createType.updatedTime = new Date().getTime();
   const response = await client.index({
     index: INDEX_ES_MAIN,
-    body: createType, // Contenido del documento
+    body:createType , // Contenido del documento
   });
   await client.indices.refresh({ index: INDEX_ES_MAIN });
   return response;

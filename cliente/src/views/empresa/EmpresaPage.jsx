@@ -5,10 +5,14 @@ import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 import imageCompression from 'browser-image-compression'
 import { useForm } from 'react-hook-form'
+import { useEmpresa } from '../../hooks/useEmpresa'
+import toast from 'react-hot-toast'
 
 const EmpresaPage = () => {
-  const [selectedImage, setSelectedImage] = useState(null)
-  const [base64Image, setBase64Image] = useState(null)
+  const { establecerConfiguracionEmpresa, getConfiguracionEmpresa, empresaData } = useEmpresa()
+
+  const [selectedImage, setSelectedImage] = useState(empresaData ? empresaData?.logo : null)
+  const [base64Image, setBase64Image] = useState(empresaData ? empresaData?.logo : null)
   const [ErrorFile, setErrorFile] = useState(null)
 
   const {
@@ -16,6 +20,11 @@ const EmpresaPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm()
+
+
+  useEffect(() => {
+    getConfiguracionEmpresa()
+  }, [])
 
   const handleImageChange = async (e) => {
     try {
@@ -71,10 +80,22 @@ const EmpresaPage = () => {
     }
   }
 
-  const onSubmit =(data)=>{
-    data.logo = base64Image;
-    console.log(data);
-    
+  console.log(empresaData)
+
+  const onSubmit = async (data) => {
+    data.logo = base64Image
+    console.log(data)
+    if (empresaData) {
+      console.log('editar')
+    } else {
+      try {
+        await establecerConfiguracionEmpresa(data)
+        toast.success('Configuracion de la Empresa Establecida')
+      } catch (error) {
+        console.log(error)
+        toast.error(error.message)
+      }
+    }
   }
   return (
     <div>
@@ -88,10 +109,10 @@ const EmpresaPage = () => {
               </Form.Group>
             </div>
             <div className="col-6">
-              {selectedImage && (
+              {base64Image && (
                 <div className=" d-flex gap-4 justify-content-center my-4">
                   <div className="rounded-4 border overflow-hidden">
-                    <img src={URL.createObjectURL(selectedImage)} alt="Preview" width="80px" />
+                    <img src={base64Image} alt="Preview" width="80px" />
                   </div>
                 </div>
               )}
@@ -99,24 +120,39 @@ const EmpresaPage = () => {
           </div>
           <Form.Group className="mb-3" controlId="nameCompany">
             <Form.Label>Nombre Empresa</Form.Label>
-            <Form.Control {...register('name', { required: true })} type="text" placeholder="" />
+            <Form.Control
+              defaultValue={empresaData?.name || ''}
+              {...register('name', { required: true })}
+              type="text"
+              placeholder=""
+            />
           </Form.Group>
           <div className="row">
             <div className="col-md-6">
               <Form.Group className="mb-3" controlId="addressCompany">
                 <Form.Label>Direccion</Form.Label>
-                <Form.Control {...register('address', { required: true })} type="text" placeholder="" />
+                <Form.Control
+                  {...register('address', { required: true })}
+                  type="text"
+                  placeholder=""
+                  defaultValue={empresaData?.address || ''}
+                />
               </Form.Group>
             </div>
             <div className="col-md-6">
               <Form.Group className="mb-3" controlId="phoneCompany">
                 <Form.Label>Telefono</Form.Label>
-                <Form.Control {...register('phone', { required: true })} type="text" placeholder="" />
+                <Form.Control
+                  {...register('phone', { required: true })}
+                  type="text"
+                  placeholder=""
+                  defaultValue={empresaData?.phone || ''}
+                />
               </Form.Group>
             </div>
           </div>
           <div className="text-center">
-            <button type='submit' className="btn btn-success text-white">
+            <button type="submit" className="btn btn-success text-white">
               <i className="fa-solid fa-floppy-disk me-2"></i>Guardar
             </button>
           </div>

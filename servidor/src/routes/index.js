@@ -16,6 +16,7 @@ import PagosRouters from "./pagos.routes.js";
 import CotizacionRouters from "./cotizacion.routes.js";
 import FacturaRouters from "./facturas.routes.js";
 import PedidosRouters from "./pedidos.routes.js";
+import EmpresaRouters from "./empresa.routes.js";
 
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
@@ -37,7 +38,7 @@ router.use("/pagos", PagosRouters);
 router.use("/cotizacion", validateTokenMid,  CotizacionRouters);
 router.use("/pedidos", validateTokenMid,  PedidosRouters);
 router.use("/factura", validateTokenMid, FacturaRouters);
-
+router.use("/empresa", validateTokenMid, EmpresaRouters);
 
 
 
