@@ -4,14 +4,14 @@ import { Button, Card, Form } from 'react-bootstrap'
 import CurrencyInput from 'react-currency-input-field'
 import { Controller, useForm } from 'react-hook-form'
 import AsyncSelect from 'react-select/async'
-import { useClientes } from '../../../../hooks/useClientes'
-import { stylesSelect, themeSelect } from '../../../../utils/optionsConfig'
+import { useClientes } from '../../../hooks/useClientes'
+import { stylesSelect, themeSelect } from '../../../utils/optionsConfig'
 import DataTable from 'react-data-table-component'
-import { ViewDollar } from '../../../../utils'
 import PropTypes from 'prop-types'
 import toast from 'react-hot-toast'
-import { useCotizacion } from '../../../../hooks/useCotizacion'
+import { useCotizacion } from '../../../hooks/useCotizacion'
 import FormProductoCotizacion from './FormProductoCotizacion'
+import { ViewDollar } from '../../../utils'
 
 export default function FormCotizacion({ getAllCotizacion, CotiSelecionada }) {
   FormCotizacion.propTypes = {

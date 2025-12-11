@@ -1,6 +1,5 @@
 import React from 'react'
 import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
-import { Toaster } from 'react-hot-toast'
 import './DefaultLayout.css'
 
 const DefaultLayout = () => {

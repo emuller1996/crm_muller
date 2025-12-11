@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Tab, Tabs } from 'react-bootstrap'
 import React from 'react'
-import CotizacionPage from './cotizaciones/CotizacionPage'
 import FacturaPage from './facturas/FacturaPage'
 import { useState } from 'react'
 
@@ -18,7 +17,6 @@ export default function FacturasMainPage(second) {
               <FacturaPage  draw={draw} setDraw={setDraw} />
             </Tab>
             <Tab eventKey="cotizacion" title="Cotización">
-              <CotizacionPage draw={draw} setDraw={setDraw}  />
             </Tab>
           </Tabs>
         </div>

@@ -2,11 +2,11 @@
 import React, { useEffect } from 'react'
 import { Modal } from 'react-bootstrap'
 import DataTable from 'react-data-table-component'
-import { paginationComponentOptions } from '../../../utils/optionsConfig'
-import { ViewDollar } from '../../../utils'
+import { paginationComponentOptions } from '../../utils/optionsConfig'
+import { ViewDollar } from '../../utils'
 import { useState } from 'react'
 import FormCotizacion from './components/FormCotizacion'
-import { useCotizacion } from '../../../hooks/useCotizacion'
+import { useCotizacion } from '../../hooks/useCotizacion'
 import toast from 'react-hot-toast'
 import FormSignedCotizacion from './components/FormSignedCotizacion'
 import FormFacturaCotizacion from './components/FormFacturaCotizacion'
@@ -201,7 +201,7 @@ export default function CotizacionPage({ draw, setDraw }) {
           }} */
         />
       </div>
-      <Modal backdrop={'static'} size="xl" centered show={show} onHide={() => setShow(false)}>
+      <Modal fullscreen backdrop={'static'} size="xl" centered show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Crear Cotización</Modal.Title>
         </Modal.Header>
@@ -356,7 +356,7 @@ export default function CotizacionPage({ draw, setDraw }) {
           />
         </Modal.Body>
       </Modal>
-      <Modal centered show={showFactura} size="xl" onHide={() => setShowFactura(false)}>
+      <Modal centered   show={showFactura} size="xl" onHide={() => setShowFactura(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
             Cotización

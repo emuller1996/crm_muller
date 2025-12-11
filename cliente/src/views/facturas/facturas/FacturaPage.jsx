@@ -162,7 +162,7 @@ export default function FacturaPage({ draw, setDraw }) {
           }} */
         />
       </div>
-      <Modal backdrop={'static'} size="xl" centered show={show} onHide={() => setShow(false)}>
+      <Modal backdrop={'static'} size="xl" fullscreen centered show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Crear Factura</Modal.Title>
         </Modal.Header>
