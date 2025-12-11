@@ -1,17 +1,22 @@
 /* eslint-disable prettier/prettier */
 import React from 'react'
 import DataTable from 'react-data-table-component'
-import { useProductos } from '../../../../hooks/useProductos'
+import { useProductos } from '../../../hooks/useProductos'
 import { useEffect } from 'react'
 import { useState } from 'react'
-import { paginationComponentOptions } from '../../../../utils/optionsConfig'
-import { ViewDollar } from '../../../../utils'
+import { paginationComponentOptions } from '../../../utils/optionsConfig'
+import { ViewDollar } from '../../../utils'
 import { Button, Card, Form } from 'react-bootstrap'
 import { Controller, useForm } from 'react-hook-form'
 import CurrencyInput from 'react-currency-input-field'
 import FormDetailProducto from './FormDetailProducto'
+import PropTypes from 'prop-types';
 
 export default function FormProductoCotizacion({ setProductoCotizacion }) {
+
+  FormProductoCotizacion.propTypes = {
+    setProductoCotizacion :PropTypes.func
+  }
   const {
     getAllProductos,
     data: ListProductos,
@@ -48,6 +53,7 @@ export default function FormProductoCotizacion({ setProductoCotizacion }) {
                   type="text"
                   aria-label="First name"
                   className="form-control"
+                  value={dataFilter.search}
                   onChange={(e) => {
                     setdataFilter((status) => {
                       return { ...status, search: e.target.value }

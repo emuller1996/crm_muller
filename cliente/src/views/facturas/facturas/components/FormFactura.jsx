@@ -10,9 +10,9 @@ import DataTable from 'react-data-table-component'
 import { ViewDollar } from '../../../../utils'
 import PropTypes from 'prop-types'
 import toast from 'react-hot-toast'
-import FormProductoCotizacion from '../../cotizaciones/components/FormProductoCotizacion'
 import Select from 'react-select'
 import { useFacturas } from '../../../../hooks/useFacturas'
+import FormProductoCotizacion from '../../../cotizaciones/components/FormProductoCotizacion'
 export default function FormFactura({ getAllFactura, FacturaSelect }) {
   FormFactura.propTypes = {
     getAllFactura: PropTypes.func,

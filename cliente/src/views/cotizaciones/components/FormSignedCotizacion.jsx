@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 import React, { useRef } from 'react'
 import SignatureCanvas from 'react-signature-canvas'
-import { ViewDollar } from '../../../../utils'
-import { useCotizacion } from '../../../../hooks/useCotizacion'
+import { ViewDollar } from '../../../utils'
+import { useCotizacion } from '../../../hooks/useCotizacion'
 import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
 

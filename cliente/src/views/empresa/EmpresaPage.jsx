@@ -21,7 +21,6 @@ const EmpresaPage = () => {
     formState: { errors },
   } = useForm()
 
-
   useEffect(() => {
     getConfiguracionEmpresa()
   }, [])
@@ -83,7 +82,9 @@ const EmpresaPage = () => {
   console.log(empresaData)
 
   const onSubmit = async (data) => {
-    data.logo = base64Image
+    if(base64Image){
+      data.logo = base64Image
+    }
     console.log(data)
     if (empresaData) {
       console.log('editar')
@@ -109,6 +110,13 @@ const EmpresaPage = () => {
               </Form.Group>
             </div>
             <div className="col-6">
+              {!base64Image && empresaData && (
+                <div className=" d-flex gap-4 justify-content-center my-4">
+                  <div className="rounded-4 border overflow-hidden">
+                    <img src={empresaData.logo} alt="Preview" width="80px" />
+                  </div>
+                </div>
+              )}
               {base64Image && (
                 <div className=" d-flex gap-4 justify-content-center my-4">
                   <div className="rounded-4 border overflow-hidden">

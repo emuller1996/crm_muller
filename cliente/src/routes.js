@@ -1,5 +1,4 @@
 import React from 'react'
-import FacturasMainPage from './views/facturas'
 
 const EntregasPages = React.lazy(() => import('./views/entregas-pedidos/EntregasPages'))
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
@@ -10,6 +9,8 @@ const ImagesPage = React.lazy(() => import('./views/productos/ImagesPage/ImagesP
 const ClientePage = React.lazy(() => import('./views/clientes/ClientePage'))
 const TallasPage = React.lazy(() => import('./views/productos/TallasPage/TallasPage'))
 const EmpresaPage = React.lazy(() => import('./views/empresa/EmpresaPage'))
+const FacturasMainPage = React.lazy(() => import('./views/facturas'))
+const CotizacionPage = React.lazy(() => import('./views/cotizaciones/CotizacionPage'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -19,6 +20,7 @@ const routes = [
   { path: '/categorias', name: 'Categorias', element: CategoriasPage },
   { path: '/clientes', name: 'Clientes', element: ClientePage },
   { path: '/facturas', name: 'Facturas', element: FacturasMainPage },
+  { path: '/cotizaciones', name: 'Cotizaciones', element: CotizacionPage },
   { path: '/empresa', name: 'Empresa Config', element: EmpresaPage },
   { path: '/pedidos', name: 'Entregas - Pedidos', element: EntregasPages },
   { path: '/productos/:idProduct/images', name: 'ImagesPage', element: ImagesPage },

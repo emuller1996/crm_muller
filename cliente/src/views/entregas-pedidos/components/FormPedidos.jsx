@@ -11,8 +11,8 @@ import Select from 'react-select'
 import { useClientes } from '../../../hooks/useClientes'
 import { stylesSelect, themeSelect } from '../../../utils/optionsConfig'
 import { ViewDollar } from '../../../utils'
-import FormProductoCotizacion from '../../facturas/cotizaciones/components/FormProductoCotizacion'
 import { usePedidos } from '../../../hooks/usePedidos'
+import FormProductoCotizacion from '../../cotizaciones/components/FormProductoCotizacion'
 
 export default function FormPedidos({ getAllPedido, PedidoSelect }) {
   FormPedidos.propTypes = {
