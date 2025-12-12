@@ -11,11 +11,7 @@ import toast from 'react-hot-toast'
 import FormSignedCotizacion from './components/FormSignedCotizacion'
 import FormFacturaCotizacion from './components/FormFacturaCotizacion'
 import PropTypes from 'prop-types'
-export default function CotizacionPage({ draw, setDraw }) {
-  CotizacionPage.propTypes = {
-    setDraw: PropTypes.func,
-    draw: PropTypes.number,
-  }
+export default function CotizacionPage() {
   const [show, setShow] = useState(false)
   const [showView, setShowView] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
@@ -24,7 +20,7 @@ export default function CotizacionPage({ draw, setDraw }) {
 
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
 
-  // const [draw, setDraw] = useState(1)
+   const [draw, setDraw] = useState(1)
 
   const {
     getAllCotizacion,
@@ -208,7 +204,7 @@ export default function CotizacionPage({ draw, setDraw }) {
         <Modal.Body>
           <FormCotizacion
             CotiSelecionada={CotiSelecionada}
-            getAllCotizacion={() => {
+            getAllCotizacion={ async() => {
               setShow(false)
               setDraw((status) => ++status)
             }}

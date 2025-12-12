@@ -12,6 +12,7 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
+  CSpinner,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
@@ -35,10 +36,12 @@ const Login = () => {
   } = useForm()
 
   const [errorMessage, seterrorMessage] = useState(null)
+  const [isLoading, setisLoading] = useState(false)
 
   const onSubmit = async (data) => {
     console.log(data)
     try {
+      setisLoading(true)
       seterrorMessage(null)
       const r = await postLoginService(data)
       console.log(r.data)
@@ -51,6 +54,8 @@ const Login = () => {
       if (error.response.status === 400) {
         seterrorMessage(error.response.data.message)
       }
+    } finally {
+      setisLoading(false)
     }
   }
   return (
@@ -96,9 +101,14 @@ const Login = () => {
                     </div>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton color="primary" type="submit" className="px-4">
+                        <CButton
+                          disabled={isLoading}
+                          color="primary"
+                          type="submit"
+                          className="px-4"
+                        >
                           {/* <Link to={'/d/dashboard'}> */}
-                          Login
+                          {isLoading ? <CSpinner style={{width:"15px", height:"15px", marginLeft:"0.7em", marginRight:"0.7em"}}></CSpinner> : 'Login'}
                           {/* </Link> */}
                         </CButton>
                       </CCol>
