@@ -47,7 +47,7 @@ export default function FormCotizacion({ getAllCotizacion, CotiSelecionada }) {
       try {
         await actualizarCotizacion(data,CotiSelecionada._id)
         toast.success(`Cotizacion Actualizada`)
-        getAllCotizacion()
+        await getAllCotizacion()
       } catch (error) {
         console.log(error)
       }
@@ -55,7 +55,7 @@ export default function FormCotizacion({ getAllCotizacion, CotiSelecionada }) {
       try {
         await crearCotizacion(data)
         toast.success(`Cotizacion Creada`)
-        getAllCotizacion()
+        await getAllCotizacion()
       } catch (error) {
         console.log(error)
       }
