@@ -9,6 +9,10 @@ export const getAllFacturaService = (token, signal) => {
   return axios.get('/factura', { signal: signal, headers: { 'access-token': token } })
 }
 
+export const getAllFacturaPerDayService = (token, signal,date) => {
+  return axios.get(`/factura/per_day/${date}`, { signal: signal, headers: { 'access-token': token } })
+}
+
 export const putUpdateFacturaService = (token, id, data) => {
   return axios.put(`/factura/${id}`, data, { headers: { 'access-token': token } })
 }

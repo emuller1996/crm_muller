@@ -50,6 +50,69 @@ FacturaRouters.get("/:id", async (req, res) => {
   }
 });
 
+FacturaRouters.get("/per_day/:date", async (req, res) => {
+  try {
+    const specificDate = new Date(req.params.date);
+
+    const startOfDay = new Date(specificDate).setHours(0, 0, 0, 0);
+    const endOfDay = new Date(specificDate).setHours(23, 59, 59, 999);
+
+    console.log(startOfDay);
+    console.log(endOfDay);
+
+    
+    const result = await client.search({
+      index: INDEX_ES_MAIN, // Reemplaza con el nombre de tu índice
+      body: {
+        query: {
+          bool: {
+            must: [
+              { match: { "type.keyword": "factura" } },
+              { match: { dia_venta: specificDate } },              
+              /* {
+                range: {
+                  createdTime: {
+                    gte: new Date(startOfDay).getTime(),
+                    lte: new Date(endOfDay).getTime()
+                  }
+                }
+              } */
+            ]
+          }
+        }
+      }
+    });
+  
+
+    console.log(result.body);
+    
+    var invoices =result.body.hits.hits
+    invoices = invoices.map( async(c) =>{
+      console.log(c._source.client_id !==null);
+        if(c._source.client_id !==null){
+          return {
+            ...c._source,
+            _id:c._id,
+            client: await getDocumentById(c._source.client_id )
+          }
+        }else{
+
+          return {
+            ...c._source,
+            _id:c._id
+          }
+        }
+      
+      
+    })
+    invoices = await Promise.all(invoices)    
+    res.json(invoices);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+});
+
 FacturaRouters.post(
   "/",
   /* validateTokenMid, */ async (req, res) => {
