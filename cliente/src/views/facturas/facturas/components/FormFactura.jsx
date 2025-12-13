@@ -13,12 +13,16 @@ import toast from 'react-hot-toast'
 import Select from 'react-select'
 import { useFacturas } from '../../../../hooks/useFacturas'
 import FormProductoCotizacion from '../../../cotizaciones/components/FormProductoCotizacion'
+import moment from 'moment-timezone'
 export default function FormFactura({ getAllFactura, FacturaSelect }) {
   FormFactura.propTypes = {
     getAllFactura: PropTypes.func,
     FacturaSelect: PropTypes.object,
   }
   const { getAllClientesPaginationPromise } = useClientes()
+
+  const currentDate = moment.utc()
+  const localDate = currentDate.tz('America/Bogota')
 
   const [ProductoCotizacion, setProductoCotizacion] = useState(
     FacturaSelect ? FacturaSelect.productos : [],
@@ -41,6 +45,7 @@ export default function FormFactura({ getAllFactura, FacturaSelect }) {
       return
     }
     data.productos = ProductoCotizacion
+    data.dia_venta = localDate.format().split('T')[0];
     data.total_monto = ProductoCotizacion?.reduce((preVal, currentVal) => {
       return preVal + currentVal.price * currentVal.cantidad
     }, 0)
