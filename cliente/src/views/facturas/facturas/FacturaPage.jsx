@@ -11,6 +11,7 @@ import PropTypes from 'prop-types'
 import FormFactura from './components/FormFactura'
 import DetalleFactura from './components/DetalleFactura'
 import FormPagosFactura from './components/FormPagosFactura'
+import Chip from '@mui/material/Chip'
 
 export default function FacturaPage({ draw, setDraw }) {
   FacturaPage.propTypes = {
@@ -99,6 +100,24 @@ export default function FacturaPage({ draw, setDraw }) {
               selector: (row) => row?.status ?? '',
               format: (row) => row?.status ?? '',
               width: '150px',
+              cell: (row) => {
+                const translateColor = {
+                  Pendiente: {
+                    color: '#f0e54c',
+                  },
+                  Pagada: {
+                    color: '#4cf05a',
+                  },
+                }
+
+                return (
+                  <Chip
+                    sx={{ backgroundColor: translateColor?.[row.status]?.color }}
+                    label={row.status}
+                    variant="outlined"
+                  />
+                )
+              },
             },
             {
               name: 'Creado por',
