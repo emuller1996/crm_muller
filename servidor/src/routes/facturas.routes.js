@@ -59,7 +59,9 @@ FacturaRouters.get("/per_day/:date", async (req, res) => {
 
     console.log(startOfDay);
     console.log(endOfDay);
-
+    if(!req.params.date || req.params.date ==="" ){ 
+      return res.status(500).json({ message: "error falta la fecha del dia " });
+    }
     
     const result = await client.search({
       index: INDEX_ES_MAIN, // Reemplaza con el nombre de tu índice
@@ -79,7 +81,10 @@ FacturaRouters.get("/per_day/:date", async (req, res) => {
               } */
             ]
           }
-        }
+        },
+        sort: [
+        { createdTime: { order: "desc" } }, // Reemplaza con el campo por el que quieres ordenar
+      ],
       }
     });
   
@@ -87,24 +92,25 @@ FacturaRouters.get("/per_day/:date", async (req, res) => {
     console.log(result.body);
     
     var invoices =result.body.hits.hits
-    invoices = invoices.map( async(c) =>{
-      console.log(c._source.client_id !==null);
-        if(c._source.client_id !==null){
-          return {
-            ...c._source,
-            _id:c._id,
-            client: await getDocumentById(c._source.client_id )
-          }
-        }else{
-
-          return {
-            ...c._source,
-            _id:c._id
-          }
+    invoices = invoices.map(async (c) => {
+      try {
+        if (c._source.client_id && c._source.client_id !== "") {
+          const clientdata = await getDocumentById(c._source.client_id);
+          c._source.client = clientdata ?? null;
         }
-      
-      
-    })
+        if (c._source.user_create_id && c._source.user_create_id !== "") {
+          const user_create_data = await getDocumentById(c._source.user_create_id);
+          c._source.user_create = { name: user_create_data?.name ?? null };
+        }
+        delete c.user_create_id;
+      } catch (error) {
+        console.log(error);
+      }
+      return {
+      ...c._source,
+      _id: c._id,
+    };
+    });
     invoices = await Promise.all(invoices)    
     res.json(invoices);
   } catch (error) {
