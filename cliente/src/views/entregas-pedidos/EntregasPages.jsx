@@ -128,7 +128,7 @@ export default function EntregasPages({ draw, setDraw }) {
           data={ListPedidos ?? []}
           pagination
           //paginationServer
-          //progressPending={loading}
+          progressPending={loading}
           progressComponent={
             <div className="d-flex justify-content-center my-5">
               <div
