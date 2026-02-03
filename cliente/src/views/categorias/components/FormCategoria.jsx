@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React from 'react'
-import { Button, Form } from 'react-bootstrap'
+import { Button, Form, Spinner } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
@@ -20,10 +20,10 @@ export default function FormCategoria({ onHide, categoria, getAllCategorias }) {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm()
 
-  const  { crearCategoria, actualizarCategoria } = useCategorias()
+  const { crearCategoria, actualizarCategoria } = useCategorias()
 
   const onSubmit = async (data) => {
     console.log(data)
@@ -83,8 +83,8 @@ export default function FormCategoria({ onHide, categoria, getAllCategorias }) {
         <button type="button" onClick={onHide} className="btn btn-danger text-white">
           Cancelar
         </button>
-        <Button type="submit" className="text-white" variant="success">
-          Guardar Categoria
+        <Button disabled={isSubmitting} type="submit" className="text-white" variant="success">
+          {isSubmitting && <Spinner size="sm" className='me-2' />} Guardar Categoria
         </Button>
       </div>
     </form>

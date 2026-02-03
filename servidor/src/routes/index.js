@@ -3,10 +3,8 @@ import { client } from "../db.js";
 
 import UsuariosRouters from "./usuarios.routes.js";
 import AuthRouters from "./auth.routes.js";
-import CategoriasRouters from "./categorias.routes.js";
-import ProductosRouters from "./productos.routes.js";
-import ImagesRouters from "./images.routes.js";
-import ClienteRouters from "./clientes.routes.js";
+import CategoriasRouters from "../modules/categorias/categorias.routes.js";
+import ProductosRouters from "../modules/productos/productos.routes.js";
 import { validateTokenMid } from "../utils/authjws.js";
 import { INDEX_ES_MAIN_LOGS } from "../config.js";
 import ConsultasRouters from "./consultas.routes.js";
@@ -17,6 +15,7 @@ import CotizacionRouters from "./cotizacion.routes.js";
 import FacturaRouters from "./facturas.routes.js";
 import PedidosRouters from "./pedidos.routes.js";
 import EmpresaRouters from "./empresa.routes.js";
+import ClienteRouters from "../modules/clientes/clientes.routes.js";
 
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
@@ -28,9 +27,8 @@ const router = Router();
 
 router.use("/usuarios", validateTokenMid, UsuariosRouters);
 router.use("/consultas", ConsultasRouters);
-router.use("/categoria", CategoriasRouters);
+router.use("/categoria",validateTokenMid, CategoriasRouters);
 router.use("/productos", ProductosRouters);
-router.use("/images/", ImagesRouters);
 router.use("/clientes/",validateTokenMid, ClienteRouters);
 router.use("/auth", AuthRouters);
 router.use("/punto_venta", PuntoVentaRouters);
@@ -40,29 +38,6 @@ router.use("/pedidos", validateTokenMid,  PedidosRouters);
 router.use("/factura", validateTokenMid, FacturaRouters);
 router.use("/empresa", validateTokenMid, EmpresaRouters);
 
-
-
-
-router.get("/test", async (req, res) => {
-  try {
-    /* const searchResult = await client.get({index:"test"}) */
-
-    return res.json({ message: "ss", client /* searchResult */ });
-  } catch (error) {
-    return res.json({ message: "ss", error: error.message });
-  }
-});
-
-router.get("/test", async (req, res) => {
-  try {
-    const searchResult = client;
-    console.log(client);
-    return res.json(client);
-  } catch (error) {
-    console.log(error);
-    return res.json({ error: error.message });
-  }
-});
 
 router.get("/logs", async (req, res) => {
   try {
