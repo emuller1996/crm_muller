@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext,  useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   CButton,
@@ -66,9 +66,12 @@ const Login = () => {
             <CCardGroup>
               <CCard className="p-4">
                 <CCardBody>
+                  <div className="text-center mb-2">
+                    <img style={{ width: '125px' }} src="Logo.png" />
+                  </div>
                   <CForm onSubmit={handleSubmit(onSubmit)}>
-                    <h1>Login</h1>
-                    <p className="text-body-secondary">Sign In to your account</p>
+                    <h4 className='text-muted text-center'>INICIO DE SESION</h4>
+                    <p className="text-body-secondary">Ingresa con tu cuenta</p>
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
@@ -99,26 +102,32 @@ const Login = () => {
                         </div>
                       )}
                     </div>
+                    <div className="my-3 text-center">
+                      <CButton disabled={isLoading} color="primary" type="submit" className="px-4">
+                        {/* <Link to={'/d/dashboard'}> */}
+                        {isLoading ? (
+                          <CSpinner
+                            style={{
+                              width: '15px',
+                              height: '15px',
+                              marginLeft: '0.7em',
+                              marginRight: '0.7em',
+                            }}
+                          ></CSpinner>
+                        ) : (
+                          'Ingresar'
+                        )}
+                        {/* </Link> */}
+                      </CButton>
+                    </div>
                     <CRow>
-                      <CCol xs={6}>
-                        <CButton
-                          disabled={isLoading}
-                          color="primary"
-                          type="submit"
-                          className="px-4"
-                        >
-                          {/* <Link to={'/d/dashboard'}> */}
-                          {isLoading ? <CSpinner style={{width:"15px", height:"15px", marginLeft:"0.7em", marginRight:"0.7em"}}></CSpinner> : 'Login'}
-                          {/* </Link> */}
-                        </CButton>
-                      </CCol>
-                      <CCol xs={6} className="text-right">
+                      <CCol xs={12} className="text-right">
                         <CButton color="link" className="px-0">
-                          Forgot password?
+                          Se te olvido la contraseña.
                         </CButton>
                       </CCol>
-                      <Link to={'/'}>Home</Link>
                     </CRow>
+                    <div className="text-muted"> Muller Dev</div>
                   </CForm>
                 </CCardBody>
               </CCard>

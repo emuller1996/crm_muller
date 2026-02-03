@@ -39,29 +39,6 @@ router.use("/factura", validateTokenMid, FacturaRouters);
 router.use("/empresa", validateTokenMid, EmpresaRouters);
 
 
-
-
-router.get("/test", async (req, res) => {
-  try {
-    /* const searchResult = await client.get({index:"test"}) */
-
-    return res.json({ message: "ss", client /* searchResult */ });
-  } catch (error) {
-    return res.json({ message: "ss", error: error.message });
-  }
-});
-
-router.get("/test", async (req, res) => {
-  try {
-    const searchResult = client;
-    console.log(client);
-    return res.json(client);
-  } catch (error) {
-    console.log(error);
-    return res.json({ error: error.message });
-  }
-});
-
 router.get("/logs", async (req, res) => {
   try {
     const searchResult = await client.search({
