@@ -12,8 +12,8 @@ export default function FacturasMainPage(second) {
     <>
       <div className="card">
         <div className="card-body">
-          <Tabs defaultActiveKey="Facturas" id="uncontrolled-tab-example" className="">
-            <Tab eventKey="cotizacion" title="Facturas de Hoy">
+          <Tabs defaultActiveKey="facturas_hoy" id="uncontrolled-tab-example" className="">
+            <Tab eventKey="facturas_hoy" title="Facturas de Hoy">
               <FacturasHoyPage />
             </Tab>
             <Tab eventKey="Facturas" title="Facturas">
