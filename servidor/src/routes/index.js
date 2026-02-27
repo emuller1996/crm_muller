@@ -7,15 +7,15 @@ import CategoriasRouters from "../modules/categorias/categorias.routes.js";
 import ProductosRouters from "../modules/productos/productos.routes.js";
 import { validateTokenMid } from "../utils/authjws.js";
 import { INDEX_ES_MAIN_LOGS } from "../config.js";
-import ConsultasRouters from "./consultas.routes.js";
-import OrdenesRouters from "./ordenes.routes.js";
 import PuntoVentaRouters from "./punto_venta.routes.js";
 import PagosRouters from "./pagos.routes.js";
-import CotizacionRouters from "./cotizacion.routes.js";
 import FacturaRouters from "./facturas.routes.js";
 import PedidosRouters from "./pedidos.routes.js";
 import EmpresaRouters from "./empresa.routes.js";
 import ClienteRouters from "../modules/clientes/clientes.routes.js";
+import CotizacionRouters from "../modules/cotizaciones/cotizaciones.routes.js";
+
+
 
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
@@ -26,7 +26,6 @@ const router = Router();
 // Ejemplo: router.use('/auth', authRouter);
 
 router.use("/usuarios", validateTokenMid, UsuariosRouters);
-router.use("/consultas", ConsultasRouters);
 router.use("/categoria",validateTokenMid, CategoriasRouters);
 router.use("/productos", ProductosRouters);
 router.use("/clientes/",validateTokenMid, ClienteRouters);
