@@ -9,6 +9,7 @@ import {
 import {
   generateAccessToken,
 } from "./auth.tokens.js";
+import { getDocumentById } from "../../utils/index.js";
 
 export const login = async ({ email, password }) => {
   const searchResult = await client.search({
@@ -50,6 +51,13 @@ export const login = async ({ email, password }) => {
     throw new Error("Contraseña incorrecta");
 
   const cleanUser = buildUserResponse(user);
+  if(cleanUser.role_id){
+    const roleUser =  await getDocumentById(cleanUser?.role_id)
+    cleanUser.role = roleUser.name
+  }else{
+    cleanUser.role = null
+  }
+
 
   const token = generateAccessToken(cleanUser);
 

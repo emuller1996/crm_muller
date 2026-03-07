@@ -35,6 +35,8 @@ export default function FormCategoria({ onHide, categoria, getAllCategorias }) {
         onHide()
       } catch (error) {
         console.log(error)
+        toast.error(error.response.data.message || error.message)
+
       }
     } else {
       try {
@@ -44,6 +46,7 @@ export default function FormCategoria({ onHide, categoria, getAllCategorias }) {
         onHide()
       } catch (error) {
         console.log(error)
+        toast.error(error.response.data.message || error.message)
       }
     }
     await getAllCategorias()

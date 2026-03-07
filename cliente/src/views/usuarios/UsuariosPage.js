@@ -5,11 +5,13 @@ import { useUsuarios } from '../../hooks/useUsuarios'
 import DataTable from 'react-data-table-component'
 import { paginationComponentOptions } from '../../utils/optionsConfig'
 import FormChangePassword from './components/FormChangePassword'
+import { Link } from 'react-router-dom'
 
 const UsuariosPage = () => {
   const [show, setShow] = useState(false)
   const [Draw, setDraw] = useState(1)
   const [showPass, setShowPass] = useState({ show: false, data: null })
+  const [UserSelect, setUserSelect] = useState(null)
 
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
@@ -24,10 +26,17 @@ const UsuariosPage = () => {
   }, [Draw])
   return (
     <div>
-      <div>
-        <Button variant="primary" onClick={handleShow}>
+      <div style={{ display: 'flex', gap: '0.5em', justifyContent: 'space-between' }}>
+        <Button variant="primary" onClick={()=>{
+          handleShow()
+          setUserSelect(null)
+        } }>
           Crear Usuarios
         </Button>
+
+        <Link to={`roles`}>
+          <Button variant="secondary">Roles</Button>
+        </Link>
       </div>
       <div className="rounded overflow-hidden border border-ligth shadow-sm mt-3">
         <DataTable
@@ -39,6 +48,16 @@ const UsuariosPage = () => {
               cell: (row) => {
                 return (
                   <ButtonGroup size="sm">
+                    <Button
+                      onClick={() => {
+                        setUserSelect(row)
+                        handleShow()
+                      }}
+                      title="Cambiar Contraseña"
+                      variant="secondary"
+                    >
+                      <i className="fa-regular fa-pen-to-square"></i>
+                    </Button>
                     <Button
                       onClick={() => {
                         setShowPass({ show: true, data: row })
@@ -85,6 +104,7 @@ const UsuariosPage = () => {
             allUser={() => {
               setDraw((status) => ++status)
             }}
+            user={UserSelect}
           />
         </Modal.Body>
       </Modal>
