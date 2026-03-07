@@ -36,7 +36,6 @@ export default function FormCategoria({ onHide, categoria, getAllCategorias }) {
       } catch (error) {
         console.log(error)
         toast.error(error.response.data.message || error.message)
-
       }
     } else {
       try {
@@ -87,7 +86,7 @@ export default function FormCategoria({ onHide, categoria, getAllCategorias }) {
           Cancelar
         </button>
         <Button disabled={isSubmitting} type="submit" className="text-white" variant="success">
-          {isSubmitting && <Spinner size="sm" className='me-2' />} Guardar Categoria
+          {isSubmitting && <Spinner size="sm" className="me-2" />} Guardar Categoria
         </Button>
       </div>
     </form>

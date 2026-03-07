@@ -6,16 +6,15 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { paginationComponentOptions } from '../../../utils/optionsConfig'
 import { ViewDollar } from '../../../utils'
-import { Button, Card, Form } from 'react-bootstrap'
+import { Alert, Button, Card, Form } from 'react-bootstrap'
 import { Controller, useForm } from 'react-hook-form'
 import CurrencyInput from 'react-currency-input-field'
 import FormDetailProducto from './FormDetailProducto'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
 export default function FormProductoCotizacion({ setProductoCotizacion }) {
-
   FormProductoCotizacion.propTypes = {
-    setProductoCotizacion :PropTypes.func
+    setProductoCotizacion: PropTypes.func,
   }
   const {
     getAllProductos,
@@ -23,6 +22,7 @@ export default function FormProductoCotizacion({ setProductoCotizacion }) {
     getAllProductosPagination,
     dataP,
     loading,
+    error,
   } = useProductos()
 
   const [ProductoSelecionado, setProductoSelecionado] = useState(null)
@@ -40,7 +40,12 @@ export default function FormProductoCotizacion({ setProductoCotizacion }) {
 
   return (
     <>
-      {!ProductoSelecionado && (
+      {error && (
+        <div className="mt-4">
+          <Alert variant="warning"> {error.response.data.message || error.message}</Alert>{' '}
+        </div>
+      )}
+      {!ProductoSelecionado && dataP && (
         <>
           <div className="col-md-12">
             <div className="w-100">
@@ -63,6 +68,7 @@ export default function FormProductoCotizacion({ setProductoCotizacion }) {
               </div>
             </div>
           </div>
+
           <div className="rounded overflow-hidden border border-ligth shadow-sm mt-3">
             <DataTable
               className="MyDataTableEvent"
@@ -88,7 +94,7 @@ export default function FormProductoCotizacion({ setProductoCotizacion }) {
                   },
                 },
                 { name: 'Nombre Producto', selector: (row) => row?.name ?? '', width: '250px' },
-                
+
                 {
                   name: 'Precio',
                   selector: (row) => row?.price ?? '',

@@ -58,7 +58,7 @@ export default function FormUsuarios({ onHide, allUser, user }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <p className="text-center border-bottom pb-2">Creando Usuario</p>
+      <p className="text-center border-bottom pb-2">{user ? "Actualizando " : "Creando "}Usuario</p>
       <div className="row">
         <div className="col-md-6">
           <Form.Group className="mb-3" controlId="name">
