@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { CContainer } from '@coreui/react'
-import { Button, Modal } from 'react-bootstrap'
+import { Alert, Button, Modal } from 'react-bootstrap'
 import DataTable from 'react-data-table-component'
 import { paginationComponentOptions } from '../../utils/optionsConfig'
 import FormCategoria from './components/FormCategoria'
@@ -14,11 +14,13 @@ const CategoriasPage = () => {
 
   const [CategoriaSelec, setCategoriaSelec] = useState(null)
 
-  const { getAllCategorias, data: ListCategorias } = useCategorias()
+  const { getAllCategorias, data: ListCategorias, error } = useCategorias()
 
   useEffect(() => {
     getAllCategorias()
   }, [])
+
+  console.log(error)
 
   return (
     <div className="">
@@ -32,6 +34,11 @@ const CategoriasPage = () => {
         >
           Crear Categorias
         </Button>
+        {error && (
+          <div className='mt-4'>
+            <Alert variant="warning"> {error.response.data.message || error.message}</Alert>{' '}
+          </div>
+        )}
         <div className="row g-3 my-3">
           {ListCategorias &&
             ListCategorias.map((cate) => (
