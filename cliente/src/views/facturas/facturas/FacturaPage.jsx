@@ -18,12 +18,10 @@ export default function FacturaPage({ draw, setDraw }) {
     setDraw: PropTypes.func,
     draw: PropTypes.number,
   }
-  const [show, setShow] = useState(false)
-  const [showView, setShowView] = useState(false)
+  
   const [showDelete, setShowDelete] = useState(false)
   const [showPago, setShowPago] = useState(false)
 
-  const [CotiSelecionada, setCotiSelecionada] = useState(null)
 
   //const [draw, setDraw] = useState(1)
 
@@ -35,19 +33,7 @@ export default function FacturaPage({ draw, setDraw }) {
 
   return (
     <>
-      <div className="my-2">
-        <button
-          type="button"
-          onClick={() => {
-            setCotiSelecionada(null)
-            setShow(true)
-          }}
-          className="btn btn-primary"
-          aria-pressed="false"
-        >
-          Nueva Factura
-        </button>
-      </div>
+      
       <div className="rounded overflow-hidden border border-ligth shadow-sm mt-3">
         <DataTable
           className="MyDataTableEvent"
@@ -181,35 +167,7 @@ export default function FacturaPage({ draw, setDraw }) {
           }} */
         />
       </div>
-      <Modal backdrop={'static'} size="xl" fullscreen centered show={show} onHide={() => setShow(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Crear Factura</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <FormFactura
-            getAllFactura={() => {
-              setShow(false)
-              setDraw((status) => ++status)
-            }}
-            //ProductoCotizacion={ProductoCotizacion}
-          />
-        </Modal.Body>
-      </Modal>
       
-      <Modal
-        backdrop={'static'}
-        size="xl"
-        centered
-        show={showView}
-        onHide={() => setShowView(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Detalle Factura</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <DetalleFactura Factura={CotiSelecionada} />
-        </Modal.Body>
-      </Modal>
       <Modal
         backdrop={'static'}
         size="xl"
@@ -221,7 +179,7 @@ export default function FacturaPage({ draw, setDraw }) {
           <Modal.Title>Pagos de Factura</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FormPagosFactura Factura={CotiSelecionada} />
+          <FormPagosFactura  />
         </Modal.Body>
       </Modal>
     </>
