@@ -13,5 +13,41 @@ export const ACL_APP = {
       update: { text: 'Actualizar' },
       delete: { text: 'Borrar' },
     },
+    facturas: {
+      read: { text: 'Leer' },
+      create: { text: 'Crear' },
+      update: { text: 'Actualizar' },
+      delete: { text: 'Borrar' },
+    },
+    cotizaciones: {
+      read: { text: 'Leer' },
+      create: { text: 'Crear' },
+      update: { text: 'Actualizar' },
+      delete: { text: 'Borrar' },
+    },
+    pedidos: {
+      read: { text: 'Leer' },
+      create: { text: 'Crear' },
+      update: { text: 'Actualizar' },
+      delete: { text: 'Borrar' },
+    },
+    clientes: {
+      read: { text: 'Leer' },
+      create: { text: 'Crear' },
+      update: { text: 'Actualizar' },
+      delete: { text: 'Borrar' },
+    },
+    usuarios: {
+      read: { text: 'Leer' },
+      create: { text: 'Crear' },
+      update: { text: 'Actualizar' },
+      delete: { text: 'Borrar' },
+    },
+    empresa: {
+      read: { text: 'Leer' },
+      create: { text: 'Crear' },
+      update: { text: 'Actualizar' },
+      delete: { text: 'Borrar' },
+    },
   },
 }

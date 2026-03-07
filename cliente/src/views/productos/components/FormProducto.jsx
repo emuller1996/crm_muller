@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useEffect } from 'react'
-import { Button, Form } from 'react-bootstrap'
+import { Button, Form, Spinner } from 'react-bootstrap'
 import { Controller, useForm } from 'react-hook-form'
 import PropTypes from 'prop-types'
 import CurrencyInput from 'react-currency-input-field'
@@ -21,10 +21,10 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm()
 
-  const { createProducto } = useProductos()
+  const { createProducto, updateProducto } = useProductos()
   const { getAllCategorias, data: ListCategorias } = useCategorias()
 
   useEffect(() => {
@@ -46,15 +46,17 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
         toast.success(result.data.message)
       } catch (error) {
         console.log(error)
+        toast.error(error.response.data.message || error.message)
       }
     } else {
       try {
-        const result = await putUpdateProductoService(producto._id, data)
+        const result = await updateProducto(data, producto._id)
         console.log(result.data)
         onHide()
         toast.success(result.data.message)
       } catch (error) {
         console.log(error)
+        toast.error(error.response.data.message || error.message)
       }
     }
 
@@ -63,7 +65,9 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <p className="text-center border-bottom pb-2">Creando Usuario</p>
+      <p className="text-center border-bottom pb-2">
+        {producto ? 'Actualizando ' : 'Creando '} Producto
+      </p>
       <div className="row g-3">
         <div className="col-md-6">
           <Form.Group className="" controlId="name">
@@ -243,8 +247,8 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
         <button type="button" onClick={onHide} className="btn btn-danger text-white">
           Cancelar
         </button>
-        <Button type="submit" className="text-white" variant="success">
-          Guardar Producto
+        <Button disabled={isSubmitting} type="submit" className="text-white" variant="success">
+          {isSubmitting && <Spinner size="sm" className="me-2" />} Guardar Producto
         </Button>
       </div>
     </form>

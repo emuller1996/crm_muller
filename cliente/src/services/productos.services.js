@@ -9,8 +9,8 @@ export const getAllProductoService = (token, signal) => {
   return axios.get('/productos', { headers: { 'access-token': token }, signal: signal })
 }
 
-export const putUpdateProductoService = (id, data) => {
-  return axios.put(`/productos/${id}`, data)
+export const putUpdateProductoService = (id, data, token) => {
+  return axios.put(`/productos/${id}`, data,{ headers: { 'access-token': token } } )
 }
 
 export const postCreateProductoImageService = (data, product_id) => {
@@ -22,7 +22,7 @@ export const postCreateStockProductoService = (data, product_id, token) => {
 }
 
 export const postCreateConsultaProductoService = (data, product_id, token) => {
-  return axios.post(`/productos/${product_id}/consultas`, data, { headers: { 'Authorization': token } })
+  return axios.post(`/productos/${product_id}/consultas`, data, { headers: { 'access-token': token } })
 }
 
 export const putUpdateStockProductoService = (data, product_id, token) => {
@@ -71,7 +71,7 @@ export const getProductoSearchPaginationServices = async (token, ...params) => {
 
   return await axios.get(`/productos/pagination/?${searchs.toString()}`, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      "access-token": `${token}`,
     },
   });
 };
@@ -87,7 +87,7 @@ export const getProductoSearchPublishedServices = async (token, ...params) => {
 
   return await axios.get(`/productos/published/?${searchs.toString()}`, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      "access-token": `${token}`,
     },
   });
 };
