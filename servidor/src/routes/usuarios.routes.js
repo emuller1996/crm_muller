@@ -47,6 +47,19 @@ UsuariosRouters.post("/", async (req, res) => {
   }
 });
 
+UsuariosRouters.patch("/:id", async (req, res) => {
+  try {
+    const data = req.body;
+    const r = await updateElasticByType(req.params.id, data);
+    if (r.body.result === "updated") {
+      await client.indices.refresh({ index: INDEX_ES_MAIN });
+      return res.json({ message: "Usuario Actualizado" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
 UsuariosRouters.patch("/:id/change_password", async (req, res) => {
   try {
     const data = req.body;

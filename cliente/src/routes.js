@@ -11,11 +11,13 @@ const TallasPage = React.lazy(() => import('./views/productos/TallasPage/TallasP
 const EmpresaPage = React.lazy(() => import('./views/empresa/EmpresaPage'))
 const FacturasMainPage = React.lazy(() => import('./views/facturas'))
 const CotizacionPage = React.lazy(() => import('./views/cotizaciones/CotizacionPage'))
+const RolesPage = React.lazy(() => import('./views/usuarios/pages/RolesPage'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/usuarios', name: 'Usuarios', element: UsuariosPage },
+  { path: '/usuarios/roles', name: 'Roles', element: RolesPage },
   { path: '/productos', name: 'Productos', element: ProductosPage },
   { path: '/categorias', name: 'Categorias', element: CategoriasPage },
   { path: '/clientes', name: 'Clientes', element: ClientePage },

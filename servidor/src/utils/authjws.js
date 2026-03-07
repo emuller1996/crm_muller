@@ -57,8 +57,8 @@ const validateTokenClientMid = (req, res, next) => {
 };
 
 
-const validateTokenMid = (req, res, next) => {
-  const accessToken = req.headers["access-token"];
+const validateTokenMid = async (req, res, next) => {
+  /* const accessToken = req.headers["access-token"];
   if (!accessToken)
     return res
       .status(403)
@@ -71,7 +71,32 @@ const validateTokenMid = (req, res, next) => {
     } else {
       next();
     }
-  });
+  }); */
+   try {
+
+    const token = req.headers["access-token"]
+
+    if (!token)
+      return res.status(401).json({ message: "Token requerido" })
+
+    const decoded = jsonwebtoken.verify(token, SECRECT_CLIENT)
+
+    const user = await getDocumentById(decoded._id)
+
+    if (user.role_id) {
+      const role = await getDocumentById(user.role_id)
+      user.role = role
+    }
+
+    req.user = user
+
+    next()
+
+  } catch (error) {
+    console.log(error);
+    
+    return res.status(401).json({ message: "Token inválido" })
+  }
 };
 
 const generateClienteAccessToken = (user) => {

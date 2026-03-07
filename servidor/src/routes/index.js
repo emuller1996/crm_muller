@@ -14,12 +14,15 @@ import EmpresaRouters from "./empresa.routes.js";
 import ClienteRouters from "../modules/clientes/clientes.routes.js";
 import CotizacionRouters from "../modules/cotizaciones/cotizaciones.routes.js";
 import FacturaRouters from "../modules/facturas/facturas.routes.js";
+import RolesRouers from "../modules/roles/roles.routes.js";
+
 
 const router = Router();
 
 router.use("/usuarios", validateTokenMid, UsuariosRouters);
+router.use("/roles", validateTokenMid,RolesRouers );
 router.use("/categoria",validateTokenMid, CategoriasRouters);
-router.use("/productos", ProductosRouters);
+router.use("/productos",validateTokenMid, ProductosRouters);
 router.use("/clientes/",validateTokenMid, ClienteRouters);
 router.use("/auth", AuthRouters);
 router.use("/punto_venta", PuntoVentaRouters);
