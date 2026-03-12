@@ -23,7 +23,7 @@ export default function FormPagosFactura({ Factura }) {
     formState: { errors },
   } = useForm()
 
-  const { crearPagoByFactura, getPagosByFactura } = useFacturas()
+  const { crearPagoByFactura, getPagosByFactura, actualizarFactura } = useFacturas()
 
   useEffect(() => {
     getPagos(Factura._id)
@@ -33,6 +33,9 @@ export default function FormPagosFactura({ Factura }) {
     try {
       const result = await getPagosByFactura(id)
       console.log(result.data)
+      if (result.data.suma.value === Factura.total_monto && Factura.status === 'Pendiente') {
+        await actualizarFactura({ status: 'Pagada' }, Factura._id)
+      }
       setPagos(result.data)
     } catch (error) {
       console.log(error)
@@ -41,6 +44,9 @@ export default function FormPagosFactura({ Factura }) {
 
   const onSubmit = async (data) => {
     console.log(data)
+    if (Factura.monto === data.monto) {
+      data.status = 'Pagada'
+    }
     try {
       const result = await crearPagoByFactura(data, Factura._id)
       console.log(result)

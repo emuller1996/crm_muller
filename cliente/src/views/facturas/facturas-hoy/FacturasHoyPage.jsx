@@ -80,8 +80,7 @@ export default function FacturasHoyPage({ onViewFactura, onPayment, draw }) {
                       {row.status === 'Pendiente' && (
                         <button
                           onClick={() => {
-                            setShowPago(true)
-                            setCotiSelecionada(row)
+                            onPayment(row)
                           }}
                           title="Registrar Pagos"
                           className="btn btn-outline-success btn-sm"
