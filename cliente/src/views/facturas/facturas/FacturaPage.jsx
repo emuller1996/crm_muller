@@ -13,17 +13,15 @@ import DetalleFactura from './components/DetalleFactura'
 import FormPagosFactura from './components/FormPagosFactura'
 import Chip from '@mui/material/Chip'
 
-export default function FacturaPage({ draw, setDraw }) {
+export default function FacturaPage({ draw, onViewFactura }) {
   FacturaPage.propTypes = {
     setDraw: PropTypes.func,
     draw: PropTypes.number,
+    onViewFactura: PropTypes.func,
   }
   
   const [showDelete, setShowDelete] = useState(false)
   const [showPago, setShowPago] = useState(false)
-
-
-  //const [draw, setDraw] = useState(1)
 
   const { getAllFactura, data: ListFacturas, actualizarFactura, loading } = useFacturas()
 
@@ -48,8 +46,9 @@ export default function FacturaPage({ draw, setDraw }) {
                     <div className="btn-group" role="group" aria-label="Basic outlined example">
                       <button
                         onClick={() => {
-                          setShowView(true)
-                          setCotiSelecionada(row)
+                          //setShowView(true)
+                          //setCotiSelecionada(row)
+                          onViewFactura(row)
                         }}
                         title="Ver Cotización"
                         className="btn btn-outline-primary btn-sm"

@@ -45,7 +45,7 @@ export default function FormProductoCotizacion({ setProductoCotizacion }) {
           <Alert variant="warning"> {error.response.data.message || error.message}</Alert>{' '}
         </div>
       )}
-      {!ProductoSelecionado && dataP && (
+      {!ProductoSelecionado && (
         <>
           <div className="col-md-12">
             <div className="w-100">

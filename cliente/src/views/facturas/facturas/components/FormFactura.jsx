@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react'
-import { Button, Card, Form } from 'react-bootstrap'
+import { Button, Card, Form, Spinner } from 'react-bootstrap'
 import CurrencyInput from 'react-currency-input-field'
 import { Controller, useForm } from 'react-hook-form'
 import AsyncSelect from 'react-select/async'
@@ -35,7 +35,7 @@ export default function FormFactura({ getAllFactura, FacturaSelect }) {
     control,
     reset,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm()
 
   const [isPending, setPending] = useState(false)
@@ -45,7 +45,7 @@ export default function FormFactura({ getAllFactura, FacturaSelect }) {
       return
     }
     data.productos = ProductoCotizacion
-    data.dia_venta = localDate.format().split('T')[0];
+    data.dia_venta = localDate.format().split('T')[0]
     data.total_monto = ProductoCotizacion?.reduce((preVal, currentVal) => {
       return preVal + currentVal.price * currentVal.cantidad
     }, 0)
@@ -283,8 +283,21 @@ export default function FormFactura({ getAllFactura, FacturaSelect }) {
                   </Form.Group>
                 </div>
                 <div className="mt-5 d-flex gap-4 justify-content-center">
-                  <Button type="submit" className="text-white" variant="success">
-                    Guardar Factura
+                  <Button disabled={isSubmitting}  variant="success" type="submit" className="px-4 text-white">
+                    {/* <Link to={'/d/dashboard'}> */}
+                    {isSubmitting ? (
+                      <Spinner
+                        style={{
+                          width: '15px',
+                          height: '15px',
+                          marginLeft: '0.7em',
+                          marginRight: '0.7em',
+                        }}
+                      ></Spinner>
+                    ) : (
+                      ' Guardar Factura'
+                    )}
+                    {/* </Link> */}
                   </Button>
                 </div>
               </form>
