@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from 'react'
-import { Alert, Button, Form } from 'react-bootstrap'
+import { Alert, Button, Form, Spinner } from 'react-bootstrap'
 import CurrencyInput from 'react-currency-input-field'
 import { Controller, useForm } from 'react-hook-form'
 import { ViewDollar } from '../../../../utils'
@@ -20,7 +20,7 @@ export default function FormPagosFactura({ Factura }) {
     handleSubmit,
     control,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm()
 
   const { crearPagoByFactura, getPagosByFactura, actualizarFactura } = useFacturas()
@@ -203,8 +203,26 @@ export default function FormPagosFactura({ Factura }) {
               </div>
             )}
             <div className="mt-3 text-center">
-              <Button variant="primary" className="ms-2" type="submit">
-                Agregar
+              <Button
+                disabled={isSubmitting}
+                variant="success"
+                type="submit"
+                className="px-4 text-white"
+              >
+                {/* <Link to={'/d/dashboard'}> */}
+                {isSubmitting ? (
+                  <Spinner
+                    style={{
+                      width: '15px',
+                      height: '15px',
+                      marginLeft: '0.7em',
+                      marginRight: '0.7em',
+                    }}
+                  ></Spinner>
+                ) : (
+                  ' Agregar Pago'
+                )}
+                {/* </Link> */}
               </Button>
             </div>
           </form>

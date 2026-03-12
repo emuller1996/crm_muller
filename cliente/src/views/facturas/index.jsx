@@ -54,6 +54,10 @@ export default function FacturasMainPage(second) {
                   setCotiSelecionada(factura)
                   setShowView(true)
                 }}
+                onPayment={(factura) => {
+                  setShowPago(true)
+                  setCotiSelecionada(factura)
+                }}
               />
             </Tab>
           </Tabs>

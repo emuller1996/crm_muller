@@ -13,15 +13,16 @@ import DetalleFactura from './components/DetalleFactura'
 import FormPagosFactura from './components/FormPagosFactura'
 import Chip from '@mui/material/Chip'
 
-export default function FacturaPage({ draw, onViewFactura }) {
+export default function FacturaPage({ draw, onViewFactura, onPayment }) {
   FacturaPage.propTypes = {
     setDraw: PropTypes.func,
     draw: PropTypes.number,
     onViewFactura: PropTypes.func,
+    onPayment: PropTypes.func,
   }
   
   const [showDelete, setShowDelete] = useState(false)
-  const [showPago, setShowPago] = useState(false)
+  
 
   const { getAllFactura, data: ListFacturas, actualizarFactura, loading } = useFacturas()
 
@@ -58,8 +59,7 @@ export default function FacturaPage({ draw, onViewFactura }) {
                       {row.status === 'Pendiente' && (
                         <button
                           onClick={() => {
-                            setShowPago(true)
-                            setCotiSelecionada(row)
+                            onPayment(row)
                           }}
                           title="Registrar Pagos"
                           className="btn btn-outline-success btn-sm"
@@ -167,20 +167,7 @@ export default function FacturaPage({ draw, onViewFactura }) {
         />
       </div>
       
-      <Modal
-        backdrop={'static'}
-        size="xl"
-        centered
-        show={showPago}
-        onHide={() => setShowPago(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Pagos de Factura</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <FormPagosFactura  />
-        </Modal.Body>
-      </Modal>
+      
     </>
   )
 }
