@@ -6,11 +6,13 @@ import { useState } from 'react'
 import FacturasHoyPage from './facturas-hoy/FacturasHoyPage'
 import FormFactura from './facturas/components/FormFactura'
 import DetalleFactura from './facturas/components/DetalleFactura'
+import FormPagosFactura from './facturas/components/FormPagosFactura'
 
 export default function FacturasMainPage(second) {
   const [draw, setDraw] = useState(1)
   const [show, setShow] = useState(false)
   const [showView, setShowView] = useState(false)
+  const [showPago, setShowPago] = useState(false)
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
 
   return (
@@ -38,6 +40,10 @@ export default function FacturasMainPage(second) {
                   setCotiSelecionada(factura)
                   setShowView(true)
                 }}
+                onPayment={(factura) => {
+                  setShowPago(true)
+                  setCotiSelecionada(factura)
+                }}
               />
             </Tab>
             <Tab eventKey="Facturas" title="Facturas">
@@ -47,6 +53,10 @@ export default function FacturasMainPage(second) {
                 onViewFactura={(factura) => {
                   setCotiSelecionada(factura)
                   setShowView(true)
+                }}
+                onPayment={(factura) => {
+                  setShowPago(true)
+                  setCotiSelecionada(factura)
                 }}
               />
             </Tab>
@@ -86,6 +96,20 @@ export default function FacturasMainPage(second) {
         </Modal.Header>
         <Modal.Body>
           <DetalleFactura Factura={CotiSelecionada} />
+        </Modal.Body>
+      </Modal>
+      <Modal
+        backdrop={'static'}
+        size="xl"
+        centered
+        show={showPago}
+        onHide={() => setShowPago(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Pagos de Factura</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormPagosFactura Factura={CotiSelecionada} />
         </Modal.Body>
       </Modal>
     </>
