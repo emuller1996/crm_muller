@@ -32,10 +32,23 @@ export default function FacturasMainPage(second) {
           </div>
           <Tabs defaultActiveKey="facturas_hoy" id="uncontrolled-tab-example" className="">
             <Tab eventKey="facturas_hoy" title="Facturas de Hoy">
-              <FacturasHoyPage />
+              <FacturasHoyPage
+                draw={draw}
+                onViewFactura={(factura) => {
+                  setCotiSelecionada(factura)
+                  setShowView(true)
+                }}
+              />
             </Tab>
             <Tab eventKey="Facturas" title="Facturas">
-              <FacturaPage draw={draw} setDraw={setDraw} />
+              <FacturaPage
+                draw={draw}
+                setDraw={setDraw}
+                onViewFactura={(factura) => {
+                  setCotiSelecionada(factura)
+                  setShowView(true)
+                }}
+              />
             </Tab>
           </Tabs>
         </div>

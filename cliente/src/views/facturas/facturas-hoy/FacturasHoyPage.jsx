@@ -6,8 +6,15 @@ import DataTable from 'react-data-table-component'
 import { paginationComponentOptions } from '../../../utils/optionsConfig'
 import { ViewDollar } from '../../../utils'
 import Chip from '@mui/material/Chip'
+import PropTypes from 'prop-types'
 
-export default function FacturasHoyPage() {
+FacturasHoyPage.propTypes = {
+  draw: PropTypes.number,
+  onPayment: PropTypes.func,
+  onViewFactura: PropTypes.func,
+}
+
+export default function FacturasHoyPage({ onViewFactura, onPayment, draw }) {
   const currentDate = moment.utc()
   const localDate = currentDate.tz('America/Bogota')
 
@@ -19,7 +26,7 @@ export default function FacturasHoyPage() {
 
   useEffect(() => {
     getFacturasPerDay(date)
-  }, [date])
+  }, [date, draw])
 
   const getFacturasPerDay = async (dateS) => {
     try {
@@ -61,8 +68,9 @@ export default function FacturasHoyPage() {
                     <div className="btn-group" role="group" aria-label="Basic outlined example">
                       <button
                         onClick={() => {
-                          setShowView(true)
-                          setCotiSelecionada(row)
+                          //setShowView(true)
+                          //setCotiSelecionada(row)
+                          onViewFactura(row)
                         }}
                         title="Ver Cotización"
                         className="btn btn-outline-primary btn-sm"
