@@ -59,6 +59,14 @@ export const createPago = async (req, res) => {
   }
 };
 
+export const anularFactura = async (req, res) => {
+  try {
+    res.json(await service.anularFactura(req.params.id));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getPagos = async (req, res) => {
   try {
     res.json(await service.getPagos(req.params.id));

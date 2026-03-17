@@ -7,6 +7,7 @@ import { ViewDollar } from '../../../utils'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useFacturas } from '../../../hooks/useFacturas'
+import { useFacturaPDF } from '../../../hooks/useFacturaPDF'
 import PropTypes from 'prop-types'
 import FormFactura from './components/FormFactura'
 import DetalleFactura from './components/DetalleFactura'
@@ -20,11 +21,28 @@ export default function FacturaPage({ draw, onViewFactura, onPayment }) {
     onViewFactura: PropTypes.func,
     onPayment: PropTypes.func,
   }
-  
-  const [showDelete, setShowDelete] = useState(false)
-  
 
-  const { getAllFactura, data: ListFacturas, actualizarFactura, loading } = useFacturas()
+  const [showDelete, setShowDelete] = useState(false)
+  const [facturaToAnular, setFacturaToAnular] = useState(null)
+  const [loadingAnular, setLoadingAnular] = useState(false)
+
+  const { getAllFactura, data: ListFacturas, anularFactura, loading } = useFacturas()
+  const { generarPDF } = useFacturaPDF()
+
+  const handleAnular = async () => {
+    if (!facturaToAnular) return
+    try {
+      setLoadingAnular(true)
+      await anularFactura(facturaToAnular._id)
+      toast.success('Factura anulada')
+      setFacturaToAnular(null)
+      getAllFactura()
+    } catch (error) {
+      toast.error('Error al anular la factura')
+    } finally {
+      setLoadingAnular(false)
+    }
+  }
 
   useEffect(() => {
     getAllFactura()
@@ -40,35 +58,43 @@ export default function FacturaPage({ draw, onViewFactura, onPayment }) {
           columns={[
             {
               name: 'Acciones',
-              width: '150px',
+              width: '190px',
               cell: (row) => {
                 return (
-                  <>
-                    <div className="btn-group" role="group" aria-label="Basic outlined example">
+                  <div className="btn-group" role="group">
+                    <button
+                      onClick={() => onViewFactura(row)}
+                      title="Ver Factura"
+                      className="btn btn-outline-primary btn-sm"
+                    >
+                      <i className="fa-solid fa-eye"></i>
+                    </button>
+                    <button
+                      onClick={() => generarPDF(row)}
+                      title="Descargar PDF"
+                      className="btn btn-outline-secondary btn-sm"
+                    >
+                      <i className="fa-solid fa-file-pdf"></i>
+                    </button>
+                    {row.status === 'Pendiente' && (
                       <button
-                        onClick={() => {
-                          //setShowView(true)
-                          //setCotiSelecionada(row)
-                          onViewFactura(row)
-                        }}
-                        title="Ver Cotización"
-                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => onPayment(row)}
+                        title="Registrar Pagos"
+                        className="btn btn-outline-success btn-sm"
                       >
-                        <i className="fa-solid fa-eye"></i>
+                        <i className="fa-solid fa-comment-dollar"></i>
                       </button>
-                      {row.status === 'Pendiente' && (
-                        <button
-                          onClick={() => {
-                            onPayment(row)
-                          }}
-                          title="Registrar Pagos"
-                          className="btn btn-outline-success btn-sm"
-                        >
-                          <i className="fa-solid fa-comment-dollar"></i>
-                        </button>
-                      )}
-                    </div>
-                  </>
+                    )}
+                    {row.status !== 'Anulada' && (
+                      <button
+                        onClick={() => setFacturaToAnular(row)}
+                        title="Anular Factura"
+                        className="btn btn-outline-danger btn-sm"
+                      >
+                        <i className="fa-solid fa-ban"></i>
+                      </button>
+                    )}
+                  </div>
                 )
               },
             },
@@ -87,12 +113,9 @@ export default function FacturaPage({ draw, onViewFactura, onPayment }) {
               width: '150px',
               cell: (row) => {
                 const translateColor = {
-                  Pendiente: {
-                    color: '#f0e54c',
-                  },
-                  Pagada: {
-                    color: '#4cf05a',
-                  },
+                  Pendiente: { color: '#f0e54c' },
+                  Pagada: { color: '#4cf05a' },
+                  Anulada: { color: '#f04c4c' },
                 }
 
                 return (
@@ -166,8 +189,32 @@ export default function FacturaPage({ draw, onViewFactura, onPayment }) {
           }} */
         />
       </div>
-      
-      
+      {/* Modal confirmar anular */}
+      <Modal show={!!facturaToAnular} onHide={() => setFacturaToAnular(null)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Anular Factura</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            ¿Está seguro que desea anular la factura{' '}
+            <strong>FV-{facturaToAnular?.numero_factura}</strong>?
+          </p>
+          <p className="text-muted small">Esta acción no se puede deshacer.</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className="btn btn-secondary" onClick={() => setFacturaToAnular(null)}>
+            Cancelar
+          </button>
+          <button className="btn btn-danger" onClick={handleAnular} disabled={loadingAnular}>
+            {loadingAnular ? (
+              <span className="spinner-border spinner-border-sm me-1" />
+            ) : (
+              <i className="fa-solid fa-ban me-1"></i>
+            )}
+            Anular
+          </button>
+        </Modal.Footer>
+      </Modal>
     </>
   )
 }

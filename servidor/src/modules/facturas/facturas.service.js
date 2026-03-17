@@ -56,6 +56,12 @@ export const create = async (data, token) => {
   const decoded = jwtDecode(token);
   data.user_create_id = decoded?._id;
 
+  const { body: countResult } = await client.count({
+    index: INDEX_ES_MAIN,
+    body: { query: { term: { "type.keyword": "factura" } } },
+  });
+  data.numero_factura = countResult.count + 1;
+
   const response = await crearElasticByType(data, "factura");
 
   if (data.cotizacion_id) {
@@ -88,6 +94,14 @@ export const createPago = async (facturaId, data, token) => {
   await crearElasticByType(data, "pago_factura");
 
   return { message: "Pago creado correctamente" };
+};
+
+export const anularFactura = async (id) => {
+  const r = await updateElasticByType(id, { status: "Anulada" });
+  if (r.body.result === "updated") {
+    await client.indices.refresh({ index: INDEX_ES_MAIN });
+    return { message: "Factura anulada" };
+  }
 };
 
 export const getPagos = async (facturaId) => {

@@ -11,6 +11,8 @@ router.get("/per_day/:date", controller.getPerDay);
 router.post("/", validateTokenMid, controller.create);
 router.put("/:id", validateTokenMid, controller.update);
 
+router.patch("/:id/anular", validateTokenMid, controller.anularFactura);
+
 router.post("/:id/pagos", controller.createPago);
 router.get("/:id/pagos", controller.getPagos);
 
