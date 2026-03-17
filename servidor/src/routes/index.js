@@ -15,6 +15,7 @@ import ClienteRouters from "../modules/clientes/clientes.routes.js";
 import CotizacionRouters from "../modules/cotizaciones/cotizaciones.routes.js";
 import FacturaRouters from "../modules/facturas/facturas.routes.js";
 import RolesRouers from "../modules/roles/roles.routes.js";
+import ActividadesRouters from "../modules/actividades/actividades.routes.js";
 
 
 const router = Router();
@@ -31,6 +32,7 @@ router.use("/cotizacion", validateTokenMid,  CotizacionRouters);
 router.use("/pedidos", validateTokenMid,  PedidosRouters);
 router.use("/factura", validateTokenMid, FacturaRouters);
 router.use("/empresa", validateTokenMid, EmpresaRouters);
+router.use("/actividades", validateTokenMid, ActividadesRouters);
 
 
 router.get("/logs", async (req, res) => {

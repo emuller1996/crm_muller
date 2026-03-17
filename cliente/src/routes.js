@@ -12,6 +12,7 @@ const EmpresaPage = React.lazy(() => import('./views/empresa/EmpresaPage'))
 const FacturasMainPage = React.lazy(() => import('./views/facturas'))
 const CotizacionPage = React.lazy(() => import('./views/cotizaciones/CotizacionPage'))
 const RolesPage = React.lazy(() => import('./views/usuarios/pages/RolesPage'))
+const ActividadesPage = React.lazy(() => import('./views/actividades/ActividadesPage'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -25,6 +26,7 @@ const routes = [
   { path: '/cotizaciones', name: 'Cotizaciones', element: CotizacionPage },
   { path: '/empresa', name: 'Empresa Config', element: EmpresaPage },
   { path: '/pedidos', name: 'Entregas - Pedidos', element: EntregasPages },
+  { path: '/actividades', name: 'Actividades', element: ActividadesPage },
   { path: '/productos/:idProduct/images', name: 'ImagesPage', element: ImagesPage },
   { path: '/productos/:idProduct/gestion-tallas', name: 'ImagesPage', element: TallasPage },
 ]
