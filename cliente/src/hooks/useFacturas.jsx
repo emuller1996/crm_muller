@@ -6,6 +6,7 @@ import {
   getAllFacturaPerDayService,
   getAllFacturaService,
   getAllPagosByFacturaService,
+  patchAnularFacturaService,
   postCreateFacturaService,
   postCreatePagoFacturaService,
   putUpdateFacturaService,
@@ -80,6 +81,10 @@ export const useFacturas = () => {
     return getAllPagosByFacturaService(Token, signal, id)
   }
 
+  const anularFactura = async (id) => {
+    return patchAnularFacturaService(Token, id)
+  }
+
   return {
     data,
     error,
@@ -88,6 +93,7 @@ export const useFacturas = () => {
     abortController,
     crearFactura,
     actualizarFactura,
+    anularFactura,
     crearPagoByFactura,
     getPagosByFactura,
     getAllFacturaPerDay,

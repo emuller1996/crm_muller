@@ -24,3 +24,7 @@ export const postCreatePagoFacturaService = (token, data, id) => {
 export const getAllPagosByFacturaService = (token, signal,id) => {
   return axios.get(`/factura/${id}/pagos`, { signal: signal, headers: { 'access-token': token } })
 }
+
+export const patchAnularFacturaService = (token, id) => {
+  return axios.patch(`/factura/${id}/anular`, {}, { headers: { 'access-token': token } })
+}

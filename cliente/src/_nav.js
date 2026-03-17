@@ -71,6 +71,12 @@ const _nav = [
     icon: <i className="fa-solid fa-users  nav-icon"></i>,
   },
   {
+    component: CNavItem,
+    name: 'Actividades',
+    to: '/actividades',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-calendar-days nav-icon"></i>,
+  },
+  {
     component: CNavTitle,
     name: 'Configuraciones',
   },
