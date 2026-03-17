@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { client } from "../db.js";
 
-import UsuariosRouters from "./usuarios.routes.js";
+import UsuariosRouters from "../modules/usuarios/usuarios.routes.js";
 import AuthRouters from "../modules/auth/auth.routes.js";
 import CategoriasRouters from "../modules/categorias/categorias.routes.js";
 import ProductosRouters from "../modules/productos/productos.routes.js";
