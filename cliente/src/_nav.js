@@ -77,6 +77,12 @@ const _nav = [
     icon: <i style={{ width: '30px' }} className="fa-solid fa-calendar-days nav-icon"></i>,
   },
   {
+    component: CNavItem,
+    name: 'Proveedores',
+    to: '/proveedores',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-truck-field nav-icon"></i>,
+  },
+  {
     component: CNavTitle,
     name: 'Configuraciones',
   },
