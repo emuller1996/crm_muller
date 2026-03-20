@@ -49,5 +49,11 @@ export const ACL_APP = {
       update: { text: 'Actualizar' },
       delete: { text: 'Borrar' },
     },
+    proveedores: {
+      read: { text: 'Leer' },
+      create: { text: 'Crear' },
+      update: { text: 'Actualizar' },
+      delete: { text: 'Borrar' },
+    },
   },
 }
