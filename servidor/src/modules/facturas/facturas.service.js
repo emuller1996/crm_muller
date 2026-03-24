@@ -13,6 +13,11 @@ import {
   buildFactura,
   buildPagoFactura,
 } from "./facturas.helpers.js";
+import {
+  registrarMovimientoFactura,
+  registrarMovimientoPago,
+  registrarMovimientoAnulacion,
+} from "../caja/caja.service.js";
 
 export const getAll = async () => {
   let data = await buscarElasticByType("factura");
@@ -70,6 +75,18 @@ export const create = async (data, token) => {
     });
   }
 
+  // Registrar movimiento de caja si la factura es Pagada
+  try {
+    if (data.status === "Pagada") {
+      await registrarMovimientoFactura(
+        { ...data, _id: response.body._id },
+        token,
+      );
+    }
+  } catch (err) {
+    console.log("Error al registrar movimiento de caja:", err.message);
+  }
+
   return {
     message: "Factura creada",
     factura: response.body,
@@ -93,13 +110,30 @@ export const createPago = async (facturaId, data, token) => {
 
   await crearElasticByType(data, "pago_factura");
 
+  // Registrar movimiento de caja por pago
+  try {
+    await registrarMovimientoPago(data, facturaId, token);
+  } catch (err) {
+    console.log("Error al registrar movimiento de caja por pago:", err.message);
+  }
+
   return { message: "Pago creado correctamente" };
 };
 
-export const anularFactura = async (id) => {
+export const anularFactura = async (id, token) => {
   const r = await updateElasticByType(id, { status: "Anulada" });
   if (r.body.result === "updated") {
     await client.indices.refresh({ index: INDEX_ES_MAIN });
+
+    // Registrar movimiento de egreso por anulacion
+    try {
+      if (token) {
+        await registrarMovimientoAnulacion(id, token);
+      }
+    } catch (err) {
+      console.log("Error al registrar movimiento de anulacion:", err.message);
+    }
+
     return { message: "Factura anulada" };
   }
 };

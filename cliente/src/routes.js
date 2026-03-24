@@ -14,6 +14,7 @@ const CotizacionPage = React.lazy(() => import('./views/cotizaciones/CotizacionP
 const RolesPage = React.lazy(() => import('./views/usuarios/pages/RolesPage'))
 const ActividadesPage = React.lazy(() => import('./views/actividades/ActividadesPage'))
 const ProveedoresPage = React.lazy(() => import('./views/proveedores/ProveedoresPage'))
+const CajaPage = React.lazy(() => import('./views/caja/CajaPage'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -29,6 +30,7 @@ const routes = [
   { path: '/pedidos', name: 'Entregas - Pedidos', element: EntregasPages },
   { path: '/actividades', name: 'Actividades', element: ActividadesPage },
   { path: '/proveedores', name: 'Proveedores', element: ProveedoresPage },
+  { path: '/caja', name: 'Movimiento de Caja', element: CajaPage },
   { path: '/productos/:idProduct/images', name: 'ImagesPage', element: ImagesPage },
   { path: '/productos/:idProduct/gestion-tallas', name: 'ImagesPage', element: TallasPage },
 ]

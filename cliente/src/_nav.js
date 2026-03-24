@@ -83,6 +83,12 @@ const _nav = [
     icon: <i style={{ width: '30px' }} className="fa-solid fa-truck-field nav-icon"></i>,
   },
   {
+    component: CNavItem,
+    name: 'Movimiento de Caja',
+    to: '/caja',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-cash-register nav-icon"></i>,
+  },
+  {
     component: CNavTitle,
     name: 'Configuraciones',
   },
