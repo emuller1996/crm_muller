@@ -61,7 +61,7 @@ export const createPago = async (req, res) => {
 
 export const anularFactura = async (req, res) => {
   try {
-    res.json(await service.anularFactura(req.params.id));
+    res.json(await service.anularFactura(req.params.id, req.headers["access-token"]));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
