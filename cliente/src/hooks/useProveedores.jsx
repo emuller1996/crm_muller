@@ -84,6 +84,10 @@ export const useProveedores = () => {
     return getProveedorByIdService(Token, id)
   }
 
+  const getAllProveedoresPaginationPromise = async (data) => {
+    return getProveedoresSearchPaginationServices(Token, data)
+  }
+
   return {
     data,
     dataP,
@@ -95,5 +99,6 @@ export const useProveedores = () => {
     createProveedor,
     updateProveedor,
     getProveedorById,
+    getAllProveedoresPaginationPromise,
   }
 }
