@@ -54,6 +54,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Facturas de Compra',
+    to: '/facturas-compra',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-file-invoice nav-icon"></i>,
+  },
+  {
+    component: CNavItem,
     name: 'Cotizaciones',
     to: '/cotizaciones',
     icon: <i style={{ width: '30px' }} className="fa-solid fa-file-invoice nav-icon"></i>,
