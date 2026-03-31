@@ -13,6 +13,10 @@ import {
   buildFacturaCompra,
   buildPagoFacturaCompra,
 } from "./facturas_compra.helpers.js";
+import {
+  registrarEntradaPorFacturaCompra,
+  reversarEntradaPorAnulacionCompra,
+} from "../inventario/inventario.service.js";
 
 export const getAll = async () => {
   let data = await buscarElasticByType("factura_compra");
@@ -64,6 +68,18 @@ export const create = async (data, token) => {
 
   const response = await crearElasticByType(data, "factura_compra");
 
+  // Registrar entrada de inventario si la factura de compra es Pagada
+  try {
+    if (data.status === "Pagada") {
+      await registrarEntradaPorFacturaCompra(
+        { ...data, _id: response.body._id },
+        token,
+      );
+    }
+  } catch (err) {
+    console.log("Error al registrar entrada de inventario:", err.message);
+  }
+
   return {
     message: "Factura de compra creada",
     factura: response.body,
@@ -87,13 +103,43 @@ export const createPago = async (facturaId, data, token) => {
 
   await crearElasticByType(data, "pago_factura_compra");
 
+  // Verificar si con este pago la factura queda pagada para registrar inventario
+  try {
+    const factura = await getDocumentById(facturaId);
+    if (factura.status === "Pendiente") {
+      const pagosResult = await getPagos(facturaId);
+      if (pagosResult.suma.value >= factura.total_monto) {
+        await updateElasticByType(facturaId, { status: "Pagada" });
+        await client.indices.refresh({ index: INDEX_ES_MAIN });
+        // Registrar entrada de inventario al completar pago
+        await registrarEntradaPorFacturaCompra(factura, token);
+      }
+    }
+  } catch (err) {
+    console.log("Error al verificar pago completo:", err.message);
+  }
+
   return { message: "Pago creado correctamente" };
 };
 
 export const anularFactura = async (id, token) => {
+  // Obtener factura antes de anular para saber si tenia inventario registrado
+  const factura = await getDocumentById(id);
+  const teniaInventario = factura.status === "Pagada";
+
   const r = await updateElasticByType(id, { status: "Anulada" });
   if (r.body.result === "updated") {
     await client.indices.refresh({ index: INDEX_ES_MAIN });
+
+    // Reversar entrada de inventario si la factura estaba Pagada
+    if (teniaInventario && token) {
+      try {
+        await reversarEntradaPorAnulacionCompra(id, token);
+      } catch (err) {
+        console.log("Error al reversar inventario por anulacion compra:", err.message);
+      }
+    }
+
     return { message: "Factura de compra anulada" };
   }
 };

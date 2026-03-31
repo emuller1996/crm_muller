@@ -18,6 +18,10 @@ import {
   registrarMovimientoPago,
   registrarMovimientoAnulacion,
 } from "../caja/caja.service.js";
+import {
+  registrarSalidaPorFacturaVenta,
+  reversarSalidaPorAnulacion,
+} from "../inventario/inventario.service.js";
 
 export const getAll = async () => {
   let data = await buscarElasticByType("factura");
@@ -87,6 +91,16 @@ export const create = async (data, token) => {
     console.log("Error al registrar movimiento de caja:", err.message);
   }
 
+  // Registrar salida de inventario por los productos vendidos
+  try {
+    await registrarSalidaPorFacturaVenta(
+      { ...data, _id: response.body._id },
+      token,
+    );
+  } catch (err) {
+    console.log("Error al registrar salida de inventario:", err.message);
+  }
+
   return {
     message: "Factura creada",
     factura: response.body,
@@ -132,6 +146,15 @@ export const anularFactura = async (id, token) => {
       }
     } catch (err) {
       console.log("Error al registrar movimiento de anulacion:", err.message);
+    }
+
+    // Reversar salida de inventario
+    try {
+      if (token) {
+        await reversarSalidaPorAnulacion(id, token);
+      }
+    } catch (err) {
+      console.log("Error al reversar inventario por anulacion:", err.message);
     }
 
     return { message: "Factura anulada" };

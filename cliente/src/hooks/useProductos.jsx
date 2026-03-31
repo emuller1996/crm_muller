@@ -204,6 +204,11 @@ export const useProductos = () => {
   const validateProductoCart = async (id, data) => {
     return postValidateStockProductoService(data, id, Token)
   }
+
+  const getAllProductosPaginationPromise = async (data) => {
+    return getProductoSearchPaginationServices(Token, data)
+  }
+
   return {
     data,
     error,
@@ -229,6 +234,7 @@ export const useProductos = () => {
     createConsultaProducto,
     getStocLogsByProductId,
     StockProductLogs,
-    updateProducto
+    updateProducto,
+    getAllProductosPaginationPromise
   }
 }

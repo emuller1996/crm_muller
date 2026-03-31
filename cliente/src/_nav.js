@@ -43,6 +43,12 @@ const _nav = [
     icon: <i className="fa-solid fa-list nav-icon"></i>,
   },
   {
+    component: CNavItem,
+    name: 'Inventario',
+    to: '/inventario',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-warehouse nav-icon"></i>,
+  },
+  {
     component: CNavTitle,
     name: 'Tabla de Control',
   },

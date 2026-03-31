@@ -19,6 +19,7 @@ import ActividadesRouters from "../modules/actividades/actividades.routes.js";
 import ProveedoresRouters from "../modules/proveedores/proveedores.routes.js";
 import CajaRouters from "../modules/caja/caja.routes.js";
 import FacturaCompraRouters from "../modules/facturas_compra/facturas_compra.routes.js";
+import InventarioRouters from "../modules/inventario/inventario.routes.js";
 
 
 const router = Router();
@@ -39,6 +40,7 @@ router.use("/actividades", validateTokenMid, ActividadesRouters);
 router.use("/proveedores", validateTokenMid, ProveedoresRouters);
 router.use("/caja", validateTokenMid, CajaRouters);
 router.use("/factura-compra", validateTokenMid, FacturaCompraRouters);
+router.use("/inventario", validateTokenMid, InventarioRouters);
 
 
 router.get("/logs", async (req, res) => {
