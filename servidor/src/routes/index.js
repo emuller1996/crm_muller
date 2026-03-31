@@ -11,6 +11,7 @@ import PuntoVentaRouters from "./punto_venta.routes.js";
 import PagosRouters from "./pagos.routes.js";
 import PedidosRouters from "./pedidos.routes.js";
 import EmpresaRouters from "./empresa.routes.js";
+import AdminRouters from "../modules/admin/admin.routes.js";
 import ClienteRouters from "../modules/clientes/clientes.routes.js";
 import CotizacionRouters from "../modules/cotizaciones/cotizaciones.routes.js";
 import FacturaRouters from "../modules/facturas/facturas.routes.js";
@@ -19,6 +20,7 @@ import ActividadesRouters from "../modules/actividades/actividades.routes.js";
 import ProveedoresRouters from "../modules/proveedores/proveedores.routes.js";
 import CajaRouters from "../modules/caja/caja.routes.js";
 import FacturaCompraRouters from "../modules/facturas_compra/facturas_compra.routes.js";
+import InventarioRouters from "../modules/inventario/inventario.routes.js";
 
 
 const router = Router();
@@ -39,6 +41,8 @@ router.use("/actividades", validateTokenMid, ActividadesRouters);
 router.use("/proveedores", validateTokenMid, ProveedoresRouters);
 router.use("/caja", validateTokenMid, CajaRouters);
 router.use("/factura-compra", validateTokenMid, FacturaCompraRouters);
+router.use("/inventario", validateTokenMid, InventarioRouters);
+router.use("/admin", validateTokenMid, AdminRouters);
 
 
 router.get("/logs", async (req, res) => {
