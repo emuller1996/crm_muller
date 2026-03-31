@@ -22,6 +22,7 @@ server.use(fileUpload({
   
 
 
+server.use("/uploads", express.static("uploads"));
 server.use("/", routes);
 
 // Error catching endware.

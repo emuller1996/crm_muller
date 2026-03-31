@@ -23,3 +23,5 @@ _mapping.js
 *.sln
 *.sw?
 .env
+
+/uploads
