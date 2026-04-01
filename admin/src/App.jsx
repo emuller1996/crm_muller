@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import EmpresasPage from './pages/empresas/EmpresasPage';
+import UsuariosPage from './pages/usuarios/UsuariosPage';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3010';
 
@@ -32,7 +33,7 @@ function App() {
               <Route path="/clientes" element={<PlaceholderPage />} />
               <Route path="/proveedores" element={<PlaceholderPage />} />
               <Route path="/caja" element={<PlaceholderPage />} />
-              <Route path="/usuarios" element={<PlaceholderPage />} />
+              <Route path="/usuarios" element={<UsuariosPage />} />
               <Route path="/empresas" element={<EmpresasPage />} />
               <Route path="/perfil" element={<PlaceholderPage />} />
               <Route path="*" element={<PlaceholderPage />} />
