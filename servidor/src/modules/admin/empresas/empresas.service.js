@@ -42,7 +42,7 @@ export const create = async (data) => {
       role_id: "super_user",
       empresa_id: empresaId,
     };
-    const userResponse = await crearElasticByType(userData, "usuario");
+    const userResponse = await crearElasticByType(userData, "usuario_admin");
     usuarioCreado = userResponse.body._id;
 
     // Guardar referencia del super usuario en la empresa
