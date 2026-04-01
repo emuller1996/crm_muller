@@ -3,6 +3,7 @@ export const INDEX_ES_MAIN_LOGS = "crm_muller_logs";
 
 export const SECRECT_CLIENT = "CLIENTE_MULLER_CRM";
 export const SECRECT_CLIENT_CLIENT = "CLIENTE_ECO_AMERICAN_CLIENT";
+export const SECRECT_ADMIN = "ADMIN_MULLER_CRM";
 
 export const DB_USER = "root";
 export const DB_PASSWORD = "password";

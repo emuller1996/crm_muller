@@ -42,7 +42,7 @@ router.use("/proveedores", validateTokenMid, ProveedoresRouters);
 router.use("/caja", validateTokenMid, CajaRouters);
 router.use("/factura-compra", validateTokenMid, FacturaCompraRouters);
 router.use("/inventario", validateTokenMid, InventarioRouters);
-router.use("/admin", validateTokenMid, AdminRouters);
+router.use("/admin", AdminRouters);
 
 
 router.get("/logs", async (req, res) => {
