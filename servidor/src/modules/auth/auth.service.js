@@ -52,8 +52,12 @@ export const login = async ({ email, password }) => {
 
   const cleanUser = buildUserResponse(user);
   if(cleanUser.role_id){
-    const roleUser =  await getDocumentById(cleanUser?.role_id)
-    cleanUser.role = roleUser.name
+    if(cleanUser.role_id ==="super_user"){
+      cleanUser.role = "Super Usuario"
+    }else{
+      const roleUser =  await getDocumentById(cleanUser?.role_id)
+      cleanUser.role = roleUser.name
+    }
   }else{
     cleanUser.role = null
   }

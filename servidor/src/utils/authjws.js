@@ -84,8 +84,12 @@ const validateTokenMid = async (req, res, next) => {
     const user = await getDocumentById(decoded._id)
 
     if (user.role_id) {
+      if(user.role_id ==="super_user"){
+      user.role = "Super Usuario"
+    }else{
       const role = await getDocumentById(user.role_id)
       user.role = role
+      }
     }
 
     req.user = user
@@ -94,8 +98,7 @@ const validateTokenMid = async (req, res, next) => {
 
   } catch (error) {
     console.log(error);
-    
-    return res.status(401).json({ message: "Token inválido" })
+    return res.status(401).json({ message: "Token inválido", detail:error.message })
   }
 };
 

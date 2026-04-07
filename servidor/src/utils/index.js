@@ -58,12 +58,47 @@ export async function buscarElasticByType(type) {
   });
 }
 
+export async function buscarElasticByTypeAndBusiness(type, empresa_id) {
+  const searchResult = await client.search({
+    index: INDEX_ES_MAIN,
+    size: 1000,
+    body: {
+      query: {
+        bool: {
+          must: [
+            {
+              term: {
+                "type.keyword": {
+                  value: type,
+                },
+              },
+            },
+            {
+              term: {
+                "empresa_id.keyword": {
+                  value: empresa_id,
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+  });
+  return searchResult.body.hits.hits.map((c) => {
+    return {
+      ...c._source,
+      _id: c._id,
+    };
+  });
+}
+
 export async function buscarElasticByTypePagination(
   type,
   perPage,
   page,
   search,
-  createdTime = "createdTime"
+  createdTime = "createdTime",
 ) {
   var consulta = {
     index: INDEX_ES_MAIN,
@@ -112,7 +147,7 @@ export async function crearElasticByType(data, type) {
   createType.updatedTime = new Date().getTime();
   const response = await client.index({
     index: INDEX_ES_MAIN,
-    body:createType , // Contenido del documento
+    body: createType, // Contenido del documento
   });
   await client.indices.refresh({ index: INDEX_ES_MAIN });
   return response;

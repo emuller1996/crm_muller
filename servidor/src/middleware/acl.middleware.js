@@ -6,7 +6,10 @@ export const checkPermission = (permission) => {
       const user = req.user
       if (!user)
         return res.status(401).json({ message: "No autenticado" })
-
+      
+      if (user.role_id ==="super_user"){
+        return next()
+      }
       const permissions =JSON.parse( user.role?.permissions)
 
       if (!permissions)
