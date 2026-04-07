@@ -1,11 +1,11 @@
 import {
-  buscarElasticByType,
+  buscarElasticByTypeAndBusiness,
   crearElasticByType,
   updateElasticByType,
 } from "../../utils/index.js";
 
-export const getAll = async () => {
-  let data = await buscarElasticByType("categoria");
+export const getAll = async (empresa_id) => {
+  let data = await buscarElasticByTypeAndBusiness("categoria",empresa_id);
   return data;
 };
 
