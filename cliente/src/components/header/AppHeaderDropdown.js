@@ -28,6 +28,7 @@ import AuthContext from '../../context/AuthContext'
 const AppHeaderDropdown = () => {
   const { user, cerrarSessionAdmin } = useContext(AuthContext)
 
+  console.log(user)
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
@@ -38,6 +39,11 @@ const AppHeaderDropdown = () => {
         <div className="px-2">{user?.name}</div>
         <div className="px-2">{user?.email}</div>
         <div className="px-2">{user?.role}</div>
+        <div className="px-2">
+          <small>Empresa</small>
+          <div>{user?.empresa?.razon_social}</div>
+        </div>
+
         {/* <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
         <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
