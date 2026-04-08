@@ -19,12 +19,8 @@ export const create = async (req, res) => {
     const data = {
       ...req.body,
       empresa_id: req.empresaId,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
     };
-    
     const result = await service.create(data);
-    
     return res.status(201).json({
       success: true,
       message: "Categoría creada correctamente",
