@@ -93,6 +93,32 @@ export async function buscarElasticByTypeAndBusiness(type, empresa_id) {
   });
 }
 
+export async function getElasticByIdAndBusiness(id, type, empresa_id) {
+  try {
+    const result = await client.get({
+      index: INDEX_ES_MAIN,
+      id: id
+    });
+    
+    const document = result.body._source;
+    
+    // Verificar que pertenece a la empresa
+    if (document.type !== type || document.empresa_id !== empresa_id) {
+      return null;
+    }
+    
+    return {
+      ...document,
+      _id: result.body._id
+    };
+  } catch (error) {
+    if (error.statusCode === 404) {
+      return null;
+    }
+    throw new Error(`Error al obtener documento: ${error.message}`);
+  }
+}
+
 export async function buscarElasticByTypePagination(
   type,
   perPage,
