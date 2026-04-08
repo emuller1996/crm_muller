@@ -23,12 +23,18 @@ export const getAll = async () => {
 export const pagination = async (req) => {
   // (misma lógica que ya tienes, solo movida)
   console.log(req.query);
-  
+
   let perPage = req?.query?.perPage ?? 10;
   let page = req.query.page ?? 1;
   let search = req.query.search ?? "";
   let gender = req.query.gender ?? "";
   let category = req.query.category ?? "";
+  let empresaId = req.empresaId;
+
+  if(!empresaId){
+    throw Error("ERROR NO HAY EMPRESA")
+  }
+  console.log(empresaId);
 
   try {
     var consulta = {
@@ -45,6 +51,11 @@ export const pagination = async (req) => {
               {
                 term: {
                   type: "producto",
+                },
+              },
+              {
+                term: {
+                  "empresa_id.keyword": empresaId,
                 },
               },
             ],
@@ -69,7 +80,7 @@ export const pagination = async (req) => {
         },
       });
     }
-    
+
     if (search !== "" && search) {
       consulta.body.query.bool.must.push({
         query_string: {
@@ -111,17 +122,9 @@ export const getPublished = async (query) => {
   // (misma lógica published)
 };
 
-export const getById = async (id) => {
-  const producto = await getDocumentById(id);
-  if (producto.image_id) {
-    const img = await getDocumentById(producto.image_id);
-    producto.imageBase64 = img.image;
-  }
-  producto.Imagenes = await getAllImages(id);
-  producto.Stock = await getAllStock(id);
-
-  crearLogsElastic("", "", "Se mostró detalle de producto");
-  return producto;
+export const getById = async (id,empresa_id) => {
+  const data = await getElasticByIdAndBusiness(id, "producto", empresa_id);
+  return data;
 };
 
 export const create = async (data) => {

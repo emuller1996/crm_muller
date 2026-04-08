@@ -73,14 +73,13 @@ const validateTokenMid = async (req, res, next) => {
     }
   }); */
    try {
-
     const token = req.headers["access-token"]
-
     if (!token)
       return res.status(401).json({ message: "Token requerido" })
 
     const decoded = jsonwebtoken.verify(token, SECRECT_CLIENT)
-
+    req.empresaId = decoded.empresa_id;
+    req.user = decoded;
     const user = await getDocumentById(decoded._id)
 
     if (user.role_id) {
@@ -91,9 +90,7 @@ const validateTokenMid = async (req, res, next) => {
       user.role = role
       }
     }
-
     req.user = user
-
     next()
 
   } catch (error) {

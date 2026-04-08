@@ -1,6 +1,7 @@
 import {
   buscarElasticByTypeAndBusiness,
   crearElasticByType,
+  getElasticByIdAndBusiness,
   updateElasticByType,
 } from "../../utils/index.js";
 
@@ -16,4 +17,14 @@ export const create = async (data) => {
 
 export const update = async (data, id) => {
   return await updateElasticByType(id, data);
+};
+
+
+export const getById = async (id, empresa_id) => {
+  try {
+    const data = await getElasticByIdAndBusiness(id, "categoria", empresa_id);
+    return data;
+  } catch (error) {
+    throw new Error(`Error al obtener categoría: ${error.message}`);
+  }
 };

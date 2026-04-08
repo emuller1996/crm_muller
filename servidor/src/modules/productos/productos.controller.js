@@ -30,7 +30,7 @@ export const getPublished = async (req, res) => {
 
 export const getById = async (req, res) => {
   try {
-    const product = await service.getById(req.params.id);
+    const product = await service.getById(req.params.id,req.empresaId);
     res.json(product);
   } catch (e) {
     res.status(500).json({ message: e.message });
@@ -39,7 +39,11 @@ export const getById = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
-    await service.create(req.body);
+    const data = {
+      ...req.body,
+      empresa_id: req.empresaId,
+    };
+    await service.create(data);
     res.status(201).json({ message: "Producto creado" });
   } catch (e) {
     res.status(500).json({ message: e.message });
