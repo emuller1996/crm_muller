@@ -3,7 +3,7 @@ import * as service from "./usuarios.service.js";
 
 export const getAll = async (req, res) => {
   try {
-    const data = await service.getAll();
+    const data = await service.getAll(req.empresaId);
     res.status(200).json(data);
   } catch (e) {
     res.status(500).json({ message: e.message });
@@ -22,6 +22,7 @@ export const getById = async (req, res) => {
 export const create = async (req, res) => {
   try {
     const userId = jwtDecode(req.headers["access-token"])?._id;
+    req.body.empresa_id = req.empresaId;
     await service.create(req.body, userId);
     res.status(201).json({ message: "Usuario Creado." });
   } catch (e) {

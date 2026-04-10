@@ -2,7 +2,7 @@ import * as service from "./roles.services.js";
 
 export const getAll = async (req, res) => {
   try {
-    const data = await service.getAll();
+    const data = await service.getAll(req.empresaId);
     res.json(data);
   } catch (e) {
     res.status(500).json({ message: e.message });
@@ -12,6 +12,7 @@ export const getAll = async (req, res) => {
 export const create = async (req, res) => {
   try {
     let data = req.body;
+    data.empresa_id = req.empresaId;
     const result = await service.create(data);
     return res
       .status(201)
