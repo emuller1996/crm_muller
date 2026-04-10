@@ -329,17 +329,16 @@ const ProductosPage = () => {
           </Modal.Body>
         </Modal>
         <Modal
+          backdrop={'static'}
+          size="lg"
           centered
           show={showImport}
-          onHide={() => {
-            setShowImport(false)
-          }}
+          onHide={() => setShowImport(false)}
         >
           <Modal.Body>
             <FormImportProductos
-              getAllProduct={() => {
-                setDraw((status) => ++status)
-              }}
+              onHide={() => setShowImport(false)}
+              onSuccess={() => setDraw((status) => ++status)}
             />
           </Modal.Body>
         </Modal>
