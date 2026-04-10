@@ -2,7 +2,7 @@ import * as service from "./cotizaciones.service.js";
 
 export const getAll = async (req, res) => {
   try {
-    const data = await service.getAll();
+    const data = await service.getAll(req.empresaId);
     return res.status(200).json(data);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -11,11 +11,11 @@ export const getAll = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
+    req.body.empresa_id = req.empresaId;
     const result = await service.create(
       req.body,
       req.headers["access-token"]
     );
-
     return res.status(201).json(result);
   } catch (error) {
     return res.status(500).json({ message: error.message });

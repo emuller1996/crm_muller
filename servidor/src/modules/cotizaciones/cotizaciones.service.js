@@ -1,5 +1,4 @@
 import {
-  buscarElasticByType,
   crearElasticByType,
   updateElasticByType,
 } from "../../utils/index.js";
@@ -10,14 +9,25 @@ import { jwtDecode } from "jwt-decode";
 
 import { buildCotizacion } from "./cotizaciones.helpers.js";
 
-export const getAll = async () => {
-  let data = await buscarElasticByType("cotizacion");
+export const getAll = async (empresaId) => {
+  const result = await client.search({
+    index: INDEX_ES_MAIN,
+    size: 1000,
+    body: {
+      query: {
+        bool: {
+          must: [
+            { term: { "type.keyword": "cotizacion" } },
+            { term: { "empresa_id.keyword": empresaId } },
+          ],
+        },
+      },
+      sort: [{ createdTime: { order: "desc" } }],
+    },
+  });
 
-  data = await Promise.all(
-    data.map((c) => buildCotizacion(c))
-  );
-
-  return data;
+  let data = result.body.hits.hits.map((c) => ({ ...c._source, _id: c._id }));
+  return Promise.all(data.map((c) => buildCotizacion(c)));
 };
 
 export const create = async (data, token) => {
