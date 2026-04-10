@@ -18,9 +18,23 @@ import {
   reversarEntradaPorAnulacionCompra,
 } from "../inventario/inventario.service.js";
 
-export const getAll = async () => {
-  let data = await buscarElasticByType("factura_compra");
-
+export const getAll = async (empresaId) => {
+  const result = await client.search({
+    index: INDEX_ES_MAIN,
+    size: 1000,
+    body: {
+      query: {
+        bool: {
+          must: [
+            { term: { "type.keyword": "factura_compra" } },
+            { term: { "empresa_id.keyword": empresaId } },
+          ],
+        },
+      },
+      sort: [{ createdTime: { order: "desc" } }],
+    },
+  });
+  let data = result.body.hits.hits.map((c) => ({ ...c._source, _id: c._id }));
   return Promise.all(data.map(buildFacturaCompra));
 };
 
@@ -28,7 +42,7 @@ export const getById = async (id) => {
   return await getDocumentById(id);
 };
 
-export const getPerDay = async (date) => {
+export const getPerDay = async (date, empresaId) => {
   if (!date) throw new Error("Falta fecha");
 
   const result = await client.search({
@@ -39,6 +53,7 @@ export const getPerDay = async (date) => {
           must: [
             { match: { "type.keyword": "factura_compra" } },
             { match: { dia_compra: new Date(date) } },
+            { term: { "empresa_id.keyword": empresaId } },
           ],
         },
       },
@@ -62,7 +77,16 @@ export const create = async (data, token) => {
 
   const { body: countResult } = await client.count({
     index: INDEX_ES_MAIN,
-    body: { query: { term: { "type.keyword": "factura_compra" } } },
+    body: {
+      query: {
+        bool: {
+          must: [
+            { term: { "type.keyword": "factura_compra" } },
+            { term: { "empresa_id.keyword": data.empresa_id } },
+          ],
+        },
+      },
+    },
   });
   data.numero_factura = countResult.count + 1;
 
