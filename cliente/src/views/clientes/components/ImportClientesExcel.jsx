@@ -3,26 +3,26 @@ import React, { useRef, useState } from 'react'
 import { Alert, Button, Spinner, Table } from 'react-bootstrap'
 import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
-import { useProductos } from '../../../hooks/useProductos'
+import { useClientes } from '../../../hooks/useClientes'
 import * as XLSX from 'xlsx'
 
-const COLUMNAS_PLANTILLA = ['name', 'description', 'price', 'costo', 'gender', 'reference']
+const COLUMNAS_PLANTILLA = ['name', 'alias', 'email', 'telefono', 'direccion', 'barrio']
 const COLUMNAS_LABELS = {
   name: 'Nombre',
-  description: 'Descripcion',
-  price: 'Precio',
-  costo: 'Costo',
-  gender: 'Genero (men/women/kid)',
-  reference: 'Referencia',
+  alias: 'Alias/Apodo',
+  email: 'Correo',
+  telefono: 'Telefono',
+  direccion: 'Direccion',
+  barrio: 'Barrio',
 }
 
-export default function FormImportProductos({ onHide, onSuccess }) {
-  FormImportProductos.propTypes = {
+export default function ImportClientesExcel({ onHide, onSuccess }) {
+  ImportClientesExcel.propTypes = {
     onHide: PropTypes.func,
     onSuccess: PropTypes.func,
   }
 
-  const { importProductos } = useProductos()
+  const { importClientesExcel } = useClientes()
   const fileInputRef = useRef(null)
 
   const [file, setFile] = useState(null)
@@ -32,11 +32,13 @@ export default function FormImportProductos({ onHide, onSuccess }) {
 
   const handleDescargarPlantilla = () => {
     const ws = XLSX.utils.aoa_to_sheet([COLUMNAS_PLANTILLA])
-    ws['!cols'] = COLUMNAS_PLANTILLA.map(() => ({ wch: 22 }))
+
+    // Anchos de columna
+    ws['!cols'] = COLUMNAS_PLANTILLA.map(() => ({ wch: 20 }))
 
     const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'Productos')
-    XLSX.writeFile(wb, 'plantilla_productos.xlsx')
+    XLSX.utils.book_append_sheet(wb, ws, 'Clientes')
+    XLSX.writeFile(wb, 'plantilla_clientes.xlsx')
   }
 
   const handleFileChange = (e) => {
@@ -46,6 +48,7 @@ export default function FormImportProductos({ onHide, onSuccess }) {
     setFile(selectedFile)
     setResumen(null)
 
+    // Preview del contenido
     const reader = new FileReader()
     reader.onload = (evt) => {
       const data = new Uint8Array(evt.target.result)
@@ -68,10 +71,10 @@ export default function FormImportProductos({ onHide, onSuccess }) {
       const formData = new FormData()
       formData.append('file', file)
 
-      const res = await importProductos(formData)
+      const res = await importClientesExcel(formData)
       setResumen(res.data)
       toast.success(res.data.message)
-      if (onSuccess) onSuccess()
+      onSuccess()
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error al importar')
     } finally {
@@ -88,16 +91,16 @@ export default function FormImportProductos({ onHide, onSuccess }) {
 
   return (
     <div>
-      <p className="text-center border-bottom pb-2 fw-bold mb-3">Importar Productos desde Excel</p>
+      <p className="text-center border-bottom pb-2 fw-bold mb-3">Importar Clientes desde Excel</p>
 
-      {/* Paso 1 */}
+      {/* Paso 1: Descargar plantilla */}
       <div className="mb-3">
         <h6>
           <span className="badge bg-primary me-2">1</span>
           Descargar Plantilla
         </h6>
         <p className="text-muted small mb-2">
-          Descarga la plantilla Excel y llena los datos de los productos. Las columnas son:
+          Descarga la plantilla Excel y llena los datos de los clientes. Las columnas son:
           <br />
           <strong>{COLUMNAS_PLANTILLA.map((c) => COLUMNAS_LABELS[c]).join(', ')}</strong>
         </p>
@@ -109,7 +112,7 @@ export default function FormImportProductos({ onHide, onSuccess }) {
 
       <hr />
 
-      {/* Paso 2 */}
+      {/* Paso 2: Subir archivo */}
       <div className="mb-3">
         <h6>
           <span className="badge bg-primary me-2">2</span>
@@ -167,7 +170,7 @@ export default function FormImportProductos({ onHide, onSuccess }) {
               ) : (
                 <>
                   <i className="fa-solid fa-upload me-1"></i>
-                  Importar Productos
+                  Importar Clientes
                 </>
               )}
             </Button>

@@ -1,17 +1,30 @@
 import xlsx from "xlsx";
 import { client } from "../../db.js";
 import {
-  buscarElasticByType,
   crearElasticByType,
-  crearLogsElastic,
   createInMasaDocumentByType,
   getDocumentById,
   updateElasticByType,
 } from "../../utils/index.js";
 import { INDEX_ES_MAIN } from "../../config.js";
 
-export const getAll = async () => {
-  let data = await buscarElasticByType("producto");
+export const getAll = async (empresaId) => {
+  const searchResult = await client.search({
+    index: INDEX_ES_MAIN,
+    size: 1000,
+    body: {
+      query: {
+        bool: {
+          must: [
+            { term: { "type.keyword": "producto" } },
+            { term: { "empresa_id.keyword": empresaId } },
+          ],
+        },
+      },
+      sort: [{ createdTime: { order: "desc" } }],
+    },
+  });
+  let data = searchResult.body.hits.hits.map((c) => ({ ...c._source, _id: c._id }));
   return Promise.all(
     data.map(async (p) => ({
       ...p,
@@ -122,9 +135,8 @@ export const getPublished = async (query) => {
   // (misma lógica published)
 };
 
-export const getById = async (id,empresa_id) => {
-  const data = await getElasticByIdAndBusiness(id, "producto", empresa_id);
-  return data;
+export const getById = async (id) => {
+  return getDocumentById(id);
 };
 
 export const create = async (data) => {
@@ -138,10 +150,37 @@ export const update = async (id, data) => {
   }
 };
 
-export const importExcel = async (files) => {
+export const importExcel = async (files, empresaId) => {
   const file = files?.file;
+  if (!file) throw new Error("No se ha seleccionado ningún archivo");
+
   const workbook = xlsx.readFile(file.tempFilePath);
   let data = xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-  data = data.map((d) => ({ ...d, published: false }));
-  return createInMasaDocumentByType(data, "producto");
+
+  if (data.length === 0) throw new Error("El archivo no contiene datos");
+
+  data = data.map((d) => ({ ...d, published: false, empresa_id: empresaId }));
+  const result = await createInMasaDocumentByType(data, "producto");
+
+  const errores = [];
+  let insertados = 0;
+  if (result.items) {
+    result.items.forEach((item, i) => {
+      const op = Object.keys(item)[0];
+      if (item[op].error) {
+        errores.push({ fila: i + 2, error: item[op].error.reason || "Error desconocido" });
+      } else {
+        insertados++;
+      }
+    });
+  } else {
+    insertados = data.length;
+  }
+
+  return {
+    total_filas: data.length,
+    insertados,
+    errores_count: errores.length,
+    errores: errores.slice(0, 10),
+  };
 };

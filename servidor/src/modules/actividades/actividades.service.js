@@ -22,7 +22,7 @@ const buildActividad = async (actividad) => {
   return actividad;
 };
 
-export const getAll = async () => {
+export const getAll = async (empresaId) => {
   const now = new Date();
   const from = new Date(now);
   from.setMonth(from.getMonth() - 1);
@@ -37,6 +37,7 @@ export const getAll = async () => {
         bool: {
           filter: [
             { term: { "type.keyword": "actividad" } },
+            ...(empresaId ? [{ term: { "empresa_id.keyword": empresaId } }] : []),
             {
               range: {
                 fecha_inicio: {

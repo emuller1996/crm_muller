@@ -1,18 +1,31 @@
 import { client } from "../../db.js";
 import {
-  buscarElasticByType,
   crearElasticByType,
   getDocumentById,
   updateElasticByType,
 } from "../../utils/index.js";
 import { INDEX_ES_MAIN } from "../../config.js";
 
-export const getAll = async () => {
-  const proveedores = await buscarElasticByType("proveedor");
-  return Promise.all(proveedores);
+export const getAll = async (empresaId) => {
+  const searchResult = await client.search({
+    index: INDEX_ES_MAIN,
+    size: 1000,
+    body: {
+      query: {
+        bool: {
+          must: [
+            { term: { "type.keyword": "proveedor" } },
+            { term: { "empresa_id.keyword": empresaId } },
+          ],
+        },
+      },
+      sort: [{ createdTime: { order: "desc" } }],
+    },
+  });
+  return searchResult.body.hits.hits.map((c) => ({ ...c._source, _id: c._id }));
 };
 
-export const pagination = async ({ perPage = 10, page = 1, search = "" }) => {
+export const pagination = async ({ perPage = 10, page = 1, search = "", empresa_id }) => {
   const consulta = {
     index: INDEX_ES_MAIN,
     size: perPage,
@@ -21,7 +34,10 @@ export const pagination = async ({ perPage = 10, page = 1, search = "" }) => {
       query: {
         bool: {
           must: [],
-          filter: [{ term: { type: "proveedor" } }],
+          filter: [
+            { term: { type: "proveedor" } },
+            { term: { "empresa_id.keyword": empresa_id } },
+          ],
         },
       },
       sort: [{ createdTime: { order: "desc" } }],

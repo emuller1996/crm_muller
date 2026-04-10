@@ -83,3 +83,9 @@ export const getClientesSearchPaginationServices = async (token, ...params) => {
     },
   });
 };
+
+export const postImportClientesExcelService = (token, data) => {
+  return axios.post('/clientes/import-excel', data, {
+    headers: { 'access-token': token, 'Content-Type': 'multipart/form-data' },
+  })
+};

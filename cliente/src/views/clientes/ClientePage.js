@@ -6,11 +6,13 @@ import DataTable from 'react-data-table-component'
 import { paginationComponentOptions } from '../../utils/optionsConfig'
 import FormClientes from './components/FormClientes'
 import ComentariosCliente from './components/ComentariosCliente/ComentariosCliente'
+import ImportClientesExcel from './components/ImportClientesExcel'
 import { ViewDollar } from '../../utils'
 
 const ClientePage = () => {
   const [show, setShow] = useState(false)
   const [show2, setShow2] = useState(false)
+  const [showImport, setShowImport] = useState(false)
 
   const [Draw, setDraw] = useState(1)
   const [ClienteS, setClienteS] = useState(null)
@@ -57,8 +59,9 @@ const ClientePage = () => {
           >
             Crear Cliente
           </Button>
-          <Button className="ms-2" variant="info">
-            EXPORTAR CLIENTS
+          <Button className="ms-2 text-white" variant="info" onClick={() => setShowImport(true)}>
+            <i className="fa-solid fa-file-excel me-1"></i>
+            Importar Excel
           </Button>
         </div>
         <div className="w-100 mt-2">
@@ -214,6 +217,14 @@ const ClientePage = () => {
               Save Changes
             </Button>
           </Modal.Footer>
+        </Modal>
+        <Modal backdrop={'static'} size="lg" centered show={showImport} onHide={() => setShowImport(false)}>
+          <Modal.Body>
+            <ImportClientesExcel
+              onHide={() => setShowImport(false)}
+              onSuccess={() => setDraw((s) => ++s)}
+            />
+          </Modal.Body>
         </Modal>
       </CContainer>
     </div>

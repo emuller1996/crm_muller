@@ -63,6 +63,7 @@ export const getMovimientos = async ({
   tipo = "",
   origen = "",
   producto_id = "",
+  empresa_id = "",
 }) => {
   const consulta = {
     index: INDEX_ES_MAIN,
@@ -72,7 +73,10 @@ export const getMovimientos = async ({
       query: {
         bool: {
           must: [],
-          filter: [{ term: { "type.keyword": "movimiento_inventario" } }],
+          filter: [
+            { term: { "type.keyword": "movimiento_inventario" } },
+            ...(empresa_id ? [{ term: { "empresa_id.keyword": empresa_id } }] : []),
+          ],
         },
       },
       sort: [{ createdTime: { order: "desc" } }],
@@ -167,6 +171,7 @@ export const registrarMovimientoManual = async (data, token) => {
     origen: "manual",
     referencia: data.referencia || "",
     estado: "activo",
+    empresa_id: data.empresa_id,
     user_create_id: decoded?._id,
   };
 
@@ -195,6 +200,7 @@ export const registrarSalidaPorFacturaVenta = async (factura, token) => {
       referencia: factura._id || "",
       numero_factura: factura.numero_factura,
       estado: "activo",
+      empresa_id: factura.empresa_id,
       user_create_id: decoded?._id,
     };
 
@@ -223,6 +229,7 @@ export const reversarSalidaPorAnulacion = async (facturaId, token) => {
       referencia: facturaId,
       numero_factura: factura.numero_factura,
       estado: "activo",
+      empresa_id: factura.empresa_id,
       user_create_id: decoded?._id,
     };
 
@@ -249,6 +256,7 @@ export const registrarEntradaPorFacturaCompra = async (factura, token) => {
       referencia: factura._id || "",
       numero_factura: factura.numero_factura,
       estado: "activo",
+      empresa_id: factura.empresa_id,
       user_create_id: decoded?._id,
     };
 
@@ -276,6 +284,7 @@ export const reversarEntradaPorAnulacionCompra = async (facturaId, token) => {
       referencia: facturaId,
       numero_factura: factura.numero_factura,
       estado: "activo",
+      empresa_id: factura.empresa_id,
       user_create_id: decoded?._id,
     };
 
@@ -301,6 +310,7 @@ export const getResumenInventario = async ({
   perPage = 15,
   page = 1,
   search = "",
+  empresa_id = "",
 } = {}) => {
   // 1. Obtener productos paginados
   const consultaProductos = {
@@ -311,7 +321,10 @@ export const getResumenInventario = async ({
       query: {
         bool: {
           must: [],
-          filter: [{ term: { "type.keyword": "producto" } }],
+          filter: [
+            { term: { "type.keyword": "producto" } },
+            ...(empresa_id ? [{ term: { "empresa_id.keyword": empresa_id } }] : []),
+          ],
         },
       },
       sort: [{ "name.keyword": { order: "asc" } }],

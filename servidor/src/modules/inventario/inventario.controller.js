@@ -2,7 +2,7 @@ import * as service from "./inventario.service.js";
 
 export const getResumenInventario = async (req, res) => {
   try {
-    res.json(await service.getResumenInventario(req.query));
+    res.json(await service.getResumenInventario({ ...req.query, empresa_id: req.empresaId }));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -18,7 +18,7 @@ export const getStockByProducto = async (req, res) => {
 
 export const getMovimientos = async (req, res) => {
   try {
-    res.json(await service.getMovimientos(req.query));
+    res.json(await service.getMovimientos({ ...req.query, empresa_id: req.empresaId }));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -34,6 +34,7 @@ export const getMovimientosByProducto = async (req, res) => {
 
 export const registrarMovimientoManual = async (req, res) => {
   try {
+    req.body.empresa_id = req.empresaId;
     const result = await service.registrarMovimientoManual(
       req.body,
       req.headers["access-token"]

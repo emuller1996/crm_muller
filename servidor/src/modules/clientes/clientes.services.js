@@ -9,12 +9,27 @@ import {
 } from "../../utils/index.js";
 import { INDEX_ES_MAIN } from "../../config.js";
 
-export const getAll = async () => {
-  const clientes = await buscarElasticByType("cliente");
-  return Promise.all(clientes);
+export const getAll = async (empresaId) => {
+  const consulta = {
+    index: INDEX_ES_MAIN,
+    size: 1000,
+    body: {
+      query: {
+        bool: {
+          must: [
+            { term: { "type.keyword": "cliente" } },
+            { term: { "empresa_id.keyword": empresaId } },
+          ],
+        },
+      },
+      sort: [{ createdTime: { order: "desc" } }],
+    },
+  };
+  const searchResult = await client.search(consulta);
+  return searchResult.body.hits.hits.map((c) => ({ ...c._source, _id: c._id }));
 };
 
-export const pagination = async ({ perPage = 10, page = 1, search = "" }) => {
+export const pagination = async ({ perPage = 10, page = 1, search = "", empresa_id }) => {
   const consulta = {
     index: INDEX_ES_MAIN,
     size: perPage,
@@ -23,7 +38,10 @@ export const pagination = async ({ perPage = 10, page = 1, search = "" }) => {
       query: {
         bool: {
           must: [],
-          filter: [{ term: { type: "cliente" } }],
+          filter: [
+            { term: { type: "cliente" } },
+            { term: { "empresa_id.keyword": empresa_id } },
+          ],
         },
       },
       sort: [{ createdTime: { order: "desc" } }],
@@ -101,7 +119,7 @@ export const getComments = async (clienteId) => {
   }));
 };
 
-export const importExcel = async (files) => {
+export const importExcel = async (files, empresaId) => {
   const file = files?.file;
   if (!file) throw new Error("No se ha seleccionado ningún archivo");
 
@@ -109,5 +127,30 @@ export const importExcel = async (files) => {
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   const data = xlsx.utils.sheet_to_json(worksheet);
 
-  await createInMasaDocumentByType(data, "cliente");
+  if (data.length === 0) throw new Error("El archivo no contiene datos");
+
+  const dataWithEmpresa = data.map((d) => ({ ...d, empresa_id: empresaId }));
+  const result = await createInMasaDocumentByType(dataWithEmpresa, "cliente");
+
+  const errores = [];
+  let insertados = 0;
+  if (result.items) {
+    result.items.forEach((item, i) => {
+      const op = Object.keys(item)[0];
+      if (item[op].error) {
+        errores.push({ fila: i + 2, error: item[op].error.reason || "Error desconocido" });
+      } else {
+        insertados++;
+      }
+    });
+  } else {
+    insertados = data.length;
+  }
+
+  return {
+    total_filas: data.length,
+    insertados,
+    errores_count: errores.length,
+    errores: errores.slice(0, 10),
+  };
 };

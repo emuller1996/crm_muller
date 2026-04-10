@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 
 export const getAll = async (req, res) => {
   try {
-    const clientes = await service.getAll();
+    const clientes = await service.getAll(req.empresaId);
     return res.status(200).json(clientes);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -12,7 +12,7 @@ export const getAll = async (req, res) => {
 
 export const pagination = async (req, res) => {
   try {
-    const result = await service.pagination(req.query);
+    const result = await service.pagination({ ...req.query, empresa_id: req.empresaId });
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -32,6 +32,7 @@ export const create = async (req, res) => {
   try {
     const data = req.body;
     data.user_create_id = jwtDecode(req.headers["access-token"])?._id;
+    data.empresa_id = req.empresaId;
     data.createdTime = Date.now();
 
     const customer = await service.create(data);
@@ -56,7 +57,9 @@ export const update = async (req, res) => {
 
 export const createComment = async (req, res) => {
   try {
-    const r = await service.createComment(req.body);
+    const data = req.body;
+    data.empresa_id = req.empresaId;
+    const r = await service.createComment(data);
     return res.status(200).json({
       message: "Se creó el comentario correctamente.",
       r,
@@ -77,9 +80,9 @@ export const getComments = async (req, res) => {
 
 export const importExcel = async (req, res) => {
   try {
-    await service.importExcel(req.files);
-    return res.status(200).json({ message: "Importación realizada" });
+    const resumen = await service.importExcel(req.files, req.empresaId);
+    return res.status(200).json({ message: "Importación realizada", ...resumen });
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).json({ message: error.message });
   }
 };

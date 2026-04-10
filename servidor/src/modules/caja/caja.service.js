@@ -26,8 +26,23 @@ import { buildMovimiento } from "./caja.helpers.js";
 
 // ─── CRUD ────────────────────────────────────────────────
 
-export const getAll = async () => {
-  const movimientos = await buscarElasticByType("movimiento_caja");
+export const getAll = async (empresaId) => {
+  const result = await client.search({
+    index: INDEX_ES_MAIN,
+    size: 1000,
+    body: {
+      query: {
+        bool: {
+          must: [
+            { term: { "type.keyword": "movimiento_caja" } },
+            { term: { "empresa_id.keyword": empresaId } },
+          ],
+        },
+      },
+      sort: [{ createdTime: { order: "desc" } }],
+    },
+  });
+  const movimientos = result.body.hits.hits.map((c) => ({ ...c._source, _id: c._id }));
   return Promise.all(movimientos.map(buildMovimiento));
 };
 
@@ -44,6 +59,7 @@ export const pagination = async ({
   fecha_desde = "",
   fecha_hasta = "",
   origen = "",
+  empresa_id = "",
 }) => {
   const consulta = {
     index: INDEX_ES_MAIN,
@@ -53,7 +69,10 @@ export const pagination = async ({
       query: {
         bool: {
           must: [],
-          filter: [{ term: { type: "movimiento_caja" } }],
+          filter: [
+            { term: { type: "movimiento_caja" } },
+            ...(empresa_id ? [{ term: { "empresa_id.keyword": empresa_id } }] : []),
+          ],
         },
       },
       sort: [{ fecha: { order: "desc" } }, { createdTime: { order: "desc" } }],
@@ -129,7 +148,7 @@ export const pagination = async ({
 
 // ─── Resumen por dia ─────────────────────────────────────
 
-export const getResumenDia = async (fecha) => {
+export const getResumenDia = async (fecha, empresaId) => {
   if (!fecha) throw new Error("Falta fecha");
 
   const result = await client.search({
@@ -141,6 +160,7 @@ export const getResumenDia = async (fecha) => {
           must: [
             { term: { "type": "movimiento_caja" } },
             { term: { fecha } },
+            ...(empresaId ? [{ term: { "empresa_id.keyword": empresaId } }] : []),
           ],
         },
       },
@@ -208,7 +228,7 @@ export const getResumenDia = async (fecha) => {
 
 // ─── Resumen por rango de fechas ─────────────────────────
 
-export const getResumenRango = async (fecha_desde, fecha_hasta) => {
+export const getResumenRango = async (fecha_desde, fecha_hasta, empresaId) => {
   if (!fecha_desde || !fecha_hasta) throw new Error("Faltan fechas");
 
   const result = await client.search({
@@ -217,7 +237,10 @@ export const getResumenRango = async (fecha_desde, fecha_hasta) => {
     body: {
       query: {
         bool: {
-          must: [{ term: { type: "movimiento_caja" } }],
+          must: [
+            { term: { type: "movimiento_caja" } },
+            ...(empresaId ? [{ term: { "empresa_id.keyword": empresaId } }] : []),
+          ],
           filter: [{ range: { fecha: { gte: fecha_desde, lte: fecha_hasta } } }],
         },
       },
@@ -358,6 +381,7 @@ export const registrarMovimientoFactura = async (factura, token) => {
     referencia_id: factura._id,
     referencia: `Factura #${factura.numero_factura}`,
     estado: "activo",
+    empresa_id: factura.empresa_id,
     user_create_id: decoded?._id,
   };
 
@@ -380,6 +404,7 @@ export const registrarMovimientoPago = async (pago, facturaId, token) => {
     referencia_id: facturaId,
     referencia: `Factura #${factura?.numero_factura || ""}`,
     estado: "activo",
+    empresa_id: pago.empresa_id || factura?.empresa_id,
     user_create_id: decoded?._id,
   };
 
@@ -402,6 +427,7 @@ export const registrarMovimientoAnulacion = async (facturaId, token) => {
     referencia_id: facturaId,
     referencia: `Factura #${factura?.numero_factura || ""}`,
     estado: "activo",
+    empresa_id: factura?.empresa_id,
     user_create_id: decoded?._id,
   };
 
