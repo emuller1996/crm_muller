@@ -80,9 +80,9 @@ export const getComments = async (req, res) => {
 
 export const importExcel = async (req, res) => {
   try {
-    await service.importExcel(req.files, req.empresaId);
-    return res.status(200).json({ message: "Importación realizada" });
+    const resumen = await service.importExcel(req.files, req.empresaId);
+    return res.status(200).json({ message: "Importación realizada", ...resumen });
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).json({ message: error.message });
   }
 };

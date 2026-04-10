@@ -15,6 +15,7 @@ import {
   postNewAddressClientesService,
   putNewAddressClientesService,
   putUpdateClientesService,
+  postImportClientesExcelService,
 } from '../services/clientes.services'
 import AuthContext from '../context/AuthContext'
 
@@ -196,6 +197,10 @@ export const useClientes = () => {
     return getAllClientesPaginationService(Token, data)
   }
 
+  const importClientesExcel = async (formData) => {
+    return postImportClientesExcelService(Token, formData)
+  }
+
   return {
     data,
     error,
@@ -218,6 +223,7 @@ export const useClientes = () => {
     createComentarioByCliente,
     getAllComentarioByClientesPaginationPromise,
     getAllClientesPaginationPromise,
-    getClientesById
+    getClientesById,
+    importClientesExcel
   }
 }

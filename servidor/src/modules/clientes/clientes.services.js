@@ -127,6 +127,30 @@ export const importExcel = async (files, empresaId) => {
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   const data = xlsx.utils.sheet_to_json(worksheet);
 
+  if (data.length === 0) throw new Error("El archivo no contiene datos");
+
   const dataWithEmpresa = data.map((d) => ({ ...d, empresa_id: empresaId }));
-  await createInMasaDocumentByType(dataWithEmpresa, "cliente");
+  const result = await createInMasaDocumentByType(dataWithEmpresa, "cliente");
+
+  const errores = [];
+  let insertados = 0;
+  if (result.items) {
+    result.items.forEach((item, i) => {
+      const op = Object.keys(item)[0];
+      if (item[op].error) {
+        errores.push({ fila: i + 2, error: item[op].error.reason || "Error desconocido" });
+      } else {
+        insertados++;
+      }
+    });
+  } else {
+    insertados = data.length;
+  }
+
+  return {
+    total_filas: data.length,
+    insertados,
+    errores_count: errores.length,
+    errores: errores.slice(0, 10),
+  };
 };
