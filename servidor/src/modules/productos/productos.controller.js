@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 
 export const getAll = async (req, res) => {
   try {
-    const data = await service.getAll();
+    const data = await service.getAll(req.empresaId);
     res.json(data);
   } catch (e) {
     res.status(500).json({ message: e.message });
@@ -114,6 +114,6 @@ export const validateStock = async (req, res) => {
 };
 
 export const importExcel = async (req, res) => {
-  await service.importExcel(req.files);
+  await service.importExcel(req.files, req.empresaId);
   res.json({ message: "Importación realizada" });
 };
