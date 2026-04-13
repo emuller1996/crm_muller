@@ -13,7 +13,7 @@ import {
   cilSpeedometer,
   cilStar,
 } from '@coreui/icons'
-import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
+import {  CNavItem, CNavTitle } from '@coreui/react'
 
 const _nav = [
   {
@@ -21,10 +21,6 @@ const _nav = [
     name: 'Dashboard',
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
   },
   {
     component: CNavTitle,
@@ -115,20 +111,6 @@ const _nav = [
     name: 'Empresa',
     to: '/empresa',
     icon: <i style={{ width: '30px' }} className="fa-solid fa-building nav-icon"></i>,
-  },
-  {
-    component: CNavItem,
-    name: 'Rep. de Ventas',
-    to: '/representantes-venta',
-
-    icon: <i className="fa-solid fa-people-line nav-icon"></i>,
-  },
-  {
-    component: CNavItem,
-    name: 'Puntos de Venta',
-    to: '/puntos-venta',
-
-    icon: <i className="fa-solid fa-shop nav-icon"></i>,
   },
   {
     component: CNavItem,
