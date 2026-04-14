@@ -14,9 +14,10 @@ import { ViewDollar } from '../../../utils'
 import { usePedidos } from '../../../hooks/usePedidos'
 import FormProductoCotizacion from '../../cotizaciones/components/FormProductoCotizacion'
 
-export default function FormPedidos({ getAllPedido, PedidoSelect }) {
+export default function FormPedidos({ onHide, onSuccess, PedidoSelect }) {
   FormPedidos.propTypes = {
-    getAllPedido: PropTypes.func,
+    onHide: PropTypes.func,
+    onSuccess: PropTypes.func,
     PedidoSelect: PropTypes.object,
   }
   const { getAllClientesPaginationPromise, getClientesById } = useClientes()
@@ -51,17 +52,21 @@ export default function FormPedidos({ getAllPedido, PedidoSelect }) {
       try {
         await actualizarPedidos(data, PedidoSelect._id)
         toast.success(`Pedido Actualizado`)
-        //getAllCotizacion()
+        if (onHide) onHide()
+        if (onSuccess) onSuccess()
       } catch (error) {
         console.log(error)
+        toast.error('Error al actualizar pedido')
       }
     } else {
       try {
         await crearPedidos(data)
         toast.success(`Pedido Creado`)
-        //getAllFactura()
+        if (onHide) onHide()
+        if (onSuccess) onSuccess()
       } catch (error) {
         console.log(error)
+        toast.error('Error al crear pedido')
       }
     }
   }

@@ -55,6 +55,22 @@ export const getById = async (id) => {
 
 export const create = async (data) => {
   data.status = data.status || "Pendiente";
+
+  const { body: countResult } = await client.count({
+    index: INDEX_ES_MAIN,
+    body: {
+      query: {
+        bool: {
+          must: [
+            { term: { "type.keyword": "pedido" } },
+            { term: { "empresa_id.keyword": data.empresa_id } },
+          ],
+        },
+      },
+    },
+  });
+  data.numero_pedido = countResult.count + 1;
+
   const response = await crearElasticByType(data, "pedido");
   return { message: "Pedido creado", pedido: response.body };
 };
