@@ -9,7 +9,7 @@ import { validateTokenMid } from "../utils/authjws.js";
 import { INDEX_ES_MAIN_LOGS } from "../config.js";
 import PuntoVentaRouters from "./punto_venta.routes.js";
 import PagosRouters from "./pagos.routes.js";
-import PedidosRouters from "./pedidos.routes.js";
+import PedidosRouters from "../modules/pedidos/pedidos.routes.js";
 import EmpresaRouters from "./empresa.routes.js";
 import AdminRouters from "../modules/admin/admin.routes.js";
 import ClienteRouters from "../modules/clientes/clientes.routes.js";
