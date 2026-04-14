@@ -30,6 +30,7 @@ export default function FormFacturaCotizacion({ CotiSelecionada, getAllCotizacio
     data.client_id = CotiSelecionada.client_id
     data.cotizacion_id = CotiSelecionada._id
     data.total_monto = CotiSelecionada.total_monto
+    data.dia_venta = new Date().toISOString().split('T')[0]
     try {
       await crearFactura(data)
       getAllCotizacion()

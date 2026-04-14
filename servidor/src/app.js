@@ -6,6 +6,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import routes from "./routes/index.js";
 import fileUpload from "express-fileupload";
+import { auditLogMiddleware } from "./middleware/auditLog.middleware.js";
 
 dotenv.config();
 const server = express();
@@ -23,6 +24,7 @@ server.use(fileUpload({
 
 
 server.use("/uploads", express.static("uploads"));
+server.use(auditLogMiddleware);
 server.use("/", routes);
 
 // Error catching endware.
