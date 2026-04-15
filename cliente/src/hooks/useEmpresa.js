@@ -1,5 +1,9 @@
 import { useContext } from 'react'
-import { getEmpresaService, postEstablecerEmpresaService } from '../services/empresa.services'
+import {
+  getEmpresaService,
+  postEstablecerEmpresaService,
+  putActualizarEmpresaService,
+} from '../services/empresa.services'
 import AuthContext from '../context/AuthContext'
 import { useState } from 'react'
 
@@ -8,15 +12,13 @@ export const useEmpresa = () => {
 
   const [empresaData, setEmpresaData] = useState(null)
 
-  const getConfiguracionEmpresa = async (data) => {
+  const getConfiguracionEmpresa = async () => {
     try {
       const result = await getEmpresaService(Token)
       setEmpresaData(result.data)
     } catch (error) {
       console.log(error)
       setEmpresaData(null)
-    } finally {
-
     }
   }
 
@@ -24,9 +26,14 @@ export const useEmpresa = () => {
     return postEstablecerEmpresaService(Token, data)
   }
 
+  const actualizarEmpresa = async (data) => {
+    return putActualizarEmpresaService(Token, data)
+  }
+
   return {
     establecerConfiguracionEmpresa,
     getConfiguracionEmpresa,
-    empresaData
+    actualizarEmpresa,
+    empresaData,
   }
 }
