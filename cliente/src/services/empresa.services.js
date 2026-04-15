@@ -8,3 +8,7 @@ export const postEstablecerEmpresaService = (token,data) => {
 export const getEmpresaService = (token) => {
   return axios.get('/empresa',  { headers: { 'access-token': token } })
 }
+
+export const putActualizarEmpresaService = (token, data) => {
+  return axios.put('/empresa', data, { headers: { 'access-token': token } })
+}
