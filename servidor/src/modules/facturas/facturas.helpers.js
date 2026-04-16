@@ -2,7 +2,7 @@ import { getDocumentById } from "../../utils/index.js";
 
 export const buildFactura = async (factura) => {
   try {
-    if (factura.client_id) {
+    if (factura.client_id && factura.client_id !== "cliente_mostrador" ) {
       factura.client =
         await getDocumentById(factura.client_id);
     }
