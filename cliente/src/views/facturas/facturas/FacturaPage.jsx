@@ -97,10 +97,11 @@ export default function FacturaPage({ draw, onViewFactura, onPayment }) {
                 )
               },
             },
+            { name: 'N° Factura', selector: (row) => `FV-${row?.numero_factura}` ?? '' },
             {
               name: 'Cliente',
               selector: (row) => row?.client?.name ?? '',
-              minWidth:"200px",
+              minWidth: '200px',
               format: (row) => {
                 if (row.client_id === 'cliente_mostrador') {
                   return 'CLIENTE DE MOSTRADOR'
