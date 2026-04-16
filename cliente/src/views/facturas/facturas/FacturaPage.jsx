@@ -50,7 +50,6 @@ export default function FacturaPage({ draw, onViewFactura, onPayment }) {
 
   return (
     <>
-      
       <div className="rounded overflow-hidden border border-ligth shadow-sm mt-3">
         <DataTable
           className="MyDataTableEvent"
@@ -98,19 +97,27 @@ export default function FacturaPage({ draw, onViewFactura, onPayment }) {
                 )
               },
             },
-            { name: 'Cliente', selector: (row) => row?.client?.name ?? '', width: '250px' },
+            { name: 'N° Factura', selector: (row) => `FV-${row?.numero_factura}` ?? '' },
+            {
+              name: 'Cliente',
+              selector: (row) => row?.client?.name ?? '',
+              minWidth: '200px',
+              format: (row) => {
+                if (row.client_id === 'cliente_mostrador') {
+                  return 'CLIENTE DE MOSTRADOR'
+                }
+              },
+            },
 
             {
               name: 'Total',
               selector: (row) => row?.price ?? '',
               format: (row) => ViewDollar(row?.total_monto) ?? '',
-              width: '150px',
             },
             {
               name: 'Estado',
               selector: (row) => row?.status ?? '',
               format: (row) => row?.status ?? '',
-              width: '150px',
               cell: (row) => {
                 const translateColor = {
                   Pendiente: { color: '#f0e54c' },
@@ -145,13 +152,11 @@ export default function FacturaPage({ draw, onViewFactura, onPayment }) {
               name: 'Fecha de Creacion.',
               selector: (row) =>
                 `${new Date(row?.createdTime).toLocaleDateString() ?? ''} ${new Date(row?.createdTime).toLocaleTimeString() ?? ''}`,
-              width: '160px',
             },
             {
               name: 'Fecha de Actua',
               selector: (row) =>
                 `${new Date(row?.updatedTime).toLocaleDateString() ?? ''} ${new Date(row?.updatedTime).toLocaleTimeString() ?? ''}`,
-              width: '160px',
             },
 
             { name: '', selector: (row) => row?.city ?? '' },
