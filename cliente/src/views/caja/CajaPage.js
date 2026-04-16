@@ -33,10 +33,7 @@ const CajaPage = () => {
 
         <Modal backdrop={'static'} size="lg" centered show={show} onHide={() => setShow(false)}>
           <Modal.Body>
-            <FormMovimiento
-              onHide={() => setShow(false)}
-              onSuccess={() => setDraw((s) => ++s)}
-            />
+            <FormMovimiento onHide={() => setShow(false)} onSuccess={() => setDraw((s) => ++s)} />
           </Modal.Body>
         </Modal>
       </CContainer>

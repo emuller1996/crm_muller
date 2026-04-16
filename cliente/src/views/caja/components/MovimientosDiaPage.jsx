@@ -7,6 +7,7 @@ import { paginationComponentOptions } from '../../../utils/optionsConfig'
 import { useCaja } from '../../../hooks/useCaja'
 import ResumenCaja from './ResumenCaja'
 import PropTypes from 'prop-types'
+import moment from 'moment-timezone'
 
 const formatMoney = (value) => {
   return new Intl.NumberFormat('es-CO', {
@@ -34,8 +35,11 @@ export default function MovimientosDiaPage({ draw }) {
   MovimientosDiaPage.propTypes = {
     draw: PropTypes.number,
   }
+  const currentDate = moment.utc()
+  const localDate = currentDate.tz('America/Bogota')
 
-  const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0])
+  const [fecha, setFecha] = useState(localDate.format().split('T')[0])
+
   const { getResumenDia, resumenDia, loading, anularMovimiento } = useCaja()
   const [localDraw, setLocalDraw] = useState(1)
 
