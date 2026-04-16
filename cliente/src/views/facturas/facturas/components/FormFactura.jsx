@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react'
-import { Button, Card, Form, Spinner } from 'react-bootstrap'
+import { Alert, Button, Card, Form, Spinner } from 'react-bootstrap'
 import CurrencyInput from 'react-currency-input-field'
 import { Controller, useForm } from 'react-hook-form'
 import AsyncSelect from 'react-select/async'
@@ -61,19 +61,33 @@ export default function FormFactura({ getAllFactura, FacturaSelect }) {
 
   const searchLeadOptions = async (value) => {
     try {
+      const mostradorOption = {
+        label: 'CLIENTE DE MOSTRADORA',
+        value: 'cliente_mostrador',
+      }
+
       const result = await getAllClientesPaginationPromise({
         search: value,
         page: 1,
       })
-      return result.data.data.map((c) => {
+
+      const clientesOptions = result.data.data.map((c) => {
         return {
           label: `${c.name ?? ''} - ${c.alias ?? ''} - ${c.telefono ?? ''}`,
           value: c._id,
         }
       })
+
+      // Siempre incluir la opción de mostrador al inicio
+      return [mostradorOption, ...clientesOptions]
     } catch (error) {
       console.log(error)
-      return []
+      return [
+        {
+          label: 'CLIENTE DE MOSTRADORA',
+          value: 'cliente_mostrador',
+        },
+      ]
     }
   }
   return (
@@ -124,9 +138,11 @@ export default function FormFactura({ getAllFactura, FacturaSelect }) {
                       <Form.Label htmlFor="status">Estado</Form.Label>
                       <Controller
                         name="status"
-                        rules={{ required: true }}
+                        rules={{
+                          required: { value: true, message: 'Selecione el Estado de la Factura' },
+                        }}
                         control={control}
-                        //defaultValue={CotiSelecionada ? CotiSelecionada.client_id : undefined}
+                        defaultValue={'Pagada'}
                         render={({ field: { name, onChange, ref } }) => {
                           return (
                             <Select
@@ -134,6 +150,7 @@ export default function FormFactura({ getAllFactura, FacturaSelect }) {
                                 { label: 'Pendiente', value: 'Pendiente' },
                                 { label: 'Pagada', value: 'Pagada' },
                               ]}
+                              defaultValue={{ label: 'Pagada', value: 'Pagada' }}
                               placeholder="Selecione un Estado"
                               inputId="status"
                               onChange={(tar) => {
@@ -151,14 +168,17 @@ export default function FormFactura({ getAllFactura, FacturaSelect }) {
                           )
                         }}
                       />
+                      <Form.Text className="text-danger"> {errors?.metodo_pago?.message}</Form.Text>
                     </div>
                   </div>
-                  <div className="col-md-6">
+                  {/* <div className="col-md-6">
                     <div className="">
                       <Form.Label htmlFor="metodo_pago">Metodo de Pago</Form.Label>
                       <Controller
                         name="metodo_pago"
-                        rules={{ required: true }}
+                        rules={{
+                          required: { value: true, message: 'Selecione el Metodo de Pago' },
+                        }}
                         control={control}
                         //defaultValue={CotiSelecionada ? CotiSelecionada.client_id : undefined}
                         render={({ field: { name, onChange, ref } }) => {
@@ -181,8 +201,90 @@ export default function FormFactura({ getAllFactura, FacturaSelect }) {
                           )
                         }}
                       />
+                      <Form.Text className="text-danger"> {errors?.metodo_pago?.message}</Form.Text>
                     </div>
+                  </div> */}
+                  <label className='text-center'>Metodo de Pago</label>
+                  <div className="mt-1 mb-2 d-flex gap-3">
+                    <Form.Check className="p-0">
+                      <Form.Check.Input
+                        {...register('metodo_pago', { required: true })}
+                        type={'radio'}
+                        hidden
+                        name="metodo_pago"
+                        id={`efectivo`}
+                        value={'efectivo'}
+                      />
+                      <Form.Check.Label
+                        className=" p-2"
+                        style={{
+                          border: '1px solid',
+                          borderRadius: '0.4em',
+                          cursor: 'pointer',
+                          borderColor: watch().metodo_pago === 'efectivo' ? '#436efd' : '#acacac',
+                          color: watch().metodo_pago === 'efectivo' ? '#436efd' : '#303030',
+                        }}
+                        htmlFor="efectivo"
+                      >
+                        {`Efectivo`}
+                        <i className="ms-2 fa-xl fa-solid fa-money-bill"></i>
+                      </Form.Check.Label>
+                    </Form.Check>
+                    <Form.Check className="p-0">
+                      <Form.Check.Input
+                        {...register('metodo_pago', { required: true })}
+                        type={'radio'}
+                        id={`tarjeta`}
+                        name="metodo_pago"
+                        value={'tarjeta'}
+                        hidden
+                      />
+                      <Form.Check.Label
+                        className=" p-2"
+                        style={{
+                          border: '1px solid',
+                          borderRadius: '0.4em',
+                          cursor: 'pointer',
+                          borderColor: watch().metodo_pago === 'tarjeta' ? '#436efd' : '#acacac',
+                          color: watch().metodo_pago === 'tarjeta' ? '#436efd' : '#303030',
+                        }}
+                        htmlFor="tarjeta"
+                      >
+                        Tarjeta
+                        <i className="fa-xl fa-solid fa-credit-card ms-2"></i>
+                      </Form.Check.Label>
+                    </Form.Check>
+                    <Form.Check className="p-0">
+                      <Form.Check.Input
+                        {...register('metodo_pago', { required: true })}
+                        type={'radio'}
+                        id={`Transferencia`}
+                        name="metodo_pago"
+                        value={'Transferencia'}
+                        hidden
+                      />
+                      <Form.Check.Label
+                        className="p-2"
+                        style={{
+                          border: '1px solid',
+                          borderRadius: '0.4em',
+                          cursor: 'pointer',
+                          borderColor:
+                            watch().metodo_pago === 'Transferencia' ? '#436efd' : '#acacac',
+                          color: watch().metodo_pago === 'Transferencia' ? '#436efd' : '#303030',
+                        }}
+                        htmlFor="Transferencia"
+                      >
+                        Transferencia
+                        <i className="fa-xl fa-solid fa-money-bill-transfer ms-2"></i>
+                      </Form.Check.Label>
+                    </Form.Check>
                   </div>
+                  {errors?.metodo_pago && (
+                    <div>
+                      <Alert variant={'warning'}>Elige un Metodo de Pago.</Alert>
+                    </div>
+                  )}
                   {isPending && (
                     <div className="col-md-6">
                       <Form.Group className="" controlId="name">
@@ -283,7 +385,12 @@ export default function FormFactura({ getAllFactura, FacturaSelect }) {
                   </Form.Group>
                 </div>
                 <div className="mt-5 d-flex gap-4 justify-content-center">
-                  <Button disabled={isSubmitting}  variant="success" type="submit" className="px-4 text-white">
+                  <Button
+                    disabled={isSubmitting}
+                    variant="success"
+                    type="submit"
+                    className="px-4 text-white"
+                  >
                     {/* <Link to={'/d/dashboard'}> */}
                     {isSubmitting ? (
                       <Spinner
