@@ -20,6 +20,7 @@ import { CChartLine, CChartDoughnut } from '@coreui/react-chartjs'
 import PropTypes from 'prop-types'
 import { useMetrics } from '../../hooks/useMetrics'
 import { ViewDollar } from '../../utils'
+import moment from 'moment-timezone'
 
 const METODO_COLORS = {
   efectivo: '#2eb85c',
@@ -147,13 +148,8 @@ const Dashboard = () => {
                 height={280}
                 data={{
                   labels: ventasPorDia.map((v) => {
-                    const d = new Date(v.timestamp || v.fecha)
-                    if (isNaN(d.getTime())) return ''
-                    return d.toLocaleDateString('es-CO', {
-                      day: '2-digit',
-                      month: 'short',
-                      timeZone: 'America/Bogota',
-                    })
+                    // Tratar el timestamp como UTC y mostrar sin ajuste de zona horaria
+                    return moment.utc(v.timestamp || v.fecha).format('DD MMM') // Esto mostrará la fecha correcta sin desplazamiento
                   }),
                   datasets: [
                     {
