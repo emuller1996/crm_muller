@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useRef } from 'react';
+import { useEffect, useState,  useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Dialog,
@@ -26,11 +26,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import toast from 'react-hot-toast';
-import AuthContext from '../../../context/AuthContext';
-import {
-  uploadLogoEmpresaService,
-  deleteLogoEmpresaService,
-} from '../../../services/empresas.services';
+import { useEmpresas } from '../../../hooks/useEmpresas';
 
 const TIPOS_DOCUMENTO = [
   { value: 'NIT', label: 'NIT' },
@@ -63,7 +59,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3010';
 
 export default function FormEmpresa({ open, onClose, onSubmit, empresa }) {
   const isEdit = !!empresa;
-  const { token } = useContext(AuthContext);
+  const { removeLogo, uploadLogo, actionLoading: hookLoading } = useEmpresas();
   const fileInputRef = useRef(null);
 
   const [logoPreview, setLogoPreview] = useState(null);
@@ -146,10 +142,9 @@ export default function FormEmpresa({ open, onClose, onSubmit, empresa }) {
     if (isEdit && empresa.logo) {
       try {
         setUploadingLogo(true);
-        await deleteLogoEmpresaService(token, empresa._id);
-        toast.success('Logo eliminado');
+        await removeLogo(empresa._id);
       } catch {
-        toast.error('Error al eliminar logo');
+        // toast is handled in hook
       } finally {
         setUploadingLogo(false);
       }
@@ -165,9 +160,9 @@ export default function FormEmpresa({ open, onClose, onSubmit, empresa }) {
       if (logoFile) {
         try {
           setUploadingLogo(true);
-          await uploadLogoEmpresaService(token, empresa._id, logoFile);
+          await uploadLogo(empresa._id, logoFile);
         } catch {
-          toast.error('Error al subir logo');
+          // toast handled in hook
         } finally {
           setUploadingLogo(false);
         }
@@ -228,22 +223,22 @@ export default function FormEmpresa({ open, onClose, onSubmit, empresa }) {
               <Button
                 size="small"
                 variant="outlined"
-                startIcon={uploadingLogo ? <CircularProgress size={16} /> : <CloudUploadIcon />}
+                startIcon={(uploadingLogo || hookLoading) ? <CircularProgress size={16} /> : <CloudUploadIcon />}
                 onClick={() => fileInputRef.current?.click()}
-                disabled={uploadingLogo}
+                disabled={uploadingLogo || hookLoading}
                 sx={{ mb: 0.5 }}
               >
                 {logoPreview ? 'Cambiar Logo' : 'Subir Logo'}
               </Button>
               {logoPreview && (
-                <Button
-                  size="small"
-                  color="error"
-                  startIcon={<DeleteIcon />}
-                  onClick={handleRemoveLogo}
-                  disabled={uploadingLogo}
-                  sx={{ ml: 1, mb: 0.5 }}
-                >
+              <Button
+                size="small"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={handleRemoveLogo}
+                disabled={uploadingLogo || hookLoading}
+                sx={{ ml: 1, mb: 0.5 }}
+              >
                   Eliminar
                 </Button>
               )}
@@ -541,9 +536,9 @@ export default function FormEmpresa({ open, onClose, onSubmit, empresa }) {
           <Button onClick={onClose} color="inherit">
             Cancelar
           </Button>
-          <Button type="submit" variant="contained" disabled={isSubmitting || uploadingLogo}>
-            {isSubmitting ? 'Guardando...' : isEdit ? 'Guardar Cambios' : 'Crear Empresa'}
-          </Button>
+        <Button type="submit" variant="contained" disabled={isSubmitting || uploadingLogo || hookLoading}>
+          {isSubmitting ? 'Guardando...' : isEdit ? 'Guardar Cambios' : 'Crear Empresa'}
+        </Button>
         </DialogActions>
       </form>
     </Dialog>

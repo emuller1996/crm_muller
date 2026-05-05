@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -39,28 +39,25 @@ import ImageIcon from '@mui/icons-material/Image';
 import PaymentIcon from '@mui/icons-material/Payment';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3010';
-import toast from 'react-hot-toast';
-import AuthContext from '../../context/AuthContext';
-import {
-  getAllEmpresasService,
-  createEmpresaService,
-  updateEmpresaService,
-  disableEmpresaService,
-  enableEmpresaService,
-  uploadLogoEmpresaService,
-} from '../../services/empresas.services';
 import FormEmpresa from './components/FormEmpresa';
 import DetalleEmpresa from './components/DetalleEmpresa';
 import BillingManager from './components/BillingManager';
 import { getStatusColor } from './utils/subscriptionUtils';
+import { useEmpresas } from '../../hooks/useEmpresas';
 
 export default function EmpresasPage() {
-  const { token } = useContext(AuthContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { 
+    empresas, 
+    loading, 
+    actionLoading, 
+    fetchEmpresas, 
+    createEmpresa, 
+    updateEmpresa, 
+    toggleEstado 
+  } = useEmpresas();
 
-  const [empresas, setEmpresas] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
 
   // Modals
@@ -69,70 +66,39 @@ export default function EmpresasPage() {
   const [showToggle, setShowToggle] = useState(false);
   const [showBilling, setShowBilling] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [loadingToggle, setLoadingToggle] = useState(false);
-
-  const fetchEmpresas = async () => {
-    setLoading(true);
-    try {
-      const res = await getAllEmpresasService(token);
-      setEmpresas(res.data || []);
-    } catch {
-      toast.error('Error al cargar empresas');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     fetchEmpresas();
-  }, []);
+  }, [fetchEmpresas]);
 
   const handleCreate = async (data, logoFile) => {
     try {
-      const res = await createEmpresaService(token, data);
-      const newId = res.data?.empresa?._id;
-      if (logoFile && newId) {
-        await uploadLogoEmpresaService(token, newId, logoFile);
-      }
-      toast.success('Empresa creada');
+      await createEmpresa(data, logoFile);
       setShowForm(false);
       setSelected(null);
-      fetchEmpresas();
     } catch {
-      toast.error('Error al crear empresa');
+      // Toast is handled in the hook
     }
   };
 
   const handleUpdate = async (data) => {
     try {
-      await updateEmpresaService(token, selected._id, data);
-      toast.success('Empresa actualizada');
+      await updateEmpresa(selected._id, data);
       setShowForm(false);
       setSelected(null);
-      fetchEmpresas();
     } catch {
-      toast.error('Error al actualizar empresa');
+      // Toast is handled in the hook
     }
   };
 
   const handleToggleEstado = async () => {
     if (!selected) return;
-    setLoadingToggle(true);
     try {
-      if (selected.estado === 'activa') {
-        await disableEmpresaService(token, selected._id);
-        toast.success('Empresa deshabilitada');
-      } else {
-        await enableEmpresaService(token, selected._id);
-        toast.success('Empresa habilitada');
-      }
+      await toggleEstado(selected);
       setShowToggle(false);
       setSelected(null);
-      fetchEmpresas();
     } catch {
-      toast.error('Error al cambiar estado');
-    } finally {
-      setLoadingToggle(false);
+      // Toast is handled in the hook
     }
   };
 
@@ -407,9 +373,9 @@ export default function EmpresasPage() {
             onClick={handleToggleEstado}
             variant="contained"
             color={selected?.estado === 'activa' ? 'error' : 'success'}
-            disabled={loadingToggle}
+            disabled={actionLoading}
           >
-            {loadingToggle ? 'Procesando...' : selected?.estado === 'activa' ? 'Deshabilitar' : 'Habilitar'}
+            {actionLoading ? 'Procesando...' : selected?.estado === 'activa' ? 'Deshabilitar' : 'Habilitar'}
           </Button>
         </DialogActions>
       </Dialog>
