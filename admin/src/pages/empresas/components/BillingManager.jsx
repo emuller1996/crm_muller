@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -16,11 +16,7 @@ import {
   Grid,
 } from "@mui/material";
 import { PLANS, STATUSES } from "../utils/subscriptionUtils";
-import {
-  updateSubscriptionService,
-  getSubscriptionService,
-} from "../../../services/empresas.services";
-import AuthContext from "../../../context/AuthContext";
+import { useEmpresas } from "../../../hooks/useEmpresas";
 
 export default function BillingManager({
   open,
@@ -28,6 +24,7 @@ export default function BillingManager({
   company,
   onUpdateSuccess,
 }) {
+  const { fetchSubscription, updateSubscription, actionLoading } = useEmpresas();
   const [formData, setFormData] = useState({
     plan: "",
     status: "",
@@ -35,19 +32,12 @@ export default function BillingManager({
     nextBillingDate: "",
     paymentStatus: "paid",
   });
-  const [loading, setLoading] = useState(false);
-
-  const { token } = useContext(AuthContext);
 
   useEffect(() => {
-    const fetchSubscription = async () => {
+    const loadData = async () => {
       if (company?._id) {
-        setLoading(true);
         try {
-          const subscription = await getSubscriptionService(
-            token,
-            company._id,
-          ).then((res) => res.data);
+          const subscription = await fetchSubscription(company._id);
           setFormData({
             plan: subscription.plan || PLANS.FREE,
             status: subscription.status || STATUSES.ACTIVE,
@@ -57,30 +47,24 @@ export default function BillingManager({
           });
         } catch (error) {
           console.error("Error fetching subscription:", error);
-        } finally {
-          setLoading(false);
         }
       }
     };
 
-    fetchSubscription();
-  }, [company, token]);
+    loadData();
+  }, [company]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
     try {
-      await updateSubscriptionService(token, company._id, formData);
-      onUpdateSuccess();
+      await updateSubscription(company._id, formData);
+      if (onUpdateSuccess) onUpdateSuccess();
       onClose();
     } catch (error) {
       console.error("Error updating subscription:", error);
-      alert("Error updating subscription. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -175,8 +159,8 @@ export default function BillingManager({
         <Button onClick={onClose} color="inherit">
           Cancelar
         </Button>
-        <Button onClick={handleSubmit} variant="contained" disabled={loading}>
-          {loading ? "Guardando..." : "Guardar Cambios"}
+        <Button onClick={handleSubmit} variant="contained" disabled={actionLoading}>
+          {actionLoading ? "Guardando..." : "Guardar Cambios"}
         </Button>
       </DialogActions>
     </Dialog>
