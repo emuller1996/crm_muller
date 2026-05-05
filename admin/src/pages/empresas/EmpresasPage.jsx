@@ -36,6 +36,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ImageIcon from '@mui/icons-material/Image';
+import PaymentIcon from '@mui/icons-material/Payment';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3010';
 import toast from 'react-hot-toast';
@@ -50,6 +51,8 @@ import {
 } from '../../services/empresas.services';
 import FormEmpresa from './components/FormEmpresa';
 import DetalleEmpresa from './components/DetalleEmpresa';
+import BillingManager from './components/BillingManager';
+import { getStatusColor } from './utils/subscriptionUtils';
 
 export default function EmpresasPage() {
   const { token } = useContext(AuthContext);
@@ -64,6 +67,7 @@ export default function EmpresasPage() {
   const [showForm, setShowForm] = useState(false);
   const [showDetalle, setShowDetalle] = useState(false);
   const [showToggle, setShowToggle] = useState(false);
+  const [showBilling, setShowBilling] = useState(false);
   const [selected, setSelected] = useState(null);
   const [loadingToggle, setLoadingToggle] = useState(false);
 
@@ -204,11 +208,19 @@ export default function EmpresasPage() {
                       </Typography>
                     )}
                   </Box>
-                  <Chip
-                    label={emp.estado === 'activa' ? 'Activa' : 'Inactiva'}
-                    color={emp.estado === 'activa' ? 'success' : 'default'}
-                    size="small"
-                  />
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.5 }}>
+                    <Chip
+                      label={emp.estado === 'activa' ? 'Activa' : 'Inactiva'}
+                      color={emp.estado === 'activa' ? 'success' : 'default'}
+                      size="small"
+                    />
+                    <Chip
+                      label={emp.subscription?.status || 'activo'}
+                      color={getStatusColor(emp.subscription?.status)}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </Box>
                 </Box>
                 <Typography variant="body2" color="text.secondary">
                   {emp.tipo_documento}: {emp.numero_documento}
@@ -231,6 +243,11 @@ export default function EmpresasPage() {
                 >
                   Editar
                 </Button>
+                <Button size="small" startIcon={<PaymentIcon />}
+                  onClick={() => { setSelected(emp); setShowBilling(true); }}
+                >
+                  Pagos
+                </Button>
                 <Button
                   size="small"
                   color={emp.estado === 'activa' ? 'error' : 'success'}
@@ -252,6 +269,7 @@ export default function EmpresasPage() {
                 <TableCell sx={{ fontWeight: 600, width: 60 }}>Logo</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Razon Social</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>NIT / Documento</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Plan</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Ciudad</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Telefono</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
@@ -261,7 +279,7 @@ export default function EmpresasPage() {
             <TableBody>
               {filtered.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
                     <Typography color="text.secondary">No hay empresas para mostrar</Typography>
                   </TableCell>
                 </TableRow>
@@ -296,6 +314,9 @@ export default function EmpresasPage() {
                     {emp.digito_verificacion ? `-${emp.digito_verificacion}` : ''}
                   </TableCell>
                   <TableCell>
+                    {emp.subscription?.plan || 'Gratuito'}
+                  </TableCell>
+                  <TableCell>
                     {[emp.ciudad, emp.departamento].filter(Boolean).join(', ') || '-'}
                   </TableCell>
                   <TableCell>{emp.telefono || emp.celular || '-'}</TableCell>
@@ -315,6 +336,11 @@ export default function EmpresasPage() {
                     <Tooltip title="Editar">
                       <IconButton size="small" onClick={() => { setSelected(emp); setShowForm(true); }}>
                         <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Gestionar Pagos">
+                      <IconButton size="small" onClick={() => { setSelected(emp); setShowBilling(true); }}>
+                        <PaymentIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
                     <Tooltip title={emp.estado === 'activa' ? 'Deshabilitar' : 'Habilitar'}>
@@ -342,12 +368,19 @@ export default function EmpresasPage() {
         empresa={selected}
       />
 
-      {/* Detalle */}
-      <DetalleEmpresa
-        open={showDetalle}
-        onClose={() => { setShowDetalle(false); setSelected(null); }}
-        empresa={selected}
-      />
+       {/* Detalle */}
+       <DetalleEmpresa
+         open={showDetalle}
+         onClose={() => { setShowDetalle(false); setSelected(null); }}
+         empresa={selected}
+       />
+
+       {/* Gestion de Facturacion / Pagos */}
+       <BillingManager
+         open={showBilling}
+         onClose={() => { setShowBilling(false); setSelected(null); }}
+         empresa={selected}
+       />
 
       {/* Confirmar Habilitar / Deshabilitar */}
       <Dialog open={showToggle} onClose={() => setShowToggle(false)} maxWidth="xs" fullWidth>

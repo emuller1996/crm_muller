@@ -35,3 +35,9 @@ export const uploadLogoEmpresaService = (token, id, file) => {
 export const deleteLogoEmpresaService = (token, id) => {
   return axios.delete(`/admin/empresas/${id}/logo`, { headers: { 'access-token': token } });
 };
+
+export const updateSubscriptionService = (token, id, subscriptionData) => {
+  return axios.put(`/admin/empresas/${id}/subscription`, subscriptionData, { 
+    headers: { 'access-token': token } 
+  });
+};
