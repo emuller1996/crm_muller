@@ -18,6 +18,10 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import LanguageIcon from '@mui/icons-material/Language';
 import PersonIcon from '@mui/icons-material/Person';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import { useState } from 'react';
+import BillingManager from './BillingManager';
+import { formatBillingDate } from '../utils/subscriptionUtils';
 
 function Field({ label, value }) {
   if (!value) return null;
@@ -41,6 +45,7 @@ const regimenLabels = {
 };
 
 export default function DetalleEmpresa({ open, onClose, empresa }) {
+  const [showBilling, setShowBilling] = useState(false);
   if (!empresa) return null;
 
   const dv = empresa.digito_verificacion ? `-${empresa.digito_verificacion}` : '';
@@ -168,6 +173,45 @@ export default function DetalleEmpresa({ open, onClose, empresa }) {
             </Grid>
           </>
         )}
+
+        <Divider sx={{ my: 2 }} />
+
+        {/* Facturación y Suscripción */}
+        <Box>
+          <Typography variant="subtitle2" color="primary" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <CreditCardIcon fontSize="small" /> Facturación y Suscripción
+          </Typography>
+          <Grid container spacing={2} alignItems="center">
+            <Grid size={{ xs: 8 }}>
+              <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+                <Chip 
+                  label={empresa.subscription?.plan || 'Gratuito'} 
+                  size="small" 
+                  color="primary" 
+                  variant="outlined" 
+                />
+                <Chip 
+                  label={empresa.subscription?.status || 'activo'} 
+                  size="small" 
+                  color={empresa.subscription?.status === 'activo' ? 'success' : 'default'} 
+                />
+              </Box>
+              <Field 
+                label="Fecha de Vencimiento" 
+                value={empresa.subscription?.endDate ? formatBillingDate(empresa.subscription.endDate) : 'N/A'} 
+              />
+            </Grid>
+            <Grid size={{ xs: 4 }} sx={{ textAlign: 'right' }}>
+              <Button 
+                variant="outlined" 
+                size="small" 
+                onClick={() => setShowBilling(true)}
+              >
+                Gestionar
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
       </DialogContent>
 
       <DialogActions sx={{ px: 3, py: 1.5 }}>
@@ -175,6 +219,12 @@ export default function DetalleEmpresa({ open, onClose, empresa }) {
           Cerrar
         </Button>
       </DialogActions>
+
+      <BillingManager
+        open={showBilling}
+        onClose={() => setShowBilling(false)}
+        empresa={empresa}
+      />
     </Dialog>
   );
 }
