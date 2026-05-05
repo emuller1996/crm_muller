@@ -36,6 +36,10 @@ export const deleteLogoEmpresaService = (token, id) => {
   return axios.delete(`/admin/empresas/${id}/logo`, { headers: { 'access-token': token } });
 };
 
+export const getSubscriptionService = (token, id) => {
+  return axios.get(`/admin/empresas/${id}/subscription`, { headers: { 'access-token': token } });
+};
+
 export const updateSubscriptionService = (token, id, subscriptionData) => {
   return axios.put(`/admin/empresas/${id}/subscription`, subscriptionData, { 
     headers: { 'access-token': token } 
