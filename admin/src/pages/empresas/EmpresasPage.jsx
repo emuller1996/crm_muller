@@ -379,7 +379,10 @@ export default function EmpresasPage() {
        <BillingManager
          open={showBilling}
          onClose={() => { setShowBilling(false); setSelected(null); }}
-         empresa={selected}
+         company={selected}
+         onUpdateSuccess={()=>{
+          fetchEmpresas()
+         }}
        />
 
       {/* Confirmar Habilitar / Deshabilitar */}

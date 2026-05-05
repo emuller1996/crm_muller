@@ -75,3 +75,19 @@ export const deleteLogo = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getSubscription = async (req, res) => {
+  try {
+    res.json(await service.getSubscription(req.params.id));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateSubscription = async (req, res) => {
+  try {
+    res.json(await service.updateSubscription(req.params.id, req.body));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

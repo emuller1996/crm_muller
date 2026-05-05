@@ -111,3 +111,18 @@ export const deleteLogo = async (id) => {
   await client.indices.refresh({ index: INDEX_ES_MAIN });
   return { message: "Logo eliminado" };
 };
+
+export const getSubscription = async (id) => {
+  const empresa = await getDocumentById(id);
+  if (!empresa) throw new Error("Empresa no encontrada");
+  return empresa.subscription || {};
+};
+
+export const updateSubscription = async (id, subscriptionData) => {
+  const r = await updateElasticByType(id, { subscription: subscriptionData });
+  if (r.body.result === "updated") {
+    await client.indices.refresh({ index: INDEX_ES_MAIN });
+    return { message: "Suscripción actualizada" };
+  }
+  throw new Error("No se pudo actualizar la suscripción");
+};
