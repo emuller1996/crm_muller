@@ -71,6 +71,7 @@ export const getPerDay = async (date, empresaId) => {
 
 export const create = async (data, token) => {
   if (!data.status) data.status = "Pendiente";
+  if (!data.estado_remision) data.estado_remision = "Pendiente";
 
   const decoded = jwtDecode(token);
   data.user_create_id = decoded?._id;
@@ -91,18 +92,6 @@ export const create = async (data, token) => {
   data.numero_factura = countResult.count + 1;
 
   const response = await crearElasticByType(data, "factura_compra");
-
-  // Registrar entrada de inventario si la factura de compra es Pagada
-  try {
-    if (data.status === "Pagada") {
-      await registrarEntradaPorFacturaCompra(
-        { ...data, _id: response.body._id },
-        token,
-      );
-    }
-  } catch (err) {
-    console.log("Error al registrar entrada de inventario:", err.message);
-  }
 
   return {
     message: "Factura de compra creada",
@@ -127,7 +116,7 @@ export const createPago = async (facturaId, data, token) => {
 
   await crearElasticByType(data, "pago_factura_compra");
 
-  // Verificar si con este pago la factura queda pagada para registrar inventario
+  // Verificar si con este pago la factura queda pagada (solo cambio de status, sin afectar inventario)
   try {
     const factura = await getDocumentById(facturaId);
     if (factura.status === "Pendiente") {
@@ -135,8 +124,6 @@ export const createPago = async (facturaId, data, token) => {
       if (pagosResult.suma.value >= factura.total_monto) {
         await updateElasticByType(facturaId, { status: "Pagada" });
         await client.indices.refresh({ index: INDEX_ES_MAIN });
-        // Registrar entrada de inventario al completar pago
-        await registrarEntradaPorFacturaCompra(factura, token);
       }
     }
   } catch (err) {
@@ -149,13 +136,13 @@ export const createPago = async (facturaId, data, token) => {
 export const anularFactura = async (id, token) => {
   // Obtener factura antes de anular para saber si tenia inventario registrado
   const factura = await getDocumentById(id);
-  const teniaInventario = factura.status === "Pagada";
+  const teniaInventario = factura.estado_remision === "Recibida";
 
   const r = await updateElasticByType(id, { status: "Anulada" });
   if (r.body.result === "updated") {
     await client.indices.refresh({ index: INDEX_ES_MAIN });
 
-    // Reversar entrada de inventario si la factura estaba Pagada
+    // Reversar entrada de inventario solo si la mercancia ya habia sido recibida
     if (teniaInventario && token) {
       try {
         await reversarEntradaPorAnulacionCompra(id, token);
@@ -166,6 +153,32 @@ export const anularFactura = async (id, token) => {
 
     return { message: "Factura de compra anulada" };
   }
+};
+
+export const marcarComoRecibida = async (id, token) => {
+  const factura = await getDocumentById(id);
+
+  if (!factura) throw new Error("Factura no encontrada");
+  if (factura.status === "Anulada")
+    throw new Error("No se puede recibir mercancia de una factura anulada");
+  if (factura.estado_remision === "Recibida")
+    throw new Error("La mercancia de esta factura ya fue recibida");
+
+  const r = await updateElasticByType(id, { estado_remision: "Recibida" });
+  if (r.body.result === "updated") {
+    await client.indices.refresh({ index: INDEX_ES_MAIN });
+
+    // Registrar entrada de inventario por la mercancia recibida
+    try {
+      await registrarEntradaPorFacturaCompra(factura, token);
+    } catch (err) {
+      console.log("Error al registrar entrada de inventario por remision:", err.message);
+    }
+
+    return { message: "Mercancia recibida, inventario actualizado" };
+  }
+
+  throw new Error("No se pudo actualizar la factura");
 };
 
 export const getPagos = async (facturaId) => {

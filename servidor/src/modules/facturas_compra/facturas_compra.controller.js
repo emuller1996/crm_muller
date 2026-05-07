@@ -68,6 +68,14 @@ export const anularFactura = async (req, res) => {
   }
 };
 
+export const marcarComoRecibida = async (req, res) => {
+  try {
+    res.json(await service.marcarComoRecibida(req.params.id, req.headers["access-token"]));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getPagos = async (req, res) => {
   try {
     res.json(await service.getPagos(req.params.id));

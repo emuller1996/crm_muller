@@ -28,3 +28,7 @@ export const getAllPagosByFacturaCompraService = (token, signal, id) => {
 export const patchAnularFacturaCompraService = (token, id) => {
   return axios.patch(`/factura-compra/${id}/anular`, {}, { headers: { 'access-token': token } })
 }
+
+export const patchMarcarRecibidaFacturaCompraService = (token, id) => {
+  return axios.patch(`/factura-compra/${id}/recibir`, {}, { headers: { 'access-token': token } })
+}

@@ -7,6 +7,7 @@ import {
   getAllFacturaCompraService,
   getAllPagosByFacturaCompraService,
   patchAnularFacturaCompraService,
+  patchMarcarRecibidaFacturaCompraService,
   postCreateFacturaCompraService,
   postCreatePagoFacturaCompraService,
   putUpdateFacturaCompraService,
@@ -83,6 +84,10 @@ export const useFacturasCompra = () => {
     return patchAnularFacturaCompraService(Token, id)
   }
 
+  const marcarComoRecibida = async (id) => {
+    return patchMarcarRecibidaFacturaCompraService(Token, id)
+  }
+
   return {
     data,
     error,
@@ -92,6 +97,7 @@ export const useFacturasCompra = () => {
     crearFacturaCompra,
     actualizarFacturaCompra,
     anularFacturaCompra,
+    marcarComoRecibida,
     crearPagoByFacturaCompra,
     getPagosByFacturaCompra,
     getAllFacturaCompraPerDay,
