@@ -50,13 +50,13 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Facturas',
+    name: 'Ventas',
     to: '/facturas',
     icon: <i style={{ width: '30px' }} className="fa-solid fa-file-invoice-dollar nav-icon"></i>,
   },
   {
     component: CNavItem,
-    name: 'Facturas de Compra',
+    name: 'Compras',
     to: '/facturas-compra',
     icon: <i style={{ width: '30px' }} className="fa-solid fa-file-invoice nav-icon"></i>,
   },
@@ -64,7 +64,7 @@ const _nav = [
     component: CNavItem,
     name: 'Cotizaciones',
     to: '/cotizaciones',
-    icon: <i style={{ width: '30px' }} className="fa-solid fa-file-invoice nav-icon"></i>,
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-file-lines nav-icon"></i>,
   },
   {
     component: CNavItem,
