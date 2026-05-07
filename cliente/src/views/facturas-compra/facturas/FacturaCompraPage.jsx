@@ -21,8 +21,16 @@ export default function FacturaCompraPage({ draw, onViewFactura, onPayment }) {
 
   const [facturaToAnular, setFacturaToAnular] = useState(null)
   const [loadingAnular, setLoadingAnular] = useState(false)
+  const [facturaToReceive, setFacturaToReceive] = useState(null)
+  const [loadingReceive, setLoadingReceive] = useState(false)
 
-  const { getAllFacturaCompra, data: ListFacturas, anularFacturaCompra, loading } = useFacturasCompra()
+  const {
+    getAllFacturaCompra,
+    data: ListFacturas,
+    anularFacturaCompra,
+    marcarComoRecibida,
+    loading,
+  } = useFacturasCompra()
   const { generarPDF } = useFacturaCompraPDF()
 
   const handleAnular = async () => {
@@ -40,6 +48,21 @@ export default function FacturaCompraPage({ draw, onViewFactura, onPayment }) {
     }
   }
 
+  const handleRecibir = async () => {
+    if (!facturaToReceive) return
+    try {
+      setLoadingReceive(true)
+      const res = await marcarComoRecibida(facturaToReceive._id)
+      toast.success(res.data?.message || 'Mercancia recibida')
+      setFacturaToReceive(null)
+      getAllFacturaCompra()
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Error al registrar recepcion')
+    } finally {
+      setLoadingReceive(false)
+    }
+  }
+
   useEffect(() => {
     getAllFacturaCompra()
   }, [draw])
@@ -53,8 +76,10 @@ export default function FacturaCompraPage({ draw, onViewFactura, onPayment }) {
           columns={[
             {
               name: 'Acciones',
-              width: '190px',
+              width: '230px',
               cell: (row) => {
+                const remisionPendiente =
+                  !row.estado_remision || row.estado_remision === 'Pendiente'
                 return (
                   <div className="btn-group" role="group">
                     <button
@@ -78,6 +103,15 @@ export default function FacturaCompraPage({ draw, onViewFactura, onPayment }) {
                         className="btn btn-outline-success btn-sm"
                       >
                         <i className="fa-solid fa-comment-dollar"></i>
+                      </button>
+                    )}
+                    {row.status !== 'Anulada' && remisionPendiente && (
+                      <button
+                        onClick={() => setFacturaToReceive(row)}
+                        title="Recibir Mercancia"
+                        className="btn btn-outline-warning btn-sm"
+                      >
+                        <i className="fa-solid fa-truck-ramp-box"></i>
                       </button>
                     )}
                     {row.status !== 'Anulada' && (
@@ -104,7 +138,7 @@ export default function FacturaCompraPage({ draw, onViewFactura, onPayment }) {
               name: 'Estado',
               selector: (row) => row?.status ?? '',
               format: (row) => row?.status ?? '',
-              width: '150px',
+              width: '130px',
               cell: (row) => {
                 const translateColor = {
                   Pendiente: { color: '#f0e54c' },
@@ -117,6 +151,23 @@ export default function FacturaCompraPage({ draw, onViewFactura, onPayment }) {
                     sx={{ backgroundColor: translateColor?.[row.status]?.color }}
                     label={row.status}
                     variant="outlined"
+                    size="small"
+                  />
+                )
+              },
+            },
+            {
+              name: 'Remision',
+              width: '140px',
+              cell: (row) => {
+                const remision = row.estado_remision || 'Pendiente'
+                const color = remision === 'Recibida' ? '#4cf05a' : '#f0a04c'
+                return (
+                  <Chip
+                    sx={{ backgroundColor: color }}
+                    label={remision}
+                    variant="outlined"
+                    size="small"
                   />
                 )
               },
@@ -171,6 +222,43 @@ export default function FacturaCompraPage({ draw, onViewFactura, onPayment }) {
           }
         />
       </div>
+      {/* Modal confirmar recepcion de mercancia */}
+      <Modal show={!!facturaToReceive} onHide={() => setFacturaToReceive(null)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i className="fa-solid fa-truck-ramp-box text-warning me-2"></i>
+            Recibir Mercancia
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            ¿Confirmar recepcion de la mercancia de la factura{' '}
+            <strong>FC-{facturaToReceive?.numero_factura}</strong>?
+          </p>
+          <p className="text-muted small mb-0">
+            Se registrara automaticamente la entrada en el inventario por cada producto de la
+            factura. Esta accion se puede revertir solo anulando la factura.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button className="btn btn-secondary" onClick={() => setFacturaToReceive(null)}>
+            Cancelar
+          </button>
+          <button
+            className="btn btn-warning text-white"
+            onClick={handleRecibir}
+            disabled={loadingReceive}
+          >
+            {loadingReceive ? (
+              <span className="spinner-border spinner-border-sm me-1" />
+            ) : (
+              <i className="fa-solid fa-check me-1"></i>
+            )}
+            Confirmar Recepcion
+          </button>
+        </Modal.Footer>
+      </Modal>
+
       {/* Modal confirmar anular */}
       <Modal show={!!facturaToAnular} onHide={() => setFacturaToAnular(null)} centered>
         <Modal.Header closeButton>

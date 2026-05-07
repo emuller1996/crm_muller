@@ -13,6 +13,7 @@ router.post("/", checkPermission("facturas_compra.create"), controller.create);
 router.put("/:id", checkPermission("facturas_compra.update"), controller.update);
 
 router.patch("/:id/anular", checkPermission("facturas_compra.update"),controller.anularFactura);
+router.patch("/:id/recibir", checkPermission("facturas_compra.update"), controller.marcarComoRecibida);
 
 router.post("/:id/pagos",checkPermission("facturas_compra.create"), controller.createPago);
 router.get("/:id/pagos", checkPermission("facturas_compra.read"),controller.getPagos);

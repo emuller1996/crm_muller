@@ -35,9 +35,21 @@ export default function DetalleFacturaCompra({ Factura }) {
                 <p className="m-0 fs-5 text-uppercase">{Factura?.fecha_vencimiento}</p>
               </div>
             )}
-            <div className="col-md-12 text-center">
-              <p className="m-0">Estado</p>
+            <div className="col-md-6 text-center">
+              <p className="m-0">Estado Financiero</p>
               <p className="badge bg-primary text-uppercase m-0 fs-5">{Factura?.status}</p>
+            </div>
+            <div className="col-md-6 text-center">
+              <p className="m-0">Remision (Mercancia)</p>
+              <p
+                className={`badge text-uppercase m-0 fs-5 ${
+                  (Factura?.estado_remision || 'Pendiente') === 'Recibida'
+                    ? 'bg-success'
+                    : 'bg-warning text-dark'
+                }`}
+              >
+                {Factura?.estado_remision || 'Pendiente'}
+              </p>
             </div>
           </div>
         </div>
