@@ -10,6 +10,7 @@ const ClientePage = React.lazy(() => import('./views/clientes/ClientePage'))
 const TallasPage = React.lazy(() => import('./views/productos/TallasPage/TallasPage'))
 const EmpresaPage = React.lazy(() => import('./views/empresa/EmpresaPage'))
 const FacturasMainPage = React.lazy(() => import('./views/facturas'))
+const FacturaCreatePage = React.lazy(() => import('./views/facturas/FacturaCreatePage'))
 const CotizacionPage = React.lazy(() => import('./views/cotizaciones/CotizacionPage'))
 const RolesPage = React.lazy(() => import('./views/usuarios/pages/RolesPage'))
 const ActividadesPage = React.lazy(() => import('./views/actividades/ActividadesPage'))
@@ -28,6 +29,7 @@ const routes = [
   { path: '/categorias', name: 'Categorias', element: CategoriasPage },
   { path: '/clientes', name: 'Clientes', element: ClientePage },
   { path: '/facturas', name: 'Facturas', element: FacturasMainPage },
+  { path: '/facturas/nueva', name: 'Nueva Factura', element: FacturaCreatePage },
   { path: '/cotizaciones', name: 'Cotizaciones', element: CotizacionPage },
   { path: '/empresa', name: 'Empresa Config', element: EmpresaPage },
   { path: '/pedidos', name: 'Entregas - Pedidos', element: EntregasPages },

@@ -1,16 +1,15 @@
 /* eslint-disable prettier/prettier */
 import { Modal, Tab, Tabs } from 'react-bootstrap'
-import React from 'react'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import FacturaPage from './facturas/FacturaPage'
-import { useState } from 'react'
 import FacturasHoyPage from './facturas-hoy/FacturasHoyPage'
-import FormFactura from './facturas/components/FormFactura'
 import DetalleFactura from './facturas/components/DetalleFactura'
 import FormPagosFactura from './facturas/components/FormPagosFactura'
 
-export default function FacturasMainPage(second) {
-  const [draw, setDraw] = useState(1)
-  const [show, setShow] = useState(false)
+export default function FacturasMainPage() {
+  const navigate = useNavigate()
+  const [draw] = useState(1)
   const [showView, setShowView] = useState(false)
   const [showPago, setShowPago] = useState(false)
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
@@ -22,17 +21,15 @@ export default function FacturasMainPage(second) {
           <div className="my-2">
             <button
               type="button"
-              onClick={() => {
-                setCotiSelecionada(null)
-                setShow(true)
-              }}
+              onClick={() => navigate('/facturas/nueva')}
               className="btn btn-primary"
               aria-pressed="false"
             >
+              <i className="fa-solid fa-plus me-1"></i>
               Nueva Factura
             </button>
           </div>
-          <Tabs defaultActiveKey="facturas_hoy" id="uncontrolled-tab-example" className="">
+          <Tabs defaultActiveKey="facturas_hoy" id="uncontrolled-tab-example">
             <Tab eventKey="facturas_hoy" title="Facturas de Hoy">
               <FacturasHoyPage
                 draw={draw}
@@ -49,7 +46,6 @@ export default function FacturasMainPage(second) {
             <Tab eventKey="Facturas" title="Facturas">
               <FacturaPage
                 draw={draw}
-                setDraw={setDraw}
                 onViewFactura={(factura) => {
                   setCotiSelecionada(factura)
                   setShowView(true)
@@ -64,26 +60,6 @@ export default function FacturasMainPage(second) {
         </div>
       </div>
 
-      <Modal
-        backdrop={'static'}
-        size="xl"
-        fullscreen
-        centered
-        show={show}
-        onHide={() => setShow(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Crear Factura</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <FormFactura
-            getAllFactura={() => {
-              setShow(false)
-              setDraw((status) => ++status)
-            }}
-          />
-        </Modal.Body>
-      </Modal>
       <Modal
         backdrop={'static'}
         size="xl"
