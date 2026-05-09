@@ -148,7 +148,7 @@ const ProductosPage = () => {
                     <i className="fa-solid fa-magnifying-glass"></i>
                   </span>
                   <input
-                    placeholder="Busque Producto por Nombre, Categoria y Marca"
+                    placeholder="Busque Producto por Nombre, Descripcion y Codigo"
                     type="text"
                     aria-label="First name"
                     className="form-control"
@@ -191,35 +191,12 @@ const ProductosPage = () => {
                         >
                           <i className="fa-solid fa-pen-to-square"></i>
                         </button>
-                        <button
-                          onClick={() => {
-                            setProductoSelecionado(row)
-                            setShowSize(true)
-                          }}
-                          title="Editar Producto."
-                          className="btn btn-info btn-sm me-2"
-                        >
-                          <i className="text-white fa-regular fa-images"></i>
-                        </button>
-                        <button
-                          to={`${row._id}/gestion-tallas`}
-                          onClick={() => {
-                            setProductoSelecionado(row)
-                            setShowSizeTallas(true)
-                            //handleShow()
-                          }}
-                          title="Gestion de Tallas del Producto."
-                          className="btn btn-secondary btn-sm"
-                        >
-                          <i className="fa-solid fa-tags"></i>
-                        </button>
                       </>
                     )
                   },
                 },
                 //{ name: 'Id', selector: (row) => row._id, width: '100px' },
-                { name: 'Nombre', selector: (row) => row?.name ?? '', width: '250px' },
-
+                { name: 'Nombre', selector: (row) => row?.name ?? '', minWidth: '250px' },
                 {
                   name: 'Precio',
                   selector: (row) => row?.price ?? '',
@@ -232,7 +209,7 @@ const ProductosPage = () => {
                   selector: (row) => row?.categoria?.name ?? '',
                   width: '150px',
                 },
-                { name: 'Marca', selector: (row) => row?.brand ?? '', width: '120px' },
+                { name: 'Codigo', selector: (row) => row?.code ?? '', width: '120px' },
                 {
                   name: 'Genero',
                   selector: (row) => row?.gender ?? '',
@@ -279,7 +256,6 @@ const ProductosPage = () => {
                   width: '160px',
                 },
 
-                { name: '', selector: (row) => row?.city ?? '' },
               ]}
               data={dataP?.data}
               pagination

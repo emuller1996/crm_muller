@@ -98,7 +98,7 @@ export const pagination = async (req) => {
       consulta.body.query.bool.must.push({
         query_string: {
           query: `*${search}*`,
-          fields: ["name", "description"],
+          fields: ["name", "description","code"],
         },
       });
     }
