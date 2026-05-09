@@ -28,3 +28,15 @@ export const getAllPagosByFacturaService = (token, signal,id) => {
 export const patchAnularFacturaService = (token, id) => {
   return axios.patch(`/factura/${id}/anular`, {}, { headers: { 'access-token': token } })
 }
+
+export const getFacturasPaginationService = async (token, params) => {
+  const searchs = new URLSearchParams()
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      searchs.append(key, value)
+    }
+  })
+  return await axios.get(`/factura/pagination?${searchs.toString()}`, {
+    headers: { 'access-token': token },
+  })
+}
