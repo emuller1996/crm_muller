@@ -10,10 +10,12 @@ import {
   postCreateFacturaService,
   postCreatePagoFacturaService,
   putUpdateFacturaService,
+  getFacturasPaginationService,
 } from '../services/factura.services'
 
 export const useFacturas = () => {
   const [data, setData] = useState(null)
+  const [dataP, setDataP] = useState(undefined)
   const [dataDetalle, setDataDetalle] = useState(null)
 
   const [error, setError] = useState(null)
@@ -21,6 +23,27 @@ export const useFacturas = () => {
   const abortController = new AbortController()
   const signal = abortController.signal
   const { Token } = useContext(AuthContext)
+
+  const getAllFacturasPagination = async (params) => {
+    setLoading(true)
+    setDataP(undefined)
+    try {
+      const res = await getFacturasPaginationService(Token, params)
+      if (!signal.aborted) {
+        setDataP(res.data)
+        setError(null)
+      }
+    } catch (err) {
+      if (!signal.aborted) {
+        setDataP(undefined)
+        setError(err)
+      }
+    } finally {
+      if (!signal.aborted) {
+        setLoading(false)
+      }
+    }
+  }
 
   const getAllFactura = async () => {
     setLoading(true)
@@ -87,9 +110,11 @@ export const useFacturas = () => {
 
   return {
     data,
+    dataP,
     error,
     loading,
     getAllFactura,
+    getAllFacturasPagination,
     abortController,
     crearFactura,
     actualizarFactura,

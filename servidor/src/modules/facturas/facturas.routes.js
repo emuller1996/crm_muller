@@ -6,8 +6,9 @@ import { checkPermission } from "../../middleware/acl.middleware.js";
 const router = Router();
 
 router.get("/", checkPermission("facturas.read"),controller.getAll);
-router.get("/:id", checkPermission("facturas.read"),controller.getById);
+router.get("/pagination", checkPermission("facturas.read"), controller.pagination);
 router.get("/per_day/:date",checkPermission("facturas.read"), controller.getPerDay);
+router.get("/:id", checkPermission("facturas.read"),controller.getById);
 
 router.post("/", checkPermission("facturas.create"), controller.create);
 router.put("/:id", checkPermission("facturas.update"), controller.update);

@@ -47,6 +47,66 @@ export const getById = async (id) => {
   return await getDocumentById(id);
 };
 
+export const pagination = async ({
+  perPage = 10,
+  page = 1,
+  search = "",
+  status = "",
+  metodo_pago = "",
+  client_id = "",
+  fecha_desde = "",
+  fecha_hasta = "",
+  empresa_id = "",
+}) => {
+  const consulta = {
+    index: INDEX_ES_MAIN,
+    size: Number(perPage),
+    from: (Number(page) - 1) * Number(perPage),
+    body: {
+      query: {
+        bool: {
+          must: [],
+          filter: [
+            { term: { "type.keyword": "factura" } },
+            ...(empresa_id ? [{ term: { "empresa_id.keyword": empresa_id } }] : []),
+          ],
+        },
+      },
+      sort: [{ dia_venta: { order: "desc" } }, { createdTime: { order: "desc" } }],
+    },
+  };
+
+  if (status) {
+    consulta.body.query.bool.filter.push({ term: { "status.keyword": status } });
+  }
+  if (metodo_pago) {
+    consulta.body.query.bool.filter.push({ term: { "metodo_pago.keyword": metodo_pago } });
+  }
+  if (client_id) {
+    consulta.body.query.bool.filter.push({ term: { "client_id.keyword": client_id } });
+  }
+  if (fecha_desde || fecha_hasta) {
+    const range = {};
+    if (fecha_desde) range.gte = fecha_desde;
+    if (fecha_hasta) range.lte = fecha_hasta;
+    consulta.body.query.bool.filter.push({ range: { dia_venta: range } });
+  }
+  if (search) {
+    consulta.body.query.bool.must.push({
+      query_string: { query: `*${search}*`, fields: ["nota", "numero_factura"] },
+    });
+  }
+
+  const searchResult = await client.search(consulta);
+  const data = searchResult.body.hits.hits.map((c) => ({ ...c._source, _id: c._id }));
+
+  return {
+    data: await Promise.all(data.map(buildFactura)),
+    total: searchResult.body.hits.total.value,
+    total_pages: Math.ceil(searchResult.body.hits.total.value / Number(perPage)),
+  };
+};
+
 export const getPerDay = async (date, empresaId) => {
   if (!date) throw new Error("Falta fecha");
 
