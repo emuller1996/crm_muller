@@ -71,7 +71,7 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
       <div className="row g-3">
         <div className="col-md-6">
           <Form.Group className="" controlId="name">
-            <Form.Label>Nombre Producto</Form.Label>
+            <Form.Label>Nombre Producto <span className='text-primary'>*</span></Form.Label>
             <Form.Control
               defaultValue={producto?.name}
               {...register('name', { required: true })}
@@ -81,8 +81,19 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
           </Form.Group>
         </div>
         <div className="col-md-6">
+          <Form.Group className="" controlId="name">
+            <Form.Label>Codigo Producto</Form.Label>
+            <Form.Control
+              defaultValue={producto?.code}
+              {...register('code')}
+              type="text"
+              placeholder=""
+            />
+          </Form.Group>
+        </div>
+        <div className="col-md-6">
           <div>
-            <Form.Label>Precio</Form.Label>
+            <Form.Label>Precio <span className='text-primary'>*</span></Form.Label>
             <Controller
               control={control}
               name="price"
@@ -112,7 +123,7 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
         </div>
         <div className="col-md-6">
           <div>
-            <Form.Label>Costo</Form.Label>
+            <Form.Label>Costo <span className='text-primary'>*</span></Form.Label>
             <Controller
               control={control}
               name="cost"
@@ -146,7 +157,6 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
               <Form.Label htmlFor="category_id">Categoria</Form.Label>
               <Controller
                 name="category_id"
-                //rules={{ required: true }}
                 control={control}
                 defaultValue={producto?.category_id}
                 render={({ field: { name, onChange, ref } }) => {
@@ -208,7 +218,7 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
             </div>
           )}
         </div>
-        <div className="col-md-4">
+        <div className="col-md-6">
           <Form.Group className="" controlId="brand">
             <Form.Label>Marca</Form.Label>
             <Form.Control
@@ -235,7 +245,7 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
             <Form.Label>Descripcion</Form.Label>
             <Form.Control
               defaultValue={producto?.description}
-              {...register('description', { required: true })}
+              {...register('description')}
               as="textarea"
               rows={3}
             />

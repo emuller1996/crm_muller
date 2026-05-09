@@ -6,12 +6,12 @@ import PropTypes from 'prop-types'
 import { useProductos } from '../../../hooks/useProductos'
 import * as XLSX from 'xlsx'
 
-const COLUMNAS_PLANTILLA = ['name', 'description', 'price', 'costo', 'gender', 'reference']
+const COLUMNAS_PLANTILLA = ['name', 'description', 'price', 'cost', 'gender', 'reference']
 const COLUMNAS_LABELS = {
   name: 'Nombre',
   description: 'Descripcion',
   price: 'Precio',
-  costo: 'Costo',
+  cost: 'Costo',
   gender: 'Genero (men/women/kid)',
   reference: 'Referencia',
 }
