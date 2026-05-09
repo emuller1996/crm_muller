@@ -16,6 +16,14 @@ export const getById = async (req, res) => {
   }
 };
 
+export const pagination = async (req, res) => {
+  try {
+    res.json(await service.pagination({ ...req.query, empresa_id: req.empresaId }));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getPerDay = async (req, res) => {
   try {
     res.json(await service.getPerDay(req.params.date, req.empresaId));
