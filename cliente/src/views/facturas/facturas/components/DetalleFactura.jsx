@@ -1,15 +1,42 @@
 /* eslint-disable prettier/prettier */
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import DataTable from 'react-data-table-component'
 import { ViewDollar } from '../../../../utils'
+import { useFacturas } from '../../../../hooks/useFacturas'
 
 export default function DetalleFactura({ Factura }) {
   DetalleFactura.propTypes = {
     getAllFactura: PropTypes.func,
     Factura: PropTypes.object,
   }
-  console.log(Factura)
+
+  const { getPagosByFactura } = useFacturas()
+  const [Pagos, setPagos] = useState(null)
+  const [loadingPagos, setLoadingPagos] = useState(false)
+
+  useEffect(() => {
+    if (Factura?._id && Factura?.status === 'Pendiente') {
+      loadPagos(Factura._id)
+    } else {
+      setPagos(null)
+    }
+  }, [Factura?._id, Factura?.status])
+
+  const loadPagos = async (id) => {
+    setLoadingPagos(true)
+    try {
+      const result = await getPagosByFactura(id)
+      setPagos(result.data)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoadingPagos(false)
+    }
+  }
+
+  const totalPagado = Pagos?.suma?.value || 0
+  const saldoPendiente = (Factura?.total_monto || 0) - totalPagado
 
   return (
     <>
@@ -76,6 +103,133 @@ export default function DetalleFactura({ Factura }) {
             <span className="me-2">Total </span>
             <span className="fw-bold fs-4">{ViewDollar(Factura?.total_monto)}</span>
           </div>
+
+          {/* Seccion de pagos parciales - solo si la factura esta Pendiente */}
+          {Factura?.status === 'Pendiente' && (
+            <>
+              <hr />
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <h6 className="mb-0 fw-bold">
+                  <i className="fa-solid fa-comment-dollar me-2 text-success"></i>
+                  Pagos Realizados
+                </h6>
+                {Pagos && (
+                  <span className="badge bg-info text-dark">
+                    {Pagos.pagos?.length || 0} pago(s)
+                  </span>
+                )}
+              </div>
+
+              {loadingPagos && (
+                <div className="text-center py-3">
+                  <div className="spinner-border spinner-border-sm text-primary me-2" />
+                  <span className="text-muted">Cargando pagos...</span>
+                </div>
+              )}
+
+              {!loadingPagos && Pagos && Pagos.pagos?.length === 0 && (
+                <div className="alert alert-secondary py-2 small mb-2">
+                  <i className="fa-solid fa-circle-info me-1"></i>
+                  No se han registrado pagos parciales en esta factura.
+                </div>
+              )}
+
+              {!loadingPagos && Pagos && Pagos.pagos?.length > 0 && (
+                <>
+                  <div className="rounded overflow-hidden border border-ligth shadow-sm mb-2">
+                    <DataTable
+                      className="MyDataTableEvent"
+                      striped
+                      dense
+                      columns={[
+                        {
+                          name: 'Fecha y Hora',
+                          selector: (row) =>
+                            row?.createdTime
+                              ? `${new Date(row.createdTime).toLocaleDateString()} ${new Date(row.createdTime).toLocaleTimeString()}`
+                              : '',
+                          width: '200px',
+                        },
+                        {
+                          name: 'Monto',
+                          cell: (row) => (
+                            <span className="fw-bold text-success">
+                              {ViewDollar(row?.monto || 0)}
+                            </span>
+                          ),
+                          width: '140px',
+                        },
+                        {
+                          name: 'Metodo',
+                          cell: (row) => (
+                            <span className="text-capitalize">
+                              {row.metodo_pago === 'efectivo' && (
+                                <i className="fa-solid fa-money-bill me-1 text-success"></i>
+                              )}
+                              {row.metodo_pago === 'tarjeta' && (
+                                <i className="fa-solid fa-credit-card me-1 text-primary"></i>
+                              )}
+                              {row.metodo_pago === 'Transferencia' && (
+                                <i className="fa-solid fa-money-bill-transfer me-1 text-warning"></i>
+                              )}
+                              {row?.metodo_pago ?? '-'}
+                            </span>
+                          ),
+                          width: '160px',
+                        },
+                        {
+                          name: 'Registrado por',
+                          cell: (row) => (
+                            <span className="text-muted">
+                              <i className="fa-solid fa-user me-1"></i>
+                              {row?.user_create?.name ?? 'No registrado'}
+                            </span>
+                          ),
+                        },
+                      ]}
+                      data={Pagos.pagos}
+                      noDataComponent={<p className="my-3">Sin pagos</p>}
+                    />
+                  </div>
+
+                  {/* Resumen de pagos */}
+                  <div className="row g-2 mt-2">
+                    <div className="col-md-4">
+                      <div className="card border-success">
+                        <div className="card-body py-2 text-center">
+                          <div className="text-muted small">Total Pagado</div>
+                          <div className="fs-5 fw-bold text-success">
+                            {ViewDollar(totalPagado)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="card border-warning">
+                        <div className="card-body py-2 text-center">
+                          <div className="text-muted small">Saldo Pendiente</div>
+                          <div className="fs-5 fw-bold text-warning">
+                            {ViewDollar(saldoPendiente)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="card border-primary">
+                        <div className="card-body py-2 text-center">
+                          <div className="text-muted small">Total Factura</div>
+                          <div className="fs-5 fw-bold text-primary">
+                            {ViewDollar(Factura?.total_monto || 0)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+
           {Factura?.signature && (
             <>
               <hr />

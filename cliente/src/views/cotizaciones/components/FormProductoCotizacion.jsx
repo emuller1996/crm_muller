@@ -76,6 +76,7 @@ export default function FormProductoCotizacion({ setProductoCotizacion }) {
               columns={[
                 {
                   name: '',
+                  width:"100px",
                   cell: (row) => {
                     return (
                       <>
@@ -93,19 +94,17 @@ export default function FormProductoCotizacion({ setProductoCotizacion }) {
                     )
                   },
                 },
-                { name: 'Nombre Producto', selector: (row) => row?.name ?? '', width: '250px' },
+                { name: 'Nombre Producto', selector: (row) => row?.name ?? '' },
 
                 {
                   name: 'Precio',
                   selector: (row) => row?.price ?? '',
                   format: (row) => ViewDollar(row?.price) ?? '',
-                  width: '150px',
                 },
                 {
                   name: 'Fecha de Actua',
                   selector: (row) =>
                     `${new Date(row?.updatedTime).toLocaleDateString() ?? ''} ${new Date(row?.updatedTime).toLocaleTimeString() ?? ''}`,
-                  width: '160px',
                 },
               ]}
               data={dataP?.data}
