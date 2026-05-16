@@ -1,16 +1,15 @@
 /* eslint-disable prettier/prettier */
 import { Modal, Tab, Tabs } from 'react-bootstrap'
-import React from 'react'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import FacturaCompraPage from './facturas/FacturaCompraPage'
-import { useState } from 'react'
 import FacturasCompraHoyPage from './facturas-hoy/FacturasCompraHoyPage'
-import FormFacturaCompra from './facturas/components/FormFacturaCompra'
 import DetalleFacturaCompra from './facturas/components/DetalleFacturaCompra'
 import FormPagosFacturaCompra from './facturas/components/FormPagosFacturaCompra'
 
 export default function FacturasCompraMainPage() {
+  const navigate = useNavigate()
   const [draw, setDraw] = useState(1)
-  const [show, setShow] = useState(false)
   const [showView, setShowView] = useState(false)
   const [showPago, setShowPago] = useState(false)
   const [FacturaSelecionada, setFacturaSelecionada] = useState(null)
@@ -22,13 +21,11 @@ export default function FacturasCompraMainPage() {
           <div className="my-2">
             <button
               type="button"
-              onClick={() => {
-                setFacturaSelecionada(null)
-                setShow(true)
-              }}
+              onClick={() => navigate('/facturas-compra/nueva')}
               className="btn btn-primary"
               aria-pressed="false"
             >
+              <i className="fa-solid fa-plus me-1"></i>
               Nueva Factura de Compra
             </button>
           </div>
@@ -64,26 +61,6 @@ export default function FacturasCompraMainPage() {
         </div>
       </div>
 
-      <Modal
-        backdrop={'static'}
-        size="xl"
-        fullscreen
-        centered
-        show={show}
-        onHide={() => setShow(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Crear Factura de Compra</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <FormFacturaCompra
-            getAllFacturaCompra={() => {
-              setShow(false)
-              setDraw((status) => ++status)
-            }}
-          />
-        </Modal.Body>
-      </Modal>
       <Modal
         backdrop={'static'}
         size="xl"
