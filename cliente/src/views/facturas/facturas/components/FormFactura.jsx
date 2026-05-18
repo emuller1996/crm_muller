@@ -213,7 +213,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
                   type={'radio'}
                   id={`Transferencia`}
                   name="metodo_pago"
-                  value={'Transferencia'}
+                  value={'transferencia'}
                   hidden
                 />
                 <Form.Check.Label
