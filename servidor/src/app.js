@@ -13,7 +13,10 @@ const server = express();
 
 // Configuración más robusta
 const corsOptions = {
-    origin: 'https://crm.esmuller.cloud',
+    origin:[
+        'https://crm.esmuller.cloud',
+        'https://crm-muller-admin.vercel.app'
+    ],
     credentials: true,
     optionsSuccessStatus: 200
 };

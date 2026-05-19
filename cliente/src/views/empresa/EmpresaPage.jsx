@@ -3,7 +3,6 @@
 import { CContainer } from '@coreui/react'
 import React, { useContext, useEffect, useState } from 'react'
 import { Alert, Button, Form } from 'react-bootstrap'
-import imageCompression from 'browser-image-compression'
 import { useForm } from 'react-hook-form'
 import { useEmpresa } from '../../hooks/useEmpresa'
 import AuthContext from '../../context/AuthContext'
@@ -23,8 +22,6 @@ const EmpresaPage = () => {
   const isSuperUser = user?.role_id === 'super_user'
   const canEdit = isSuperUser
 
-  const [base64Image, setBase64Image] = useState(null)
-  const [ErrorFile, setErrorFile] = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
   const {
@@ -57,50 +54,10 @@ const EmpresaPage = () => {
     }
   }, [empresaData, reset])
 
-  const handleImageChange = async (e) => {
-    if (!canEdit) return
-    try {
-      setErrorFile(null)
-      const file = e.target.files[0]
-      if (!file) return
-
-      const options = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1920,
-        useWebWorker: true,
-        fileType: 'image/webp',
-        initialQuality: 0.8,
-      }
-
-      const compressedFile = await imageCompression(file, options)
-      if (compressedFile) {
-        convertToBase64(compressedFile)
-      }
-    } catch (error) {
-      console.error('Error al procesar imagen:', error.message)
-      e.target.value = ''
-      setErrorFile(error.message)
-    }
-  }
-
-  const convertToBase64 = (file) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onloadend = () => {
-      setBase64Image(reader.result)
-    }
-    reader.onerror = (error) => {
-      console.error('Error al convertir la imagen a Base64:', error)
-    }
-  }
-
   const onSubmit = async (data) => {
     if (!canEdit) {
       toast.error('No tienes permisos para modificar la empresa')
       return
-    }
-    if (base64Image) {
-      data.logo_base64 = base64Image
     }
     setSubmitting(true)
     try {
@@ -111,7 +68,6 @@ const EmpresaPage = () => {
         await establecerConfiguracionEmpresa(data)
         toast.success('Configuracion de la empresa establecida')
       }
-      setBase64Image(null)
       getConfiguracionEmpresa()
     } catch (error) {
       console.log(error)
@@ -121,13 +77,11 @@ const EmpresaPage = () => {
     }
   }
 
-  const logoSrc = base64Image
-    ? base64Image
-    : empresaData?.logo
-      ? empresaData.logo.startsWith('http')
-        ? empresaData.logo
-        : `${API_BASE}${empresaData.logo}`
-      : null
+  const logoSrc = empresaData?.logo
+    ? empresaData.logo.startsWith('http')
+      ? empresaData.logo
+      : `${API_BASE}${empresaData.logo}`
+    : null
 
   return (
     <div>
@@ -168,40 +122,30 @@ const EmpresaPage = () => {
             )}
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              {/* Logo */}
-              <div className="row g-3 mb-3 align-items-center">
-                <div className="col-md-3 text-center">
-                  <div
-                    className="rounded-4 border overflow-hidden mx-auto d-flex align-items-center justify-content-center bg-light"
-                    style={{ width: 120, height: 120 }}
-                  >
-                    {logoSrc ? (
+              {/* Logo - solo lectura */}
+              {logoSrc && (
+                <div className="row g-3 mb-3 align-items-center">
+                  <div className="col-md-3 text-center">
+                    <div
+                      className="rounded-4 border overflow-hidden mx-auto d-flex align-items-center justify-content-center bg-light"
+                      style={{ width: 120, height: 120 }}
+                    >
                       <img
                         src={logoSrc}
                         alt="Logo"
                         style={{ maxWidth: '100%', maxHeight: '100%' }}
                       />
-                    ) : (
-                      <i className="fa-solid fa-image text-muted fs-1"></i>
-                    )}
+                    </div>
+                  </div>
+                  <div className="col-md-9">
+                    <div className="text-muted small">
+                      <i className="fa-solid fa-circle-info me-1"></i>
+                      El logo de la empresa solo puede ser modificado desde el panel de
+                      administracion.
+                    </div>
                   </div>
                 </div>
-                <div className="col-md-9">
-                  <Form.Group controlId="logoCompany">
-                    <Form.Label>Logo de la Empresa</Form.Label>
-                    <Form.Control
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      disabled={!canEdit}
-                    />
-                    <Form.Text className="text-muted">
-                      Se comprimira automaticamente a WebP. Max 1MB.
-                    </Form.Text>
-                    {ErrorFile && <div className="text-danger small mt-1">{ErrorFile}</div>}
-                  </Form.Group>
-                </div>
-              </div>
+              )}
 
               <hr />
               <h6 className="text-muted small text-uppercase">Informacion Legal</h6>
