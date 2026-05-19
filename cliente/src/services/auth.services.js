@@ -17,7 +17,7 @@ export const postRegisterService = async (data) => {
 }
 
 export const getValidateTokensService = async (token) => {
-  return await axios.get(`/auth/validate/`, {
+  return await axios.get(`/auth/validate`, {
     headers: {
       'access-token': token,
     },
