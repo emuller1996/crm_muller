@@ -325,3 +325,86 @@ export function getHTMLRespuestaEmailDetail(data) {
 
   return HTML;
 }
+
+export function getHTMLActivityReminder(activity, user) {
+  const formatDate = (d) => {
+    if (!d) return "-";
+    const date = new Date(d);
+    return `${date.toLocaleDateString("es-CO")} ${date.toLocaleTimeString("es-CO", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`;
+  };
+
+  const titulo = activity?.titulo ?? "Sin titulo";
+  const descripcion = activity?.descripcion ?? "";
+  const fechaInicio = formatDate(activity?.fecha_inicio);
+  const fechaFin = formatDate(activity?.fecha_fin);
+  const estado = activity?.estado ?? "Pendiente";
+  const userName = user?.name ?? "Usuario";
+
+  return `<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recordatorio de Actividad</title>
+    <style>
+      * { font-family: Tahoma, sans-serif; box-sizing: border-box; }
+      body { margin: 0; padding: 0; background: #f5f6fa; }
+      .container { margin: 24px auto; width: 95%; max-width: 640px; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+      .header { background: linear-gradient(135deg, #2563eb, #1e40af); color: #fff; padding: 28px 24px; text-align: center; }
+      .header h1 { margin: 0; font-size: 22px; font-weight: 700; }
+      .header p { margin: 8px 0 0; font-size: 14px; opacity: 0.9; }
+      .body { padding: 24px; color: #333; font-size: 14px; line-height: 1.6; }
+      .greeting { font-size: 16px; margin-bottom: 16px; }
+      .card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin: 16px 0; background: #fafafa; }
+      .card h3 { margin: 0 0 8px; color: #1e40af; font-size: 16px; }
+      .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #efefef; }
+      .row:last-child { border-bottom: none; }
+      .row .label { color: #6b7280; font-size: 13px; }
+      .row .value { color: #111827; font-size: 13px; font-weight: 600; text-align: right; }
+      .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #fef3c7; color: #92400e; }
+      .footer { background: #f9fafb; padding: 16px 24px; text-align: center; color: #6b7280; font-size: 12px; }
+      .alert { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 14px; border-radius: 6px; color: #78350f; font-size: 13px; margin-top: 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>📋 Recordatorio de Actividad Pendiente</h1>
+        <p>Tienes una tarea por terminar</p>
+      </div>
+      <div class="body">
+        <p class="greeting">Hola <strong>${userName}</strong>,</p>
+        <p>Te recordamos que tienes la siguiente actividad <strong>pendiente</strong> en el sistema CRM Muller. Por favor revisa los detalles y completala lo antes posible.</p>
+
+        <div class="card">
+          <h3>${titulo}</h3>
+          ${descripcion ? `<p style="margin:8px 0 12px; color:#4b5563;">${descripcion}</p>` : ""}
+          <div class="row">
+            <span class="label">Estado</span>
+            <span class="value"><span class="badge">${estado}</span></span>
+          </div>
+          <div class="row">
+            <span class="label">Fecha de Inicio</span>
+            <span class="value">${fechaInicio}</span>
+          </div>
+          <div class="row">
+            <span class="label">Fecha de Fin</span>
+            <span class="value">${fechaFin}</span>
+          </div>
+        </div>
+
+        <div class="alert">
+          ⚠️ Esta actividad esta marcada como <strong>Pendiente</strong>. Recuerda actualizar su estado una vez la hayas completado.
+        </div>
+      </div>
+      <div class="footer">
+        Este es un recordatorio automatico de CRM Muller.<br/>
+        Si crees que recibiste este correo por error, ignoralo.
+      </div>
+    </div>
+  </body>
+</html>`;
+}

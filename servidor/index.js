@@ -1,4 +1,7 @@
 import server from "./src/app.js";
+import initializeJobs from "./src/jobs/index.js";
+
+initializeJobs();
 
 server.listen(process.env.PORT, () => {
   console.log(`Server listening at port ${process.env.PORT}`); // eslint-disable-line no-console
