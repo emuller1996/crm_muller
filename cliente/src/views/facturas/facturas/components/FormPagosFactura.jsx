@@ -178,7 +178,7 @@ export default function FormPagosFactura({ Factura }) {
                   type={'radio'}
                   id={`Transferencia`}
                   name="metodo_pago"
-                  value={'Transferencia'}
+                  value={'transferencia'}
                   hidden
                 />
                 <Form.Check.Label

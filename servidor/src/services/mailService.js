@@ -2,7 +2,7 @@ import { createTransport } from "nodemailer";
 import "dotenv/config";
 import { getHTMLOrderDetail, getHTMLRespuestaEmailDetail } from "./MailUtils.js";
 // Configurar el transporte SMTP de IONOS
-const transporter = createTransport({
+export const transporter = createTransport({
   host: "smtp.ionos.com", // Servidor SMTP de IONOS
   port: 465, // Puerto seguro SSL
   secure: true, // true para SSL, false para STARTTLS
