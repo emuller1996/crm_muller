@@ -11,7 +11,22 @@ import { auditLogMiddleware } from "./middleware/auditLog.middleware.js";
 dotenv.config();
 const server = express();
 
-server.use(cors());
+// Configuración más robusta
+const corsOptions = {
+    origin: 'https://crm.esmuller.cloud',
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
+server.use(cors(corsOptions));
+
+// Middleware para asegurar CORS incluso en errores
+server.use((err, req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://crm.esmuller.cloud');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next(err);
+});
+
 server.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 server.use(bodyParser.json({ limit: "50mb" }));
 server.use(cookieParser());
