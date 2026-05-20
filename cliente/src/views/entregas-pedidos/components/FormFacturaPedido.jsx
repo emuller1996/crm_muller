@@ -9,6 +9,7 @@ import { usePedidos } from '../../../hooks/usePedidos'
 import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
 import { ViewDollar } from '../../../utils'
+import moment from 'moment-timezone'
 
 export default function FormFacturaPedido({ pedido, onHide, onSuccess }) {
   FormFacturaPedido.propTypes = {
@@ -25,6 +26,9 @@ export default function FormFacturaPedido({ pedido, onHide, onSuccess }) {
     formState: { errors, isSubmitting },
   } = useForm()
 
+  const currentDate = moment.utc()
+  const localDate = currentDate.tz('America/Bogota')
+
   const { crearFactura } = useFacturas()
   const { actualizarPedidos } = usePedidos()
 
@@ -33,7 +37,7 @@ export default function FormFacturaPedido({ pedido, onHide, onSuccess }) {
     data.client_id = pedido.client_id
     data.pedido_id = pedido._id
     data.total_monto = pedido.total_monto
-    data.dia_venta = new Date().toISOString().split('T')[0]
+    data.dia_venta = localDate.format().split('T')[0]
     try {
       await crearFactura(data)
       // Actualizar estado del pedido a Facturado
