@@ -8,6 +8,7 @@ import { stylesSelect, themeSelect } from '../../../utils/optionsConfig'
 import { useFacturas } from '../../../hooks/useFacturas'
 import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
+import moment from 'moment-timezone'
 
 export default function FormFacturaCotizacion({ CotiSelecionada, getAllCotizacion }) {
   FormFacturaCotizacion.propTypes = {
@@ -23,6 +24,9 @@ export default function FormFacturaCotizacion({ CotiSelecionada, getAllCotizacio
     formState: { errors },
   } = useForm()
 
+  const currentDate = moment.utc()
+  const localDate = currentDate.tz('America/Bogota')
+
   const { crearFactura } = useFacturas()
 
   const onSubmit = async (data) => {
@@ -30,7 +34,7 @@ export default function FormFacturaCotizacion({ CotiSelecionada, getAllCotizacio
     data.client_id = CotiSelecionada.client_id
     data.cotizacion_id = CotiSelecionada._id
     data.total_monto = CotiSelecionada.total_monto
-    data.dia_venta = new Date().toISOString().split('T')[0]
+    data.dia_venta = localDate.format().split('T')[0]
     try {
       await crearFactura(data)
       getAllCotizacion()
