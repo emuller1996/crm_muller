@@ -12,9 +12,10 @@ import CurrencyInput from 'react-currency-input-field'
 import FormDetailProducto from './FormDetailProducto'
 import PropTypes from 'prop-types'
 
-export default function FormProductoCotizacion({ setProductoCotizacion }) {
+export default function FormProductoCotizacion({ setProductoCotizacion, isCompra = false }) {
   FormProductoCotizacion.propTypes = {
     setProductoCotizacion: PropTypes.func,
+    isCompra: PropTypes.bool,
   }
   const {
     getAllProductos,
@@ -149,6 +150,7 @@ export default function FormProductoCotizacion({ setProductoCotizacion }) {
             setProductoSelecionado={setProductoSelecionado}
             ProductoSelecionado={ProductoSelecionado}
             setProductoCotizacion={setProductoCotizacion}
+            isCompra={isCompra}
           />
         </>
       )}

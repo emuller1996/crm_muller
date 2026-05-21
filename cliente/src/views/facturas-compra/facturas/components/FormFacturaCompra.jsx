@@ -314,7 +314,7 @@ export default function FormFacturaCompra({ getAllFacturaCompra, onCancel, Factu
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FormProductoCotizacion setProductoCotizacion={setProductoCotizacion} />
+          <FormProductoCotizacion  isCompra={true} setProductoCotizacion={setProductoCotizacion} />
         </Modal.Body>
         <Modal.Footer>
           <Button
