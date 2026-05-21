@@ -10,7 +10,7 @@ const initializeJobs = () => {
     // Recordatorios de actividades pendientes: 8 AM y 8 PM (hora del servidor)
     schedule('0 8,20 * * *', async () => {
         await validatePendingActivities();
-    });
+    },{timezone:"America/Bogota"});
 
     console.log("✅ Cron Jobs registrados correctamente.");
 };
