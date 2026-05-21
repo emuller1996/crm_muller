@@ -6,11 +6,17 @@ import { Controller, useForm } from 'react-hook-form'
 import CurrencyInput from 'react-currency-input-field'
 import PropTypes from 'prop-types'
 
-export default function FormDetailProducto({ ProductoSelecionado, setProductoSelecionado,setProductoCotizacion }) {
+export default function FormDetailProducto({
+  ProductoSelecionado,
+  setProductoSelecionado,
+  setProductoCotizacion,
+  isCompra,
+}) {
   FormDetailProducto.propTypes = {
     ProductoSelecionado: PropTypes.object,
     setProductoSelecionado: PropTypes.func,
     setProductoCotizacion: PropTypes.func,
+    isCompra: PropTypes.bool,
   }
 
   const {
@@ -25,11 +31,10 @@ export default function FormDetailProducto({ ProductoSelecionado, setProductoSel
     data.product_name = ProductoSelecionado.name
     data.cantidad = parseFloat(data.cantidad)
 
+    console.log(data)
 
-    console.log(data);
-
-    setProductoCotizacion(status =>{
-        return [...status,{...data}]
+    setProductoCotizacion((status) => {
+      return [...status, { ...data }]
     })
     setProductoSelecionado(null)
   }
@@ -54,40 +59,71 @@ export default function FormDetailProducto({ ProductoSelecionado, setProductoSel
               placeholder=""
             />
           </div>
-          <div>
-            <Form.Label>Precio</Form.Label>
-            <Controller
-              control={control}
-              name="price"
-              defaultValue={ProductoSelecionado ? ProductoSelecionado?.price : 0}
-              rules={{ required: 'el Precio es requerido' }}
-              render={({ field: { name, onChange, ref, value } }) => {
-                return (
-                  <CurrencyInput
-                    ref={ref}
-                    className="form-control"
-                    id={name}
-                    name={name}
-                    value={value}
-                    placeholder=""
-                    decimalsLimit={2}
-                    prefix="$"
-                    intlConfig={{ locale: 'en-US', currency: 'GBP' }}
-                    onValueChange={(value, name, values) => {
-                      console.log(value, name, values)
-                      onChange(values.float)
-                    }}
-                  />
-                )
-              }}
-            />
-          </div>
+          {isCompra ? (
+            <div>
+              <Form.Label>Costo</Form.Label>
+              <Controller
+                control={control}
+                name="price"
+                defaultValue={ProductoSelecionado ? ProductoSelecionado?.cost : 0}
+                rules={{ required: 'El Costo es requerido' }}
+                render={({ field: { name, onChange, ref, value } }) => {
+                  return (
+                    <CurrencyInput
+                      ref={ref}
+                      className="form-control"
+                      id={name}
+                      name={name}
+                      value={value}
+                      placeholder=""
+                      decimalsLimit={2}
+                      prefix="$"
+                      intlConfig={{ locale: 'en-US', currency: 'GBP' }}
+                      onValueChange={(value, name, values) => {
+                        console.log(value, name, values)
+                        onChange(values.float)
+                      }}
+                    />
+                  )
+                }}
+              />
+            </div>
+          ) : (
+            <div>
+              <Form.Label>Precio</Form.Label>
+              <Controller
+                control={control}
+                name="price"
+                defaultValue={ProductoSelecionado ? ProductoSelecionado?.price : 0}
+                rules={{ required: 'el Precio es requerido' }}
+                render={({ field: { name, onChange, ref, value } }) => {
+                  return (
+                    <CurrencyInput
+                      ref={ref}
+                      className="form-control"
+                      id={name}
+                      name={name}
+                      value={value}
+                      placeholder=""
+                      decimalsLimit={2}
+                      prefix="$"
+                      intlConfig={{ locale: 'en-US', currency: 'GBP' }}
+                      onValueChange={(value, name, values) => {
+                        console.log(value, name, values)
+                        onChange(values.float)
+                      }}
+                    />
+                  )
+                }}
+              />
+            </div>
+          )}
 
           <div className="mt-3 text-center">
             <Button variant="danger" onClick={() => setProductoSelecionado(null)}>
               Cancelar
             </Button>
-            <Button variant="primary" className='ms-2' type='submit' >
+            <Button variant="primary" className="ms-2" type="submit">
               Agregar
             </Button>
           </div>
