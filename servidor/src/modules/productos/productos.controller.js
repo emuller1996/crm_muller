@@ -99,11 +99,6 @@ export const getImages = async (req, res) => {
   res.json(await service.getImages(req.params.id));
 };
 
-export const createConsulta = async (req, res) => {
-  const decoded = jwtDecode(req.headers["authorization"]);
-  await service.createConsulta(req.params.id, req.body, decoded._id);
-  res.status(201).json({ message: "Consulta creada" });
-};
 
 export const getConsultas = async (req, res) => {
   res.json(await service.getConsultas(req.params.id));

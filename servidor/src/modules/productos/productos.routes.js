@@ -1,6 +1,5 @@
 import { Router } from "express";
 import * as controller from "./productos.controller.js";
-import { validateTokenClientMid } from "../../utils/authjws.js";
 import { checkPermission } from "../../middleware/acl.middleware.js";
 
 const router = Router();
@@ -22,11 +21,6 @@ router.post("/stock/:idStock/validate", controller.validateStock);
 router.post("/:id/images", controller.createImage);
 router.get("/:id/images", controller.getImages); */
 
-router.post(
-  "/:id/consultas",
-  validateTokenClientMid,
-  controller.createConsulta
-);
 router.get("/:id/consultas", controller.getConsultas);
 
 router.post("/import-excel", controller.importExcel);
