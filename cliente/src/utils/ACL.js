@@ -73,5 +73,11 @@ export const ACL_APP = {
       update: { text: 'Actualizar' },
       delete: { text: 'Borrar' },
     },
+    metricas: {
+      read: { text: 'Leer' },
+      create: { text: 'Crear' },
+      update: { text: 'Actualizar' },
+      delete: { text: 'Borrar' },
+    },
   },
 }
