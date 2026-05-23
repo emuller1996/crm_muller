@@ -97,6 +97,12 @@ const _nav = [
     icon: <i style={{ width: '30px' }} className="fa-solid fa-cash-register nav-icon"></i>,
   },
   {
+    component: CNavItem,
+    name: 'Metricas',
+    to: '/metricas',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-chart-line nav-icon"></i>,
+  },
+  {
     component: CNavTitle,
     name: 'Configuraciones',
   },
