@@ -11,4 +11,11 @@ router.get("/top-clientes", controller.getTopClientes);
 router.get("/stock-bajo", controller.getStockBajo);
 router.get("/caja-hoy", controller.getCajaHoy);
 
+// Metricas detalladas por tab
+router.get("/ventas", controller.getMetricasVentas);
+router.get("/compras", controller.getMetricasCompras);
+router.get("/productos", controller.getMetricasProductos);
+router.get("/clientes", controller.getMetricasClientes);
+router.get("/proveedores", controller.getMetricasProveedores);
+
 export default router;

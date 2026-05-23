@@ -59,3 +59,70 @@ export const getCajaHoy = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// ─── Metricas detalladas por tab ────────────────────────────────────────────
+
+export const getMetricasVentas = async (req, res) => {
+  try {
+    res.json(
+      await service.getMetricasVentas({
+        ...req.query,
+        empresa_id: req.empresaId,
+      }),
+    );
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getMetricasCompras = async (req, res) => {
+  try {
+    res.json(
+      await service.getMetricasCompras({
+        ...req.query,
+        empresa_id: req.empresaId,
+      }),
+    );
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getMetricasProductos = async (req, res) => {
+  try {
+    res.json(
+      await service.getMetricasProductos({
+        ...req.query,
+        empresa_id: req.empresaId,
+      }),
+    );
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getMetricasClientes = async (req, res) => {
+  try {
+    res.json(
+      await service.getMetricasClientes({
+        ...req.query,
+        empresa_id: req.empresaId,
+      }),
+    );
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getMetricasProveedores = async (req, res) => {
+  try {
+    res.json(
+      await service.getMetricasProveedores({
+        ...req.query,
+        empresa_id: req.empresaId,
+      }),
+    );
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
