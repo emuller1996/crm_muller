@@ -6,14 +6,16 @@ import PropTypes from 'prop-types'
 import { useProductos } from '../../../hooks/useProductos'
 import * as XLSX from 'xlsx'
 
-const COLUMNAS_PLANTILLA = ['name', 'description', 'price', 'cost', 'gender', 'reference']
+const COLUMNAS_PLANTILLA = ['name', 'description', 'price', 'cost', 'gender', 'code', 'category','stock']
 const COLUMNAS_LABELS = {
   name: 'Nombre',
+  code: 'Codigo Producto',
   description: 'Descripcion',
   price: 'Precio',
   cost: 'Costo',
   gender: 'Genero (men/women/kid)',
-  reference: 'Referencia',
+  category :"Categoria",
+  stock:"Existencia",
 }
 
 export default function FormImportProductos({ onHide, onSuccess }) {

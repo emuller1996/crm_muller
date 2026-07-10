@@ -1,6 +1,8 @@
 import xlsx from "xlsx";
+import { jwtDecode } from "jwt-decode";
 import { client } from "../../db.js";
 import {
+  buscarElasticByTypeAndBusiness,
   crearElasticByType,
   createInMasaDocumentByType,
   getDocumentById,
@@ -150,31 +152,90 @@ export const update = async (id, data) => {
   }
 };
 
-export const importExcel = async (files, empresaId) => {
+export const importExcel = async (files, empresaId, token) => {
   const file = files?.file;
   if (!file) throw new Error("No se ha seleccionado ningún archivo");
 
   const workbook = xlsx.readFile(file.tempFilePath);
-  let data = xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+  const data = xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 
   if (data.length === 0) throw new Error("El archivo no contiene datos");
 
-  data = data.map((d) => ({ ...d, published: false, empresa_id: empresaId }));
-  const result = await createInMasaDocumentByType(data, "producto");
+  // Precargar categorías de la empresa: mapa nombreNormalizado -> category_id
+  const categorias = await buscarElasticByTypeAndBusiness("categoria", empresaId);
+  const categoriaMap = new Map();
+  categorias.forEach((c) => {
+    if (c?.name) categoriaMap.set(String(c.name).trim().toLowerCase(), c._id);
+  });
+
+  // Usuario que registra los movimientos (opcional)
+  let userCreateId = null;
+  try {
+    if (token) userCreateId = jwtDecode(token)?._id ?? null;
+  } catch (e) {
+    userCreateId = null;
+  }
 
   const errores = [];
   let insertados = 0;
-  if (result.items) {
-    result.items.forEach((item, i) => {
-      const op = Object.keys(item)[0];
-      if (item[op].error) {
-        errores.push({ fila: i + 2, error: item[op].error.reason || "Error desconocido" });
-      } else {
-        insertados++;
+
+  for (let i = 0; i < data.length; i++) {
+    const row = data[i];
+    try {
+      const { category, stock, ...resto } = row;
+
+      // Resolver / crear categoría por nombre
+      let categoryId = undefined;
+      const categoriaNombre = category != null ? String(category).trim() : "";
+      if (categoriaNombre !== "") {
+        const key = categoriaNombre.toLowerCase();
+        categoryId = categoriaMap.get(key);
+        if (!categoryId) {
+          const respCat = await crearElasticByType(
+            { name: categoriaNombre, empresa_id: empresaId },
+            "categoria",
+          );
+          categoryId = respCat.body._id;
+          categoriaMap.set(key, categoryId);
+        }
       }
-    });
-  } else {
-    insertados = data.length;
+
+      // Crear producto (stock no se guarda en el producto)
+      const producto = {
+        ...resto,
+        published: false,
+        empresa_id: empresaId,
+      };
+      if (categoryId) producto.category_id = categoryId;
+
+      const respProd = await crearElasticByType(producto, "producto");
+      const productoId = respProd.body._id;
+
+      // Generar movimiento de inventario por las existencias iniciales
+      const cantidad = Number(stock);
+      if (!Number.isNaN(cantidad) && cantidad > 0) {
+        await crearElasticByType(
+          {
+            producto_id: productoId,
+            nombre_producto: producto.name ?? "",
+            tipo: "entrada",
+            cantidad,
+            descripcion: "Importación inicial",
+            nota: "",
+            origen: "importacion",
+            referencia: "",
+            estado: "activo",
+            empresa_id: empresaId,
+            user_create_id: userCreateId,
+          },
+          "movimiento_inventario",
+        );
+      }
+
+      insertados++;
+    } catch (error) {
+      errores.push({ fila: i + 2, error: error.message || "Error desconocido" });
+    }
   }
 
   return {

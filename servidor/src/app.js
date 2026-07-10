@@ -22,7 +22,7 @@ const corsOptions = {
     optionsSuccessStatus: 200
 };
 
-server.use(cors(corsOptions));
+server.use(cors());
 
 // Middleware para asegurar CORS incluso en errores
 server.use((err, req, res, next) => {
