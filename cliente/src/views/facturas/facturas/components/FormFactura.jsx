@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Alert, Button, Form, Modal, Spinner } from 'react-bootstrap'
 import { Controller, useForm } from 'react-hook-form'
 import AsyncSelect from 'react-select/async'
@@ -42,6 +42,8 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
   const [isPending, setPending] = useState(false)
 
   const onSubmit = async (data) => {
+    console.log(ProductoCotizacion);
+    
     if (ProductoCotizacion.length === 0) {
       toast.error(`Selecione al menos un producto a la Factura`)
       return
@@ -92,6 +94,33 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
     }
   }
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      // F3 keyCode = 114, F4 keyCode = 115
+      if (event.key === 'F3') {
+        event.preventDefault(); // Evita comportamiento por defecto del navegador
+        setShowProductosModal(true)
+      }
+
+      if (event.key === 'F2' ) {
+        event.preventDefault(); // Evita comportamiento por defecto del navegador
+        setShowProductosModal(false)
+      }
+
+      if (event.key === 'F4') {
+        event.preventDefault(); // Evita comportamiento por defecto del navegador
+        handleSubmit(onSubmit)()
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleSubmit, onSubmit, ProductoCotizacion]);
+
   return (
     <>
       <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
@@ -126,6 +155,11 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
                 />
               )}
             />
+            {errors?.client_id && (
+              <Alert variant={'warning'} className="mt-2 py-1 px-2 small">
+                Elige un cliente.
+              </Alert>
+            )}
           </div>
 
           <div className="col-md-6">
@@ -138,8 +172,8 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
               render={({ field: { name, onChange, ref } }) => (
                 <Select
                   options={[
-                    { label: 'Pendiente', value: 'Pendiente' },
                     { label: 'Pagada', value: 'Pagada' },
+                    { label: 'Pendiente', value: 'Pendiente' },
                   ]}
                   defaultValue={{ label: 'Pagada', value: 'Pagada' }}
                   placeholder="Selecione un Estado"
@@ -156,7 +190,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
             />
           </div>
 
-          <div className="col-12">
+          <div className="col-md-7">
             <label className="form-label">Metodo de Pago</label>
             <div className="d-flex gap-3 flex-wrap">
               <Form.Check className="p-0">
@@ -233,11 +267,13 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
                 </Form.Check.Label>
               </Form.Check>
             </div>
+            <div className='col-8'>
             {errors?.metodo_pago && (
               <Alert variant={'warning'} className="mt-2 py-1 px-2 small">
                 Elige un Metodo de Pago.
               </Alert>
             )}
+            </div>
           </div>
 
           {isPending && (
@@ -268,7 +304,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
             onClick={() => setShowProductosModal(true)}
           >
             <i className="fa-solid fa-plus me-1"></i>
-            Agregar Productos
+            Agregar Productos (F3)
           </Button>
         </div>
 
@@ -394,7 +430,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
         <Modal.Footer>
           <Button variant="success" className="text-white" onClick={() => setShowProductosModal(false)}>
             <i className="fa-solid fa-check me-1"></i>
-            Listo ({ProductoCotizacion.length} productos)
+            Listo [{ProductoCotizacion.length} productos] (F2)
           </Button>
         </Modal.Footer>
       </Modal>

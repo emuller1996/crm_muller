@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 
 import { Button, Card, Form } from 'react-bootstrap'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import CurrencyInput from 'react-currency-input-field'
 import PropTypes from 'prop-types'
@@ -38,6 +38,14 @@ export default function FormDetailProducto({
     })
     setProductoSelecionado(null)
   }
+
+  const inputCantidad = useRef()
+  useEffect(() => {
+    //inputCantidad.current.focus()
+    console.log(control._fields.cantidad._f.ref.focus());
+    
+  }, [])
+
   return (
     <Card>
       <Card.Body>
@@ -54,6 +62,7 @@ export default function FormDetailProducto({
             <Form.Control
               type="number"
               id="cantidad"
+              itemRef={inputCantidad}
               defaultValue={1}
               {...register('cantidad', { required: true })}
               placeholder=""
