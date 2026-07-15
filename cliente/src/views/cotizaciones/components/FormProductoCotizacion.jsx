@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React from 'react'
+import React, { useRef } from 'react'
 import DataTable from 'react-data-table-component'
 import { useProductos } from '../../../hooks/useProductos'
 import { useEffect } from 'react'
@@ -39,6 +39,12 @@ export default function FormProductoCotizacion({ setProductoCotizacion, isCompra
     getAllProductosPagination(dataFilter)
   }, [dataFilter])
 
+  const inputSearch = useRef()
+
+  useEffect(()=>{
+    inputSearch.current.focus()
+  },[])
+
   return (
     <>
       {error && (
@@ -57,6 +63,7 @@ export default function FormProductoCotizacion({ setProductoCotizacion, isCompra
                 <input
                   placeholder="Busque Producto por Nombre, Categoria y Marca"
                   type="text"
+                  ref={inputSearch}
                   aria-label="First name"
                   className="form-control"
                   value={dataFilter.search}
