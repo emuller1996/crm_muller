@@ -787,7 +787,7 @@ export const getMetricasProductos = async ({
     size: 10000,
     body: {
       query: { bool: { must: filterProductos } },
-      _source: ["name", "price", "costo", "category_id"],
+      _source: ["name", "price", "cost", "category_id"],
     },
   });
 
@@ -854,7 +854,7 @@ export const getMetricasProductos = async ({
   const margenes = productosCatalogo
     .map((p) => {
       const price = Number(p.price) || 0;
-      const costo = Number(p.costo) || 0;
+      const costo = Number(p.cost) || 0;
       const margen = price - costo;
       const margen_pct = price > 0 ? (margen / price) * 100 : 0;
       return {

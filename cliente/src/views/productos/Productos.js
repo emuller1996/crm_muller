@@ -78,25 +78,6 @@ const ProductosPage = () => {
           <div className="row g-3 align-items-end">
             <div className="col-md-3">
               <div>
-                <Form.Label htmlFor="gender">Genero</Form.Label>
-                <Select
-                  name={'gender'}
-                  placeholder=""
-                  onChange={(e) => {
-                    console.log(e)
-                    setdataFilter((status) => {
-                      return { ...status, gender: e?.value ?? '', page: 1 }
-                    })
-                  }}
-                  styles={stylesSelect}
-                  theme={themeSelect}
-                  options={genderOptions}
-                  isClearable
-                />
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div>
                 <Form.Label htmlFor="category">Categoria</Form.Label>
                 <Select
                   name={'category'}
