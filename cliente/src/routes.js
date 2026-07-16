@@ -12,6 +12,7 @@ const EmpresaPage = React.lazy(() => import('./views/empresa/EmpresaPage'))
 const FacturasMainPage = React.lazy(() => import('./views/facturas'))
 const FacturaCreatePage = React.lazy(() => import('./views/facturas/FacturaCreatePage'))
 const CotizacionPage = React.lazy(() => import('./views/cotizaciones/CotizacionPage'))
+const CotizacionFormPage = React.lazy(() => import('./views/cotizaciones/CotizacionFormPage'))
 const RolesPage = React.lazy(() => import('./views/usuarios/pages/RolesPage'))
 const ActividadesPage = React.lazy(() => import('./views/actividades/ActividadesPage'))
 const ProveedoresPage = React.lazy(() => import('./views/proveedores/ProveedoresPage'))
@@ -33,6 +34,8 @@ const routes = [
   { path: '/facturas', name: 'Facturas', element: FacturasMainPage },
   { path: '/facturas/nueva', name: 'Nueva Factura', element: FacturaCreatePage },
   { path: '/cotizaciones', name: 'Cotizaciones', element: CotizacionPage },
+  { path: '/cotizaciones/nueva', name: 'Nueva Cotización', element: CotizacionFormPage },
+  { path: '/cotizaciones/:id/editar', name: 'Editar Cotización', element: CotizacionFormPage },
   { path: '/empresa', name: 'Empresa Config', element: EmpresaPage },
   { path: '/pedidos', name: 'Entregas - Pedidos', element: EntregasPages },
   { path: '/actividades', name: 'Actividades', element: ActividadesPage },
