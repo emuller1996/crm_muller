@@ -10,13 +10,15 @@ export default function FormDetailProducto({
   ProductoSelecionado,
   setProductoSelecionado,
   setProductoCotizacion,
-  isCompra,
+  isCompra= false,
+  isVenta= false,
 }) {
   FormDetailProducto.propTypes = {
     ProductoSelecionado: PropTypes.object,
     setProductoSelecionado: PropTypes.func,
     setProductoCotizacion: PropTypes.func,
     isCompra: PropTypes.bool,
+    isVenta: PropTypes.bool,
   }
 
   const {
@@ -30,8 +32,9 @@ export default function FormDetailProducto({
     data.product_id = ProductoSelecionado._id
     data.product_name = ProductoSelecionado.name
     data.cantidad = parseFloat(data.cantidad)
-
-    console.log(data)
+    if(isVenta){
+      data.cost = parseFloat(ProductoSelecionado.cost)
+    }
 
     setProductoCotizacion((status) => {
       return [...status, { ...data }]

@@ -1,18 +1,18 @@
 /* eslint-disable prettier/prettier */
 import React, { useEffect } from 'react'
 import { Modal } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
 import DataTable from 'react-data-table-component'
 import { paginationComponentOptions } from '../../utils/optionsConfig'
 import { ViewDollar } from '../../utils'
 import { useState } from 'react'
-import FormCotizacion from './components/FormCotizacion'
 import { useCotizacion } from '../../hooks/useCotizacion'
 import toast from 'react-hot-toast'
 import FormSignedCotizacion from './components/FormSignedCotizacion'
 import FormFacturaCotizacion from './components/FormFacturaCotizacion'
 import PropTypes from 'prop-types'
 export default function CotizacionPage() {
-  const [show, setShow] = useState(false)
+  const navigate = useNavigate()
   const [showView, setShowView] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showFirma, setShowFirma] = useState(false)
@@ -38,13 +38,11 @@ export default function CotizacionPage() {
       <div className="my-2">
         <button
           type="button"
-          onClick={() => {
-            setCotiSelecionada(null)
-            setShow(true)
-          }}
+          onClick={() => navigate('/cotizaciones/nueva')}
           className="btn btn-primary"
           aria-pressed="false"
         >
+          <i className="fa-solid fa-plus me-1"></i>
           Nueva Cotización
         </button>
       </div>
@@ -74,8 +72,9 @@ export default function CotizacionPage() {
                         <>
                           <button
                             onClick={() => {
-                              setShow(true)
-                              setCotiSelecionada(row)
+                              navigate(`/cotizaciones/${row._id}/editar`, {
+                                state: { cotizacion: row },
+                              })
                             }}
                             type="button"
                             className="btn btn-outline-info  btn-sm"
@@ -197,21 +196,6 @@ export default function CotizacionPage() {
           }} */
         />
       </div>
-      <Modal fullscreen backdrop={'static'} size="xl" centered show={show} onHide={() => setShow(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Crear Cotización</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <FormCotizacion
-            CotiSelecionada={CotiSelecionada}
-            getAllCotizacion={ async() => {
-              setShow(false)
-              setDraw((status) => ++status)
-            }}
-            //ProductoCotizacion={ProductoCotizacion}
-          />
-        </Modal.Body>
-      </Modal>
 
       <Modal
         backdrop={'static'}

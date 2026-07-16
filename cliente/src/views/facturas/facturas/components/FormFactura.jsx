@@ -245,7 +245,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
                 <Form.Check.Input
                   {...register('metodo_pago', { required: true })}
                   type={'radio'}
-                  id={`Transferencia`}
+                  id={`transferencia`}
                   name="metodo_pago"
                   value={'transferencia'}
                   hidden
@@ -257,10 +257,10 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
                     borderRadius: '0.4em',
                     cursor: 'pointer',
                     borderColor:
-                      watch().metodo_pago === 'Transferencia' ? '#436efd' : '#acacac',
-                    color: watch().metodo_pago === 'Transferencia' ? '#436efd' : '#303030',
+                      watch().metodo_pago === 'transferencia' ? '#436efd' : '#acacac',
+                    color: watch().metodo_pago === 'transferencia' ? '#436efd' : '#303030',
                   }}
-                  htmlFor="Transferencia"
+                  htmlFor="transferencia"
                 >
                   Transferencia
                   <i className="fa-xl fa-solid fa-money-bill-transfer ms-2"></i>
