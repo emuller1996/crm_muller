@@ -40,10 +40,10 @@ const AppSidebar = () => {
         dispatch(setState({ sidebarShow: visible }))
       }}
     >
-      <CSidebarHeader className="border-bottom">
+      <CSidebarHeader className="border-bottom d-md-flex justify-content-md-center" style={{padding:"12px"}}>
         <CSidebarBrand to="/">
           {/* <CIcon customClassName="sidebar-brand-full" icon={logo2} height={32} width={32} /> */}
-          <img className="sidebar-brand-full" src={Logo_Side} height={50} width={150} />
+          <img className="sidebar-brand-full" src={Logo_Side} height={80} width={80} />
           <img className="sidebar-brand-narrow" src={logo2} height={32} width={32} />
 
           {/* <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} /> */}
