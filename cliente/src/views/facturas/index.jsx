@@ -13,12 +13,20 @@ export default function FacturasMainPage() {
   const [showView, setShowView] = useState(false)
   const [showPago, setShowPago] = useState(false)
   const [CotiSelecionada, setCotiSelecionada] = useState(null)
+  const [ticketAncho, setTicketAncho] = useState(
+    Number(localStorage.getItem('ticket_ancho_mm')) || 80,
+  )
+
+  const handleAnchoChange = (value) => {
+    setTicketAncho(value)
+    localStorage.setItem('ticket_ancho_mm', String(value))
+  }
 
   return (
     <>
       <div className="card">
         <div className="card-body">
-          <div className="my-2">
+          <div className="my-2 d-flex align-items-center justify-content-between flex-wrap gap-2">
             <button
               type="button"
               onClick={() => navigate('/facturas/nueva')}
@@ -28,6 +36,24 @@ export default function FacturasMainPage() {
               <i className="fa-solid fa-plus me-1"></i>
               Nueva Factura
             </button>
+            <div className="d-flex align-items-center gap-2">
+              <span className="small text-muted">
+                <i className="fa-solid fa-receipt me-1"></i>
+                Ancho ticket:
+              </span>
+              <div className="btn-group btn-group-sm" role="group" aria-label="Ancho de ticket">
+                {[58, 80].map((mm) => (
+                  <button
+                    key={mm}
+                    type="button"
+                    className={`btn ${ticketAncho === mm ? 'btn-dark' : 'btn-outline-dark'}`}
+                    onClick={() => handleAnchoChange(mm)}
+                  >
+                    {mm}mm
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           <Tabs defaultActiveKey="facturas_hoy" id="uncontrolled-tab-example">
             <Tab eventKey="facturas_hoy" title="Facturas de Hoy">

@@ -9,6 +9,7 @@ import { ViewDollar } from '../../../utils'
 import toast from 'react-hot-toast'
 import { useFacturas } from '../../../hooks/useFacturas'
 import { useFacturaPDF } from '../../../hooks/useFacturaPDF'
+import { useFacturaTicket } from '../../../hooks/useFacturaTicket'
 import { useClientes } from '../../../hooks/useClientes'
 import PropTypes from 'prop-types'
 import Chip from '@mui/material/Chip'
@@ -53,6 +54,7 @@ export default function FacturaPage({ draw, onViewFactura, onPayment }) {
 
   const { getAllFacturasPagination, dataP, anularFactura, loading } = useFacturas()
   const { generarPDF } = useFacturaPDF()
+  const { imprimirTicket } = useFacturaTicket()
   const { getAllClientesPaginationPromise } = useClientes()
 
   const handleAnular = async () => {
@@ -208,6 +210,15 @@ export default function FacturaPage({ draw, onViewFactura, onPayment }) {
                     className="btn btn-outline-secondary btn-sm"
                   >
                     <i className="fa-solid fa-file-pdf"></i>
+                  </button>
+                  <button
+                    onClick={() =>
+                      imprimirTicket(row, Number(localStorage.getItem('ticket_ancho_mm')) || 80)
+                    }
+                    title="Imprimir Ticket"
+                    className="btn btn-outline-dark btn-sm"
+                  >
+                    <i className="fa-solid fa-receipt"></i>
                   </button>
                   {row.status === 'Pendiente' && (
                     <button
