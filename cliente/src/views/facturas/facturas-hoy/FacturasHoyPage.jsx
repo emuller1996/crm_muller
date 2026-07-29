@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import moment from 'moment-timezone'
 import { useFacturas } from '../../../hooks/useFacturas'
 import { useFacturaPDF } from '../../../hooks/useFacturaPDF'
+import { useFacturaTicket } from '../../../hooks/useFacturaTicket'
 import DataTable from 'react-data-table-component'
 import { paginationComponentOptions } from '../../../utils/optionsConfig'
 import { ViewDollar } from '../../../utils'
@@ -26,6 +27,7 @@ export default function FacturasHoyPage({ onViewFactura, onPayment, draw }) {
 
   const { getAllFacturaPerDay, anularFactura } = useFacturas()
   const { generarPDF } = useFacturaPDF()
+  const { imprimirTicket } = useFacturaTicket()
   const [loading, setLoading] = useState(false)
   const [facturaToAnular, setFacturaToAnular] = useState(null)
   const [loadingAnular, setLoadingAnular] = useState(false)
@@ -100,6 +102,15 @@ export default function FacturasHoyPage({ onViewFactura, onPayment, draw }) {
                         className="btn btn-outline-secondary btn-sm"
                       >
                         <i className="fa-solid fa-file-pdf"></i>
+                      </button>
+                      <button
+                        onClick={() =>
+                          imprimirTicket(row, Number(localStorage.getItem('ticket_ancho_mm')) || 80)
+                        }
+                        title="Imprimir Ticket"
+                        className="btn btn-outline-dark btn-sm"
+                      >
+                        <i className="fa-solid fa-receipt"></i>
                       </button>
                       {row.status === 'Pendiente' && (
                         <button
