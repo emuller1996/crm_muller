@@ -93,7 +93,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Movimiento de Caja',
-    to: '/caja',
+    to: '/movimientos-cajas',
     icon: <i style={{ width: '30px' }} className="fa-solid fa-cash-register nav-icon"></i>,
   },
   {
@@ -117,6 +117,12 @@ const _nav = [
     name: 'Empresa',
     to: '/empresa',
     icon: <i style={{ width: '30px' }} className="fa-solid fa-building nav-icon"></i>,
+  },
+  {
+    component: CNavItem,
+    name: 'Cajas',
+    to: '/cajas',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-box-archive nav-icon"></i>,
   },
   {
     component: CNavItem,
