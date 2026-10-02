@@ -67,6 +67,12 @@ export const ACL_APP = {
       update: { text: 'Actualizar' },
       delete: { text: 'Borrar' },
     },
+    cajas: {
+      read: { text: 'Leer' },
+      create: { text: 'Crear' },
+      update: { text: 'Actualizar' },
+      delete: { text: 'Borrar' },
+    },
     inventario: {
       read: { text: 'Leer' },
       create: { text: 'Crear' },

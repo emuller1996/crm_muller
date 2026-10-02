@@ -1,10 +1,11 @@
 /* eslint-disable prettier/prettier */
 import React from 'react'
 import { Button, Form } from 'react-bootstrap'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
 import { useCaja } from '../../../hooks/useCaja'
+import SelectMiCaja from '../../cajas/components/SelectMiCaja'
 
 export default function FormMovimiento({ onHide, onSuccess }) {
   FormMovimiento.propTypes = {
@@ -16,6 +17,7 @@ export default function FormMovimiento({ onHide, onSuccess }) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -42,6 +44,17 @@ export default function FormMovimiento({ onHide, onSuccess }) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <p className="text-center border-bottom pb-2 fw-bold">Registrar Movimiento de Caja</p>
       <div className="row">
+        <div className="col-md-12 mb-3">
+          <Form.Label>Caja *</Form.Label>
+          <Controller
+            name="caja_id"
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { onChange } }) => (
+              <SelectMiCaja onChange={(id) => onChange(id)} error={!!errors?.caja_id} />
+            )}
+          />
+        </div>
         <div className="col-md-6">
           <Form.Group className="mb-3" controlId="tipo">
             <Form.Label>Tipo de Movimiento *</Form.Label>

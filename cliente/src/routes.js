@@ -16,12 +16,13 @@ const CotizacionFormPage = React.lazy(() => import('./views/cotizaciones/Cotizac
 const RolesPage = React.lazy(() => import('./views/usuarios/pages/RolesPage'))
 const ActividadesPage = React.lazy(() => import('./views/actividades/ActividadesPage'))
 const ProveedoresPage = React.lazy(() => import('./views/proveedores/ProveedoresPage'))
-const CajaPage = React.lazy(() => import('./views/caja/CajaPage'))
+const CajaPage = React.lazy(() => import('./views/movientos-cajas/CajaPage'))
 const FacturasCompraMainPage = React.lazy(() => import('./views/facturas-compra'))
 const FacturaCompraCreatePage = React.lazy(() => import('./views/facturas-compra/FacturaCompraCreatePage'))
 const InventarioPage = React.lazy(() => import('./views/inventario/InventarioPage'))
 const LogsPage = React.lazy(() => import('./views/logs/LogsPage'))
 const MetricasPage = React.lazy(() => import('./views/metricas/MetricasPage'))
+const CajasPage = React.lazy(() => import('./views/cajas/CajasPage'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -37,10 +38,11 @@ const routes = [
   { path: '/cotizaciones/nueva', name: 'Nueva Cotización', element: CotizacionFormPage },
   { path: '/cotizaciones/:id/editar', name: 'Editar Cotización', element: CotizacionFormPage },
   { path: '/empresa', name: 'Empresa Config', element: EmpresaPage },
+  { path: '/cajas', name: 'Cajas', element: CajasPage },
   { path: '/pedidos', name: 'Entregas - Pedidos', element: EntregasPages },
   { path: '/actividades', name: 'Actividades', element: ActividadesPage },
   { path: '/proveedores', name: 'Proveedores', element: ProveedoresPage },
-  { path: '/caja', name: 'Movimiento de Caja', element: CajaPage },
+  { path: '/movimientos-cajas', name: 'Movimiento de Caja', element: CajaPage },
   { path: '/facturas-compra', name: 'Facturas de Compra', element: FacturasCompraMainPage },
   { path: '/facturas-compra/nueva', name: 'Nueva Factura de Compra', element: FacturaCompraCreatePage },
   { path: '/inventario', name: 'Inventario', element: InventarioPage },

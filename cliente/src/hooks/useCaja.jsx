@@ -60,10 +60,10 @@ export const useCaja = () => {
     }
   }
 
-  const getResumenDia = async (fecha) => {
+  const getResumenDia = async (fecha, caja_id) => {
     setLoading(true)
     try {
-      const res = await getCajaResumenDiaService(Token, fecha)
+      const res = await getCajaResumenDiaService(Token, fecha, caja_id)
       if (!signal.aborted) {
         setResumenDia(res.data)
         setError(null)
@@ -78,10 +78,10 @@ export const useCaja = () => {
     }
   }
 
-  const getResumenRango = async (fecha_desde, fecha_hasta) => {
+  const getResumenRango = async (fecha_desde, fecha_hasta, caja_id) => {
     setLoading(true)
     try {
-      const res = await getCajaResumenRangoService(Token, fecha_desde, fecha_hasta)
+      const res = await getCajaResumenRangoService(Token, fecha_desde, fecha_hasta, caja_id)
       if (!signal.aborted) {
         setResumenRango(res.data)
         setError(null)

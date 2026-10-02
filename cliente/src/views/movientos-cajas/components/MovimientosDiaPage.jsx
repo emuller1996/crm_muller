@@ -8,6 +8,7 @@ import { useCaja } from '../../../hooks/useCaja'
 import ResumenCaja from './ResumenCaja'
 import PropTypes from 'prop-types'
 import moment from 'moment-timezone'
+import SelectMiCaja from '../../cajas/components/SelectMiCaja'
 
 const formatMoney = (value) => {
   return new Intl.NumberFormat('es-CO', {
@@ -39,15 +40,16 @@ export default function MovimientosDiaPage({ draw }) {
   const localDate = currentDate.tz('America/Bogota')
 
   const [fecha, setFecha] = useState(localDate.format().split('T')[0])
+  const [cajaId, setCajaId] = useState(undefined)
 
   const { getResumenDia, resumenDia, loading, anularMovimiento } = useCaja()
   const [localDraw, setLocalDraw] = useState(1)
 
   useEffect(() => {
-    if (fecha) {
-      getResumenDia(fecha)
+    if (fecha && cajaId) {
+      getResumenDia(fecha, cajaId)
     }
-  }, [fecha, draw, localDraw])
+  }, [fecha, cajaId, draw, localDraw])
 
   const handleAnular = async (row) => {
     if (!window.confirm(`¿Anular el movimiento "${row.descripcion}"?`)) return
@@ -62,16 +64,28 @@ export default function MovimientosDiaPage({ draw }) {
 
   return (
     <div className="mt-3">
-      <div className="d-flex align-items-center gap-3 mb-3">
-        <Form.Label className="mb-0 fw-bold">Fecha:</Form.Label>
-        <Form.Control
-          type="date"
-          value={fecha}
-          onChange={(e) => setFecha(e.target.value)}
-          style={{ maxWidth: '200px' }}
-        />
+      <div className="row g-3 align-items-center mb-3">
+        <div className="col-md-6 col-lg-5">
+          <SelectMiCaja onChange={(id) => setCajaId(id)} />
+        </div>
+        <div className="col-md-6 col-lg-4 d-flex align-items-center gap-3">
+          <Form.Label className="mb-0 fw-bold">Fecha:</Form.Label>
+          <Form.Control
+            type="date"
+            value={fecha}
+            onChange={(e) => setFecha(e.target.value)}
+            style={{ maxWidth: '200px' }}
+          />
+        </div>
       </div>
 
+      {!cajaId ? (
+        <div className="text-center text-body-secondary my-5">
+          <i className="fa-solid fa-cash-register fs-2 d-block mb-2"></i>
+          Selecciona una caja para ver sus movimientos
+        </div>
+      ) : (
+        <>
       <ResumenCaja resumen={resumenDia?.resumen} />
 
       <div className="rounded overflow-hidden border border-ligth shadow-sm mt-3">
@@ -210,6 +224,8 @@ export default function MovimientosDiaPage({ draw }) {
           ]}
         />
       </div>
+        </>
+      )}
     </div>
   )
 }

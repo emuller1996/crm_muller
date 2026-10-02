@@ -19,6 +19,7 @@ import FacturaCompraRouters from "../modules/facturas_compra/facturas_compra.rou
 import InventarioRouters from "../modules/inventario/inventario.routes.js";
 import MetricsRouters from "../modules/metrics/metrics.routes.js";
 import LogsRouters from "../modules/logs/logs.routes.js";
+import CajasRouters from "../modules/cajas/cajas.routes.js";
 
 
 const router = Router();
@@ -41,5 +42,6 @@ router.use("/inventario", validateTokenMid, InventarioRouters);
 router.use("/metrics", validateTokenMid, MetricsRouters);
 router.use("/admin", AdminRouters);
 router.use("/logs", validateTokenMid, LogsRouters);
+router.use("/cajas", validateTokenMid, CajasRouters);
 
 export default router;
