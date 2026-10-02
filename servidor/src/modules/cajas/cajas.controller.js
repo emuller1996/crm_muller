@@ -20,6 +20,16 @@ export const getAll = async (req, res) => {
   }
 };
 
+export const misCajas = async (req, res) => {
+  try {
+    const userId = jwtDecode(req.headers["access-token"])?._id;
+    const cajas = await service.getMisCajas(req.empresaId, userId);
+    return res.status(200).json(cajas);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 export const pagination = async (req, res) => {
   try {
     const result = await service.pagination({ ...req.query, empresa_id: req.empresaId });

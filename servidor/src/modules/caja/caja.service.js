@@ -60,6 +60,7 @@ export const pagination = async ({
   fecha_hasta = "",
   origen = "",
   empresa_id = "",
+  caja_id = "",
 }) => {
   const consulta = {
     index: INDEX_ES_MAIN,
@@ -114,6 +115,10 @@ export const pagination = async ({
     });
   }
 
+  if (caja_id) {
+    consulta.body.query.bool.filter.push({ term: { "caja_id.keyword": caja_id } });
+  }
+
   if (fecha_desde || fecha_hasta) {
     const range = {};
     if (fecha_desde) range.gte = fecha_desde;
@@ -148,7 +153,7 @@ export const pagination = async ({
 
 // ─── Resumen por dia ─────────────────────────────────────
 
-export const getResumenDia = async (fecha, empresaId) => {
+export const getResumenDia = async (fecha, empresaId, cajaId) => {
   if (!fecha) throw new Error("Falta fecha");
 
   const result = await client.search({
@@ -161,6 +166,7 @@ export const getResumenDia = async (fecha, empresaId) => {
             { term: { "type": "movimiento_caja" } },
             { term: { fecha } },
             ...(empresaId ? [{ term: { "empresa_id.keyword": empresaId } }] : []),
+            ...(cajaId ? [{ term: { "caja_id.keyword": cajaId } }] : []),
           ],
         },
       },
@@ -228,7 +234,7 @@ export const getResumenDia = async (fecha, empresaId) => {
 
 // ─── Resumen por rango de fechas ─────────────────────────
 
-export const getResumenRango = async (fecha_desde, fecha_hasta, empresaId) => {
+export const getResumenRango = async (fecha_desde, fecha_hasta, empresaId, cajaId) => {
   if (!fecha_desde || !fecha_hasta) throw new Error("Faltan fechas");
 
   const result = await client.search({
@@ -240,6 +246,7 @@ export const getResumenRango = async (fecha_desde, fecha_hasta, empresaId) => {
           must: [
             { term: { type: "movimiento_caja" } },
             ...(empresaId ? [{ term: { "empresa_id.keyword": empresaId } }] : []),
+            ...(cajaId ? [{ term: { "caja_id.keyword": cajaId } }] : []),
           ],
           filter: [{ range: { fecha: { gte: fecha_desde, lte: fecha_hasta } } }],
         },
@@ -382,6 +389,7 @@ export const registrarMovimientoFactura = async (factura, token) => {
     referencia: `Factura #${factura.numero_factura}`,
     estado: "activo",
     empresa_id: factura.empresa_id,
+    caja_id: factura.caja_id,
     user_create_id: decoded?._id,
   };
 
@@ -405,6 +413,7 @@ export const registrarMovimientoPago = async (pago, facturaId, token) => {
     referencia: `Factura #${factura?.numero_factura || ""}`,
     estado: "activo",
     empresa_id: pago.empresa_id || factura?.empresa_id,
+    caja_id: pago.caja_id || factura?.caja_id,
     user_create_id: decoded?._id,
   };
 
@@ -428,6 +437,7 @@ export const registrarMovimientoAnulacion = async (facturaId, token) => {
     referencia: `Factura #${factura?.numero_factura || ""}`,
     estado: "activo",
     empresa_id: factura?.empresa_id,
+    caja_id: factura?.caja_id,
     user_create_id: decoded?._id,
   };
 

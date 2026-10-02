@@ -10,6 +10,7 @@ import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
 import { ViewDollar } from '../../../utils'
 import moment from 'moment-timezone'
+import SelectMiCaja from '../../cajas/components/SelectMiCaja'
 
 export default function FormFacturaPedido({ pedido, onHide, onSuccess }) {
   FormFacturaPedido.propTypes = {
@@ -78,6 +79,17 @@ export default function FormFacturaPedido({ pedido, onHide, onSuccess }) {
       <hr />
       <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
         <div className="row g-3">
+          <div className="col-md-6">
+            <Form.Label>Caja</Form.Label>
+            <Controller
+              name="caja_id"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange } }) => (
+                <SelectMiCaja onChange={(id) => onChange(id)} error={!!errors?.caja_id} />
+              )}
+            />
+          </div>
           <div className="col-md-6">
             <Form.Label htmlFor="status">Estado de Factura</Form.Label>
             <Controller

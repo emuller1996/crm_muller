@@ -9,7 +9,11 @@ export const getAllCajasService = (token, signal) => {
   return axios.get('/cajas', { headers: { 'access-token': token }, signal: signal })
 }
 
-export const getCajaByIdService = (token, id) => {
+export const getMisCajasService = (token) => {
+  return axios.get('/cajas/mis-cajas', { headers: { 'access-token': token } })
+}
+
+export const getCajaByIdService =(token, id) => {
   return axios.get(`/cajas/${id}`, { headers: { 'access-token': token } })
 }
 

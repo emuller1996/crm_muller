@@ -13,6 +13,7 @@ import Select from 'react-select'
 import { useFacturas } from '../../../../hooks/useFacturas'
 import FormProductoCotizacion from '../../../cotizaciones/components/FormProductoCotizacion'
 import moment from 'moment-timezone'
+import SelectMiCaja from '../../../cajas/components/SelectMiCaja'
 
 export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) {
   FormFactura.propTypes = {
@@ -274,6 +275,18 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
               </Alert>
             )}
             </div>
+          </div>
+
+          <div className="col-md-5">
+            <Form.Label>Caja</Form.Label>
+            <Controller
+              name="caja_id"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange } }) => (
+                <SelectMiCaja onChange={(id) => onChange(id)} error={!!errors?.caja_id} />
+              )}
+            />
           </div>
 
           {isPending && (

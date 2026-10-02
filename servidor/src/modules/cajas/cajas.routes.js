@@ -8,7 +8,10 @@ router.get("/", checkPermission("cajas.read"), controller.getAll);
 
 router.get("/pagination", checkPermission("cajas.read"), controller.pagination);
 
-router.get("/:id", checkPermission("cajas.read"), controller.getById);
+// Cajas habilitadas asignadas al usuario del token (para facturar)
+router.get("/mis-cajas", controller.misCajas);
+
+router.get("/:id",checkPermission("cajas.read"), controller.getById);
 
 router.post("/", checkPermission("cajas.create"), controller.create);
 

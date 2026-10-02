@@ -27,7 +27,7 @@ export const getById = async (req, res) => {
 
 export const getResumenDia = async (req, res) => {
   try {
-    res.json(await service.getResumenDia(req.params.fecha, req.empresaId));
+    res.json(await service.getResumenDia(req.params.fecha, req.empresaId, req.query.caja_id));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -35,8 +35,8 @@ export const getResumenDia = async (req, res) => {
 
 export const getResumenRango = async (req, res) => {
   try {
-    const { fecha_desde, fecha_hasta } = req.query;
-    res.json(await service.getResumenRango(fecha_desde, fecha_hasta, req.empresaId));
+    const { fecha_desde, fecha_hasta, caja_id } = req.query;
+    res.json(await service.getResumenRango(fecha_desde, fecha_hasta, req.empresaId, caja_id));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -44,6 +44,9 @@ export const getResumenRango = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
+    if (!req.body.caja_id) {
+      return res.status(400).json({ message: "La caja es obligatoria" });
+    }
     req.body.empresa_id = req.empresaId;
     const result = await service.create(req.body, req.headers["access-token"]);
     res.status(201).json(result);

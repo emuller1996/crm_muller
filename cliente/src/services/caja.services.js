@@ -9,8 +9,11 @@ export const getCajaByIdService = (token, id) => {
   return axios.get(`/caja/${id}`, { headers: { 'access-token': token } })
 }
 
-export const getCajaResumenDiaService = (token, fecha) => {
-  return axios.get(`/caja/resumen/${fecha}`, { headers: { 'access-token': token } })
+export const getCajaResumenDiaService = (token, fecha, caja_id) => {
+  return axios.get(`/caja/resumen/${fecha}`, {
+    headers: { 'access-token': token },
+    params: caja_id ? { caja_id } : {},
+  })
 }
 
 export const getCajaPaginationService = async (token, ...params) => {
@@ -27,9 +30,10 @@ export const getCajaPaginationService = async (token, ...params) => {
   })
 }
 
-export const getCajaResumenRangoService = (token, fecha_desde, fecha_hasta) => {
-  return axios.get(`/caja/resumen-rango?fecha_desde=${fecha_desde}&fecha_hasta=${fecha_hasta}`, {
+export const getCajaResumenRangoService = (token, fecha_desde, fecha_hasta, caja_id) => {
+  return axios.get('/caja/resumen-rango', {
     headers: { 'access-token': token },
+    params: { fecha_desde, fecha_hasta, ...(caja_id ? { caja_id } : {}) },
   })
 }
 

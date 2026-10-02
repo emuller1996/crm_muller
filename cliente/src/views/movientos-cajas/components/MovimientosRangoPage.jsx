@@ -7,6 +7,7 @@ import { paginationComponentOptions } from '../../../utils/optionsConfig'
 import { useCaja } from '../../../hooks/useCaja'
 import ResumenCaja from './ResumenCaja'
 import PropTypes from 'prop-types'
+import SelectMiCaja from '../../cajas/components/SelectMiCaja'
 
 const formatMoney = (value) => {
   return new Intl.NumberFormat('es-CO', {
@@ -43,10 +44,15 @@ export default function MovimientosRangoPage({ draw }) {
   const [fechaDesde, setFechaDesde] = useState(firstDay)
   const [fechaHasta, setFechaHasta] = useState(today)
   const [searched, setSearched] = useState(false)
+  const [cajaId, setCajaId] = useState(undefined)
   const { getResumenRango, resumenRango, loading, anularMovimiento } = useCaja()
   const [localDraw, setLocalDraw] = useState(1)
 
   const handleBuscar = () => {
+    if (!cajaId) {
+      toast.error('Seleccione una caja')
+      return
+    }
     if (!fechaDesde || !fechaHasta) {
       toast.error('Seleccione ambas fechas')
       return
@@ -55,15 +61,15 @@ export default function MovimientosRangoPage({ draw }) {
       toast.error('La fecha inicio debe ser menor a la fecha fin')
       return
     }
-    getResumenRango(fechaDesde, fechaHasta)
+    getResumenRango(fechaDesde, fechaHasta, cajaId)
     setSearched(true)
   }
 
   useEffect(() => {
-    if (searched && fechaDesde && fechaHasta) {
-      getResumenRango(fechaDesde, fechaHasta)
+    if (searched && cajaId && fechaDesde && fechaHasta) {
+      getResumenRango(fechaDesde, fechaHasta, cajaId)
     }
-  }, [draw, localDraw])
+  }, [draw, localDraw, cajaId])
 
   const handleAnular = async (row) => {
     if (!window.confirm(`¿Anular el movimiento "${row.descripcion}"?`)) return
@@ -78,6 +84,11 @@ export default function MovimientosRangoPage({ draw }) {
 
   return (
     <div className="mt-3">
+      <div className="row mb-3">
+        <div className="col-md-6 col-lg-5">
+          <SelectMiCaja onChange={(id) => setCajaId(id)} />
+        </div>
+      </div>
       <div className="d-flex align-items-center gap-3 mb-3 flex-wrap">
         <Form.Label className="mb-0 fw-bold">Desde:</Form.Label>
         <Form.Control

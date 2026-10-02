@@ -9,6 +9,7 @@ import { useFacturas } from '../../../hooks/useFacturas'
 import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
 import moment from 'moment-timezone'
+import SelectMiCaja from '../../cajas/components/SelectMiCaja'
 
 export default function FormFacturaCotizacion({ CotiSelecionada, getAllCotizacion }) {
   FormFacturaCotizacion.propTypes = {
@@ -48,6 +49,17 @@ export default function FormFacturaCotizacion({ CotiSelecionada, getAllCotizacio
     <div>
       <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
         <div className="row g-3">
+          <div className="col-md-12">
+            <Form.Label>Caja</Form.Label>
+            <Controller
+              name="caja_id"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange } }) => (
+                <SelectMiCaja onChange={(id) => onChange(id)} error={!!errors?.caja_id} />
+              )}
+            />
+          </div>
           <div className="col-md-6">
             <Form.Group className="" controlId="name">
               <Form.Label>Fecha de Vencimiento</Form.Label>

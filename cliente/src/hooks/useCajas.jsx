@@ -7,6 +7,7 @@ import {
   postCreateCajaService,
   putUpdateCajaService,
   getCajaByIdService,
+  getMisCajasService,
 } from '../services/cajas.services'
 import AuthContext from '../context/AuthContext'
 
@@ -84,6 +85,10 @@ export const useCajas = () => {
     return getCajaByIdService(Token, id)
   }
 
+  const getMisCajas = async () => {
+    return getMisCajasService(Token)
+  }
+
   return {
     data,
     dataP,
@@ -95,5 +100,6 @@ export const useCajas = () => {
     createCaja,
     updateCaja,
     getCajaById,
+    getMisCajas,
   }
 }

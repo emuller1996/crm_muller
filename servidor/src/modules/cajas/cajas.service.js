@@ -51,6 +51,13 @@ export const getAll = async (empresaId) => {
   return searchResult.body.hits.hits.map((c) => ({ ...c._source, _id: c._id }));
 };
 
+export const getMisCajas = async (empresaId, userId) => {
+  const cajas = await getAll(empresaId);
+  return cajas
+    .filter((c) => c.estado === "habilitada" && parseUsuarios(c.usuarios).includes(userId))
+    .map((c) => ({ _id: c._id, nombre: c.nombre, monto_maximo: c.monto_maximo, nota: c.nota }));
+};
+
 export const pagination = async ({ perPage = 10, page = 1, search = "", estado = "", empresa_id }) => {
   const consulta = {
     index: INDEX_ES_MAIN,

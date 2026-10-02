@@ -34,6 +34,9 @@ export const getPerDay = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
+    if (!req.body.caja_id) {
+      return res.status(400).json({ message: "La caja es obligatoria" });
+    }
     req.body.empresa_id = req.empresaId;
     const result = await service.create(
       req.body,
