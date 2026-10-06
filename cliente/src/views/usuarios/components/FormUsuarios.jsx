@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React from 'react'
-import { Button, Form } from 'react-bootstrap'
+import { Alert, Button, Form } from 'react-bootstrap'
 import { Controller, useForm } from 'react-hook-form'
 import axios from 'axios'
 import toast from 'react-hot-toast'
@@ -11,6 +11,7 @@ import { useUsuarios } from '../../../hooks/useUsuarios'
 import Select from 'react-select'
 import { useEffect } from 'react'
 import { stylesSelect, themeSelect } from '../../../utils/optionsConfig'
+import { Link } from 'react-router-dom'
 
 export default function FormUsuarios({ onHide, allUser, user }) {
   FormUsuarios.propTypes = {
@@ -56,9 +57,16 @@ export default function FormUsuarios({ onHide, allUser, user }) {
     getAllRole()
   }, [])
 
+  console.log(DataRole?.data?.length);
+  
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <p className="text-center border-bottom pb-2">{user ? "Actualizando " : "Creando "}Usuario</p>
+      {DataRole?.data && DataRole?.data?.length ==0 && (
+        <Alert variant='warning'>
+          <span>No tienes creado un rol para crear un Usuario. Ve a <Link to={"roles"}>Gestion de Roles</Link> y crea tu primer un rol.</span>
+        </Alert>
+      )}
       <div className="row">
         <div className="col-md-6">
           <Form.Group className="mb-3" controlId="name">
