@@ -37,6 +37,11 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
     console.log(data)
     data.price = parseFloat(data.price)
     data.cost = parseFloat(data.cost)
+    if (!producto) {
+      data.stock = parseInt(data.stock || 0, 10)
+    } else {
+      delete data.stock
+    }
 
     if (!producto) {
       try {
@@ -229,6 +234,28 @@ export default function FormProducto({ onHide, getAllProduct, producto }) {
             />
           </Form.Group>
         </div>
+        {!producto && (
+          <div className="col-md-6">
+            <Form.Group className="" controlId="stock">
+              <Form.Label>Existencias (stock)</Form.Label>
+              <Form.Control
+                defaultValue={0}
+                {...register('stock', { min: 0 })}
+                type="number"
+                min={0}
+                step={1}
+                isInvalid={!!errors.stock}
+              />
+              {errors.stock ? (
+                <Form.Control.Feedback type="invalid">
+                  Las existencias no pueden ser negativas
+                </Form.Control.Feedback>
+              ) : (
+                <Form.Text muted>Se registrará como entrada de inventario inicial.</Form.Text>
+              )}
+            </Form.Group>
+          </div>
+        )}
         {/* <div className="col-md-12">
           <Form.Group className="" controlId="published">
             <Form.Check // prettier-ignore
