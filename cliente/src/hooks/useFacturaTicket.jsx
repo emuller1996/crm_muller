@@ -64,7 +64,7 @@ export const useFacturaTicket = () => {
 
       // --- Parametros de layout segun ancho (58mm vs 80mm) ---
       const small = Number(ancho) <= 58
-      const margin = 3
+      const margin = 5
       const W = Number(ancho)
       const contentW = W - margin * 2
       const cx = W / 2
