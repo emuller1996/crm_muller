@@ -43,7 +43,8 @@ export const create = async (req, res) => {
       ...req.body,
       empresa_id: req.empresaId,
     };
-    await service.create(data);
+    const userId = jwtDecode(req.headers["access-token"])?._id;
+    await service.create(data, userId);
     res.status(201).json({ message: "Producto creado" });
   } catch (e) {
     res.status(500).json({ message: e.message });

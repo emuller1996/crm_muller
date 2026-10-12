@@ -15,6 +15,7 @@ const origenLabels = {
   factura_compra: 'Factura Compra',
   anulacion_factura_venta: 'Anul. Venta',
   anulacion_factura_compra: 'Anul. Compra',
+  creacion_producto: 'Inventario Inicial',
 }
 
 const InventarioPage = () => {
@@ -253,6 +254,7 @@ function MovimientosTab({ draw }) {
             <option value="factura_compra">Factura Compra</option>
             <option value="anulacion_factura_venta">Anul. Venta</option>
             <option value="anulacion_factura_compra">Anul. Compra</option>
+            <option value="creacion_producto">Inventario Inicial</option>
           </Form.Select>
         </div>
       </div>

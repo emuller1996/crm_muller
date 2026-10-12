@@ -84,11 +84,12 @@ export default function MovimientosRangoPage({ draw }) {
 
   return (
     <div className="mt-3">
-      <div className="row mb-3">
-        <div className="col-md-6 col-lg-5">
+      <div className="row justify-content-center mb-3">
+        <div className="col-md-8 col-lg-8 col-xl-5">
           <SelectMiCaja onChange={(id) => setCajaId(id)} />
         </div>
       </div>
+      <hr />
       <div className="d-flex align-items-center gap-3 mb-3 flex-wrap">
         <Form.Label className="mb-0 fw-bold">Desde:</Form.Label>
         <Form.Control
@@ -316,7 +317,7 @@ export default function MovimientosRangoPage({ draw }) {
       {!resumenRango && !loading && (
         <div className="text-center text-muted py-5">
           <i className="fa-solid fa-calendar-days fa-3x mb-3"></i>
-          <p>Seleccione un rango de fechas y presione "Consultar"</p>
+          <p>Seleccione un rango de fechas y presione ´Consultar´</p>
         </div>
       )}
     </div>

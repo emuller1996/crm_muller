@@ -25,7 +25,7 @@ export default function ResumenCaja({ resumen }) {
   if (!resumen) return null
 
   return (
-    <div className="row mb-3">
+    <div className="row mb-3 g-3">
       <div className="col-md-4">
         <div className="card border-success">
           <div className="card-body text-center">
@@ -73,7 +73,7 @@ export default function ResumenCaja({ resumen }) {
           <div className="card">
             <div className="card-body">
               <h6 className="text-muted mb-2">Desglose por Metodo de Pago</h6>
-              <div className="row">
+              <div className="row g-3">
                 {Object.entries(resumen.por_metodo).map(([metodo, datos]) => (
                   <div key={metodo} className="col-md-3 mb-2">
                     <div className="border rounded p-2 text-center">
@@ -83,7 +83,7 @@ export default function ResumenCaja({ resumen }) {
                         Ingresos: {formatMoney(datos.ingresos)}
                       </div>
                       <div className="small text-danger">
-                        Egresos: {formatMoney(datos.egresos)}
+                        Egresos: <span style={{fontWeight:700}}>{formatMoney(datos.egresos)}</span>
                       </div>
                     </div>
                   </div>

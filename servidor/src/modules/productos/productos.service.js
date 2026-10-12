@@ -141,8 +141,34 @@ export const getById = async (id) => {
   return getDocumentById(id);
 };
 
-export const create = async (data) => {
-  await crearElasticByType(data, "producto");
+export const create = async (data, userId) => {
+  // El stock no se guarda en el producto: se registra como movimiento de inventario
+  const { stock, ...producto } = data;
+
+  const respProd = await crearElasticByType(producto, "producto");
+  const productoId = respProd.body._id;
+
+  const cantidad = Number(stock);
+  if (!Number.isNaN(cantidad) && cantidad > 0) {
+    await crearElasticByType(
+      {
+        producto_id: productoId,
+        nombre_producto: producto.name ?? "",
+        tipo: "entrada",
+        cantidad,
+        descripcion: "Existencias iniciales",
+        nota: "",
+        origen: "creacion_producto",
+        referencia: "",
+        estado: "activo",
+        empresa_id: producto.empresa_id,
+        user_create_id: userId ?? null,
+      },
+      "movimiento_inventario",
+    );
+  }
+
+  return productoId;
 };
 
 export const update = async (id, data) => {

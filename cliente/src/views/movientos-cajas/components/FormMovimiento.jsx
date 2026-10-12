@@ -6,12 +6,17 @@ import toast from 'react-hot-toast'
 import PropTypes from 'prop-types'
 import { useCaja } from '../../../hooks/useCaja'
 import SelectMiCaja from '../../cajas/components/SelectMiCaja'
+import moment from 'moment-timezone'
+import CurrencyInput from 'react-currency-input-field'
 
 export default function FormMovimiento({ onHide, onSuccess }) {
   FormMovimiento.propTypes = {
     onHide: PropTypes.func,
     onSuccess: PropTypes.func,
   }
+
+  const currentDate = moment.utc()
+  const localDate = currentDate.tz('America/Bogota')
 
   const { crearMovimiento } = useCaja()
   const {
@@ -21,7 +26,7 @@ export default function FormMovimiento({ onHide, onSuccess }) {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      fecha: new Date().toISOString().split('T')[0],
+      fecha: localDate.format().split('T')[0],
       hora: new Date().toLocaleTimeString('es-CO', { hour12: false }),
     },
   })
@@ -58,10 +63,7 @@ export default function FormMovimiento({ onHide, onSuccess }) {
         <div className="col-md-6">
           <Form.Group className="mb-3" controlId="tipo">
             <Form.Label>Tipo de Movimiento *</Form.Label>
-            <Form.Select
-              {...register('tipo', { required: true })}
-              isInvalid={!!errors.tipo}
-            >
+            <Form.Select {...register('tipo', { required: true })} isInvalid={!!errors.tipo}>
               <option value="">Seleccionar...</option>
               <option value="ingreso">Ingreso (Entrada)</option>
               <option value="egreso">Egreso (Salida)</option>
@@ -72,21 +74,35 @@ export default function FormMovimiento({ onHide, onSuccess }) {
           </Form.Group>
         </div>
         <div className="col-md-6">
-          <Form.Group className="mb-3" controlId="monto">
-            <Form.Label>Monto *</Form.Label>
-            <div className="input-group">
-              <span className="input-group-text">$</span>
-              <Form.Control
-                {...register('monto', { required: true, min: 0.01 })}
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                isInvalid={!!errors.monto}
-              />
-            </div>
-            {errors.monto && (
-              <span className="text-danger small">Ingrese un monto valido</span>
-            )}
+          <Form.Group className="mb-3">
+            <Form.Label htmlFor="monto">Monto *</Form.Label>
+            <Controller
+              control={control}
+              name="monto"
+              rules={{
+                required: true,
+                validate: (v) => parseFloat(v) > 0,
+              }}
+              render={({ field: { name, onChange, ref, value } }) => {
+                return (
+                  <CurrencyInput
+                    ref={ref}
+                    className={`form-control ${errors.monto ? 'is-invalid' : ''}`}
+                    id={name}
+                    name={name}
+                    value={value}
+                    placeholder=""
+                    decimalsLimit={2}
+                    prefix="$"
+                    intlConfig={{ locale: 'en-US', currency: 'GBP' }}
+                    onValueChange={(value) => {
+                      onChange(value)
+                    }}
+                  />
+                )
+              }}
+            />
+            {errors.monto && <span className="text-danger small">Ingrese un monto valido</span>}
           </Form.Group>
         </div>
         <div className="col-md-6">
