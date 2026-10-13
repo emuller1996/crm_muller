@@ -18,6 +18,7 @@ import { Chip } from '@mui/material'
 import ImagesPage from './ImagesPage/ImagesPage'
 import TallasPage from './TallasPage/TallasPage'
 import { useCategorias } from '../../hooks/useCategorias'
+import ConfirmDeleteProducto from './components/ConfirmDeleteProducto'
 
 const ProductosPage = () => {
   const [show, setShow] = useState(false)
@@ -25,6 +26,7 @@ const ProductosPage = () => {
   const [showSizeTallas, setShowSizeTallas] = useState(false)
 
   const [showImport, setShowImport] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
   const [Draw, setDraw] = useState(1)
   const [dataFilter, setdataFilter] = useState({
     perPage: 10,
@@ -172,6 +174,16 @@ const ProductosPage = () => {
                         >
                           <i className="fa-solid fa-pen-to-square"></i>
                         </button>
+                        <button
+                          onClick={() => {
+                            setProductoSelecionado(row)
+                            setShowDelete(true)
+                          }}
+                          title="Eliminar Producto."
+                          className="btn btn-danger btn-sm text-white"
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
                       </>
                     )
                   },
@@ -283,6 +295,21 @@ const ProductosPage = () => {
               }}
               onHide={handleClose}
             />
+          </Modal.Body>
+        </Modal>
+        <Modal backdrop={'static'} centered show={showDelete} onHide={() => setShowDelete(false)}>
+          <Modal.Body>
+            {ProductoSelecionado && (
+              <ConfirmDeleteProducto
+                producto={ProductoSelecionado}
+                onHide={() => setShowDelete(false)}
+                onDeleted={() => {
+                  setdataFilter((sta) => {
+                    return { ...sta, draw: ++sta.draw }
+                  })
+                }}
+              />
+            )}
           </Modal.Body>
         </Modal>
         <Modal

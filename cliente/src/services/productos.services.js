@@ -13,7 +13,15 @@ export const putUpdateProductoService = (id, data, token) => {
   return axios.put(`/productos/${id}`, data,{ headers: { 'access-token': token } } )
 }
 
-export const postCreateProductoImageService = (data, product_id) => {
+export const getProductoUsoService = (id, token) => {
+  return axios.get(`/productos/${id}/uso`, { headers: { 'access-token': token } })
+}
+
+export const deleteProductoService = (id, token) => {
+  return axios.delete(`/productos/${id}`, { headers: { 'access-token': token } })
+}
+
+export const postCreateProductoImageService =(data, product_id) => {
   return axios.post(`/productos/${product_id}/images`, data)
 }
 
