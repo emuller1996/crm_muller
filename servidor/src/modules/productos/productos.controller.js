@@ -60,6 +60,34 @@ export const update = async (req, res) => {
   }
 };
 
+export const getUso = async (req, res) => {
+  try {
+    res.json(await service.getUso(req.params.id));
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+};
+
+export const remove = async (req, res) => {
+  try {
+    let producto;
+    try {
+      producto = await service.getById(req.params.id);
+    } catch {
+      producto = null;
+    }
+    if (!producto || producto.type !== "producto") {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+
+    const userId = jwtDecode(req.headers["access-token"])?._id;
+    await service.softDelete(req.params.id, userId);
+    res.json({ message: "Producto eliminado" });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+};
+
 export const createStock = async (req, res) => {
   try {
     const userId = jwtDecode(req.headers["access-token"])._id;

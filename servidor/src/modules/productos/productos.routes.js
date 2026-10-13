@@ -11,6 +11,8 @@ router.get("/pagination",checkPermission("productos.read"), controller.paginatio
 router.get("/:id",checkPermission("productos.read"), controller.getById);
 router.post("/",checkPermission("productos.create"), controller.create);
 router.put("/:id",checkPermission("productos.update"), controller.update);
+router.get("/:id/uso", checkPermission("productos.read"), controller.getUso);
+router.delete("/:id", checkPermission("productos.delete"), controller.remove);
 /* 
 router.post("/:id/stock", controller.createStock);
 router.get("/:id/stock", controller.getStock);

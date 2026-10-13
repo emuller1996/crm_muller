@@ -141,6 +141,68 @@ export const getById = async (id) => {
   return getDocumentById(id);
 };
 
+/**
+ * Cuenta en cuantos documentos se usa el producto
+ * (movimientos de inventario, facturas de venta y de compra).
+ */
+export const getUso = async (id) => {
+  const countByProductoEnFactura = (type) =>
+    client.count({
+      index: INDEX_ES_MAIN,
+      body: {
+        query: {
+          bool: {
+            must: [
+              { term: { "type.keyword": type } },
+              {
+                nested: {
+                  path: "productos",
+                  ignore_unmapped: true,
+                  query: { term: { "productos.product_id.keyword": id } },
+                },
+              },
+            ],
+          },
+        },
+      },
+    });
+
+  const [movimientos, ventas, compras] = await Promise.all([
+    client.count({
+      index: INDEX_ES_MAIN,
+      body: {
+        query: {
+          bool: {
+            must: [
+              { term: { "type.keyword": "movimiento_inventario" } },
+              { term: { "producto_id.keyword": id } },
+            ],
+          },
+        },
+      },
+    }),
+    countByProductoEnFactura("factura"),
+    countByProductoEnFactura("factura_compra"),
+  ]);
+
+  return {
+    movimientos_inventario: movimientos.body.count,
+    facturas_venta: ventas.body.count,
+    facturas_compra: compras.body.count,
+  };
+};
+
+/**
+ * Eliminacion logica: el documento se conserva y solo cambia su type.
+ */
+export const softDelete = async (id, userId) => {
+  await updateElasticByType(id, {
+    type: "producto_deleted",
+    deletedTime: Date.now(),
+    user_delete_id: userId ?? null,
+  });
+};
+
 export const create = async (data, userId) => {
   // El stock no se guarda en el producto: se registra como movimiento de inventario
   const { stock, ...producto } = data;

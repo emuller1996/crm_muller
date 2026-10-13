@@ -18,6 +18,8 @@ import {
   postValidateStockProductoService,
   putUpdateProductoService,
   putUpdateStockProductoService,
+  getProductoUsoService,
+  deleteProductoService,
 } from '../services/productos.services'
 import AuthContext from '../context/AuthContext'
 import { setProductsP, setTotalProducts } from '../redux/slices/ProductsSlice'
@@ -185,6 +187,14 @@ export const useProductos = () => {
     return putUpdateProductoService( id,data,Token)
   }
 
+  const getProductoUso = async (id) => {
+    return getProductoUsoService(id, Token)
+  }
+
+  const deleteProducto = async (id) => {
+    return deleteProductoService(id, Token)
+  }
+
   const createStockProducto = async (data) => {
     return postCreateStockProductoService(data, data.product_id, Token)
   }
@@ -235,6 +245,8 @@ export const useProductos = () => {
     getStocLogsByProductId,
     StockProductLogs,
     updateProducto,
-    getAllProductosPaginationPromise
+    getAllProductosPaginationPromise,
+    getProductoUso,
+    deleteProducto,
   }
 }
