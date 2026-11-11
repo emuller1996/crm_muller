@@ -438,7 +438,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FormProductoCotizacion setProductoCotizacion={setProductoCotizacion} />
+          <FormProductoCotizacion setProductoCotizacion={setProductoCotizacion} isVenta={true}  />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="success" className="text-white" onClick={() => setShowProductosModal(false)}>
