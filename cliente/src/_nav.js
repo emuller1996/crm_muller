@@ -24,41 +24,13 @@ const _nav = [
   },
   {
     component: CNavTitle,
-    name: 'Gestion de Productos',
-  },
-  {
-    component: CNavItem,
-    name: 'Productos',
-    to: '/productos',
-    icon: <i className="fa-solid fa-box nav-icon"></i>,
-  },
-  {
-    component: CNavItem,
-    name: 'Categorias',
-    to: '/categorias',
-    icon: <i className="fa-solid fa-list nav-icon"></i>,
-  },
-  {
-    component: CNavItem,
-    name: 'Inventario',
-    to: '/inventario',
-    icon: <i style={{ width: '30px' }} className="fa-solid fa-warehouse nav-icon"></i>,
-  },
-  {
-    component: CNavTitle,
-    name: 'Tabla de Control',
+    name: 'Ventas',
   },
   {
     component: CNavItem,
     name: 'Ventas',
     to: '/facturas',
     icon: <i style={{ width: '30px' }} className="fa-solid fa-file-invoice-dollar nav-icon"></i>,
-  },
-  {
-    component: CNavItem,
-    name: 'Compras',
-    to: '/facturas-compra',
-    icon: <i style={{ width: '30px' }} className="fa-solid fa-file-invoice nav-icon"></i>,
   },
   {
     component: CNavItem,
@@ -74,15 +46,19 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Clientes',
-    to: '/clientes',
-    icon: <i className="fa-solid fa-users  nav-icon"></i>,
+    name: 'Movimiento de Caja',
+    to: '/movimientos-cajas',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-cash-register nav-icon"></i>,
+  },
+  {
+    component: CNavTitle,
+    name: 'Compras',
   },
   {
     component: CNavItem,
-    name: 'Actividades',
-    to: '/actividades',
-    icon: <i style={{ width: '30px' }} className="fa-solid fa-calendar-days nav-icon"></i>,
+    name: 'Compras',
+    to: '/facturas-compra',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-file-invoice nav-icon"></i>,
   },
   {
     component: CNavItem,
@@ -91,10 +67,46 @@ const _nav = [
     icon: <i style={{ width: '30px' }} className="fa-solid fa-truck-field nav-icon"></i>,
   },
   {
+    component: CNavTitle,
+    name: 'Productos e Inventario',
+  },
+  {
     component: CNavItem,
-    name: 'Movimiento de Caja',
-    to: '/movimientos-cajas',
-    icon: <i style={{ width: '30px' }} className="fa-solid fa-cash-register nav-icon"></i>,
+    name: 'Productos',
+    to: '/productos',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-box nav-icon"></i>,
+  },
+  {
+    component: CNavItem,
+    name: 'Categorias',
+    to: '/categorias',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-list nav-icon"></i>,
+  },
+  {
+    component: CNavItem,
+    name: 'Inventario',
+    to: '/inventario',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-warehouse nav-icon"></i>,
+  },
+  {
+    component: CNavTitle,
+    name: 'Clientes',
+  },
+  {
+    component: CNavItem,
+    name: 'Clientes',
+    to: '/clientes',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-users nav-icon"></i>,
+  },
+  {
+    component: CNavItem,
+    name: 'Actividades',
+    to: '/actividades',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-calendar-days nav-icon"></i>,
+  },
+  {
+    component: CNavTitle,
+    name: 'Reportes',
   },
   {
     component: CNavItem,
@@ -108,15 +120,15 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Usuarios',
-    to: '/usuarios',
-    icon: <i style={{ width: '30px' }} className="fa-solid fa-users nav-icon"></i>,
-  },
-  {
-    component: CNavItem,
     name: 'Empresa',
     to: '/empresa',
     icon: <i style={{ width: '30px' }} className="fa-solid fa-building nav-icon"></i>,
+  },
+  {
+    component: CNavItem,
+    name: 'Usuarios',
+    to: '/usuarios',
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-user-gear nav-icon"></i>,
   },
   {
     component: CNavItem,
@@ -128,7 +140,7 @@ const _nav = [
     component: CNavItem,
     name: 'LOGS',
     to: '/logs',
-    icon: <i className="fa-solid fa-terminal nav-icon"></i>,
+    icon: <i style={{ width: '30px' }} className="fa-solid fa-terminal nav-icon"></i>,
   },
 ]
 
