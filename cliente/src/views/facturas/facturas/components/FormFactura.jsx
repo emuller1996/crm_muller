@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Alert, Button, Form, Modal, Spinner } from 'react-bootstrap'
 import { Controller, useForm } from 'react-hook-form'
 import AsyncSelect from 'react-select/async'
@@ -14,6 +14,7 @@ import { useFacturas } from '../../../../hooks/useFacturas'
 import FormProductoCotizacion from '../../../cotizaciones/components/FormProductoCotizacion'
 import moment from 'moment-timezone'
 import SelectMiCaja from '../../../cajas/components/SelectMiCaja'
+import { useProductos } from '../../../../hooks/useProductos'
 
 export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) {
   FormFactura.propTypes = {
@@ -41,6 +42,50 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
   } = useForm()
 
   const [isPending, setPending] = useState(false)
+
+  // Escaneo por codigo de barras: el lector escribe el codigo y envia Enter
+  const { getProductoByCode } = useProductos()
+  const [codigoScan, setCodigoScan] = useState('')
+  const [scanning, setScanning] = useState(false)
+  const inputScan = useRef(null)
+
+  const agregarPorCodigo = async () => {
+    const code = codigoScan.trim()
+    if (!code || scanning) return
+    setScanning(true)
+    try {
+      const { data: producto } = await getProductoByCode(code)
+      setProductoCotizacion((status) => {
+        const existe = status.find((p) => p.product_id === producto._id)
+        if (existe) {
+          return status.map((p) =>
+            p.product_id === producto._id ? { ...p, cantidad: Number(p.cantidad) + 1 } : p,
+          )
+        }
+        return [
+          ...status,
+          {
+            product_id: producto._id,
+            product_name: producto.name,
+            price: parseFloat(producto.price) || 0,
+            cost: parseFloat(producto.cost) || 0,
+            cantidad: 1,
+          },
+        ]
+      })
+      toast.success(`${producto.name} agregado`, { duration: 1200 })
+    } catch (error) {
+      toast.error(
+        error.response?.status === 404
+          ? `No existe un producto con el codigo "${code}"`
+          : 'Error al buscar el producto',
+      )
+    } finally {
+      setCodigoScan('')
+      setScanning(false)
+      inputScan.current?.focus()
+    }
+  }
 
   const onSubmit = async (data) => {
     console.log(ProductoCotizacion);
@@ -319,6 +364,27 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
             <i className="fa-solid fa-plus me-1"></i>
             Agregar Productos (F3)
           </Button>
+        </div>
+
+        <div className="input-group mb-3">
+          <span className="input-group-text">
+            {scanning ? <Spinner size="sm" /> : <i className="fa-solid fa-barcode"></i>}
+          </span>
+          <input
+            ref={inputScan}
+            type="text"
+            className="form-control"
+            placeholder="Escanee o escriba el codigo de barras y presione Enter"
+            value={codigoScan}
+            onChange={(e) => setCodigoScan(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                // Evita que el Enter del lector envie el formulario
+                e.preventDefault()
+                agregarPorCodigo()
+              }
+            }}
+          />
         </div>
 
         <div className="rounded overflow-hidden border border-ligth shadow-sm">

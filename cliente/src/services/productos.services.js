@@ -13,7 +13,13 @@ export const putUpdateProductoService = (id, data, token) => {
   return axios.put(`/productos/${id}`, data,{ headers: { 'access-token': token } } )
 }
 
-export const getProductoUsoService = (id, token) => {
+export const getProductoByCodeService = (code, token) => {
+  return axios.get(`/productos/codigo/${encodeURIComponent(code)}`, {
+    headers: { 'access-token': token },
+  })
+}
+
+export const getProductoUsoService =(id, token) => {
   return axios.get(`/productos/${id}/uso`, { headers: { 'access-token': token } })
 }
 

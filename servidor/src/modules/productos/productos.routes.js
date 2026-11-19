@@ -8,6 +8,7 @@ router.get("/",checkPermission("productos.read"), controller.getAll);
 router.get("/pagination",checkPermission("productos.read"), controller.pagination);
 /* router.get("/published", controller.getPublished); */
 
+router.get("/codigo/:code", checkPermission("productos.read"), controller.getByCode);
 router.get("/:id",checkPermission("productos.read"), controller.getById);
 router.post("/",checkPermission("productos.create"), controller.create);
 router.put("/:id",checkPermission("productos.update"), controller.update);
