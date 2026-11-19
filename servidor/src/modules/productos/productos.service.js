@@ -142,6 +142,29 @@ export const getById = async (id) => {
 };
 
 /**
+ * Busca un producto por su codigo exacto (codigo de barras).
+ */
+export const getByCode = async (code, empresaId) => {
+  const result = await client.search({
+    index: INDEX_ES_MAIN,
+    size: 1,
+    body: {
+      query: {
+        bool: {
+          filter: [
+            { term: { "type.keyword": "producto" } },
+            { term: { "empresa_id.keyword": empresaId } },
+            { term: { "code.keyword": String(code).trim() } },
+          ],
+        },
+      },
+    },
+  });
+  const hit = result.body.hits.hits[0];
+  return hit ? { ...hit._source, _id: hit._id } : null;
+};
+
+/**
  * Cuenta en cuantos documentos se usa el producto
  * (movimientos de inventario, facturas de venta y de compra).
  */

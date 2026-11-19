@@ -60,6 +60,18 @@ export const update = async (req, res) => {
   }
 };
 
+export const getByCode = async (req, res) => {
+  try {
+    const producto = await service.getByCode(req.params.code, req.empresaId);
+    if (!producto) {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+    res.json(producto);
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+};
+
 export const getUso = async (req, res) => {
   try {
     res.json(await service.getUso(req.params.id));
