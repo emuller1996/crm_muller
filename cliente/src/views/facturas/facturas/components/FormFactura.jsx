@@ -15,6 +15,7 @@ import FormProductoCotizacion from '../../../cotizaciones/components/FormProduct
 import moment from 'moment-timezone'
 import SelectMiCaja from '../../../cajas/components/SelectMiCaja'
 import { useProductos } from '../../../../hooks/useProductos'
+import FormClientes from '../../../clientes/components/FormClientes'
 
 export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) {
   FormFactura.propTypes = {
@@ -38,10 +39,29 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm()
 
   const [isPending, setPending] = useState(false)
+
+  // Cliente seleccionado (controlado para poder seleccionar uno recien creado)
+  const [clienteOption, setClienteOption] = useState(
+    FacturaSelect
+      ? { value: FacturaSelect?.client?.id, label: FacturaSelect?.client?.name }
+      : null,
+  )
+  const [showClienteModal, setShowClienteModal] = useState(false)
+
+  const onClienteCreado = (cliente) => {
+    if (!cliente?._id) return
+    const option = {
+      value: cliente._id,
+      label: `${cliente.name ?? ''} - ${cliente.alias ?? ''} - ${cliente.telefono ?? ''}`,
+    }
+    setClienteOption(option)
+    setValue('client_id', option.value, { shouldValidate: true })
+  }
 
   // Escaneo por codigo de barras: el lector escribe el codigo y envia Enter
   const { getProductoByCode } = useProductos()
@@ -180,25 +200,35 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
               control={control}
               defaultValue={FacturaSelect ? FacturaSelect.client_id : undefined}
               render={({ field: { name, onChange, ref } }) => (
-                <AsyncSelect
-                  isClearable
-                  cacheOptions
-                  defaultOptions
-                  inputId="client_id"
-                  loadOptions={searchLeadOptions}
-                  placeholder="Selecionar Cliente"
-                  onChange={(e) => onChange(e?.value)}
-                  name={name}
-                  defaultValue={
-                    FacturaSelect && {
-                      value: FacturaSelect?.client?.id,
-                      label: FacturaSelect?.client?.name,
-                    }
-                  }
-                  ref={ref}
-                  styles={stylesSelect}
-                  theme={themeSelect}
-                />
+                <div className="d-flex gap-2">
+                  <div className="flex-grow-1">
+                    <AsyncSelect
+                      isClearable
+                      cacheOptions
+                      defaultOptions
+                      inputId="client_id"
+                      loadOptions={searchLeadOptions}
+                      placeholder="Selecionar Cliente"
+                      value={clienteOption}
+                      onChange={(e) => {
+                        setClienteOption(e ?? null)
+                        onChange(e?.value)
+                      }}
+                      name={name}
+                      ref={ref}
+                      styles={stylesSelect}
+                      theme={themeSelect}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline-primary"
+                    title="Crear nuevo cliente"
+                    onClick={() => setShowClienteModal(true)}
+                  >
+                    <i className="fa-solid fa-user-plus"></i>
+                  </Button>
+                </div>
               )}
             />
             {errors?.client_id && (
@@ -488,6 +518,22 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
           </Button>
         </div>
       </form>
+
+      {/* Modal para crear cliente (fuera del form de la factura para no anidar formularios) */}
+      <Modal
+        backdrop="static"
+        size="lg"
+        centered
+        show={showClienteModal}
+        onHide={() => setShowClienteModal(false)}
+      >
+        <Modal.Body>
+          <FormClientes
+            onHide={() => setShowClienteModal(false)}
+            onCreated={onClienteCreado}
+          />
+        </Modal.Body>
+      </Modal>
 
       {/* Modal para agregar productos */}
       <Modal
