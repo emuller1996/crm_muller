@@ -250,7 +250,7 @@ export default function FacturaPage({ draw, onViewFactura, onPayment }) {
                 if (row.client_id === 'cliente_mostrador') {
                   return <span className="fw-semibold text-secondary">CLIENTE DE MOSTRADOR</span>
                 }
-                return <span>{row?.client?.name ?? ''}</span>
+                return <span className="fw-semibold text-secondary">{row?.client?.name ?? ''}</span>
               },
             },
             {

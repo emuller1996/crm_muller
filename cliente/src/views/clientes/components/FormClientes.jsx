@@ -9,11 +9,13 @@ import { postCreateUsuariosService } from '../../../services/usuarios.services'
 import PropTypes from 'prop-types'
 import { useClientes } from '../../../hooks/useClientes'
 
-export default function FormClientes({ onHide, allClientes, cliente }) {
+export default function FormClientes({ onHide, allClientes, cliente, onCreated }) {
   FormClientes.propTypes = {
     onHide: PropTypes.func,
     allClientes: PropTypes.func,
     cliente: PropTypes.object,
+    // Recibe el cliente recien creado ({ _id, ...datos })
+    onCreated: PropTypes.func,
   }
 
   const { CreateCliente, updateCliente } = useClientes()
@@ -29,10 +31,12 @@ export default function FormClientes({ onHide, allClientes, cliente }) {
         const result = await CreateCliente(data)
         console.log(result.data)
         toast.success(result.data.message)
+        if (onCreated) onCreated({ ...data, _id: result.data?.customer?._id })
         onHide()
-        allClientes()
+        if (allClientes) allClientes()
       } catch (error) {
         console.log(error)
+        toast.error('Error al crear el cliente')
       }
     } else {
       try {

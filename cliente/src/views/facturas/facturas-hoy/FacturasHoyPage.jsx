@@ -136,15 +136,16 @@ export default function FacturasHoyPage({ onViewFactura, onPayment, draw }) {
               },
               { name: 'N° Factura', selector: (row) => `FV-${row?.numero_factura}` ?? '' },
               {
-                name: 'Cliente',
-                selector: (row) => row?.client?.name ?? '',
-                minWidth: '200px',
-                format: (row) => {
-                  if (row.client_id === 'cliente_mostrador') {
-                    return 'CLIENTE DE MOSTRADOR'
-                  }
-                },
+              name: 'Cliente',
+              selector: (row) => row?.client?.name ?? '',
+              minWidth: '200px',
+              cell: (row) => {
+                if (row.client_id === 'cliente_mostrador') {
+                  return <span className="fw-semibold text-secondary">CLIENTE DE MOSTRADOR</span>
+                }
+                return <span className="fw-semibold text-secondary">{row?.client?.name ?? ''}</span>
               },
+            },
               {
                 name: 'Total',
                 selector: (row) => row?.price ?? '',
