@@ -544,12 +544,63 @@ export const getMetricasVentas = async ({
   const porClienteMap = {};
   const productoMap = {};
 
+  // Ganancias: por cada linea, venta = price * cantidad y costo = cost * cantidad.
+  // Las lineas sin cost (facturas antiguas) no se incluyen en el calculo.
+  const ganancias = {
+    ventas: 0,
+    costo: 0,
+    ganancia: 0,
+    lineas_sin_costo: 0,
+  };
+  const gananciaDiaMap = {};
+  const gananciaProductoMap = {};
+
   for (const hit of ventasResult.body.hits.hits) {
     const f = hit._source;
     const dia = f.dia_venta || "sin-fecha";
     if (!porDiaMap[dia]) porDiaMap[dia] = { fecha: dia, total: 0, count: 0 };
     porDiaMap[dia].total += Number(f.total_monto) || 0;
     porDiaMap[dia].count += 1;
+
+    for (const p of f.productos || []) {
+      const cantidad = Number(p.cantidad) || 0;
+      const costoUnit = p.cost === undefined || p.cost === null || p.cost === "" ? NaN : Number(p.cost);
+      if (Number.isNaN(costoUnit)) {
+        ganancias.lineas_sin_costo += 1;
+        continue;
+      }
+      const venta = (Number(p.price) || 0) * cantidad;
+      const costo = costoUnit * cantidad;
+      const ganancia = venta - costo;
+
+      ganancias.ventas += venta;
+      ganancias.costo += costo;
+      ganancias.ganancia += ganancia;
+
+      if (!gananciaDiaMap[dia]) {
+        gananciaDiaMap[dia] = { fecha: dia, ventas: 0, costo: 0, ganancia: 0 };
+      }
+      gananciaDiaMap[dia].ventas += venta;
+      gananciaDiaMap[dia].costo += costo;
+      gananciaDiaMap[dia].ganancia += ganancia;
+
+      const key = p.product_id || p.product_name;
+      if (!key) continue;
+      if (!gananciaProductoMap[key]) {
+        gananciaProductoMap[key] = {
+          product_id: p.product_id,
+          name: p.product_name,
+          cantidad: 0,
+          ventas: 0,
+          costo: 0,
+          ganancia: 0,
+        };
+      }
+      gananciaProductoMap[key].cantidad += cantidad;
+      gananciaProductoMap[key].ventas += venta;
+      gananciaProductoMap[key].costo += costo;
+      gananciaProductoMap[key].ganancia += ganancia;
+    }
 
     const m = f.metodo_pago || "sin-metodo";
     if (!porMetodoMap[m]) porMetodoMap[m] = { metodo: m, total: 0, count: 0 };
@@ -604,6 +655,8 @@ export const getMetricasVentas = async ({
     .sort((a, b) => b.total - a.total)
     .slice(0, 10);
 
+  const margen = (ganancia, ventas) => (ventas > 0 ? (ganancia / ventas) * 100 : 0);
+
   return {
     kpis: {
       total_ventas: kpisResult.body.aggregations.total.value || 0,
@@ -615,6 +668,15 @@ export const getMetricasVentas = async ({
     por_metodo_pago,
     top_productos,
     top_clientes,
+    ganancias: {
+      ...ganancias,
+      margen: margen(ganancias.ganancia, ganancias.ventas),
+      por_dia: Object.values(gananciaDiaMap).sort((a, b) => a.fecha.localeCompare(b.fecha)),
+      top_productos: Object.values(gananciaProductoMap)
+        .map((p) => ({ ...p, margen: margen(p.ganancia, p.ventas) }))
+        .sort((a, b) => b.ganancia - a.ganancia)
+        .slice(0, 10),
+    },
   };
 };
 

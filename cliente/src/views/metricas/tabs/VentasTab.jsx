@@ -151,6 +151,119 @@ export default function VentasTab() {
             </CCol>
           </CRow>
 
+          {/* Ganancias */}
+          <div className="d-flex align-items-center gap-2 mt-4 mb-2">
+            <i className="fa-solid fa-sack-dollar text-success"></i>
+            <h5 className="mb-0 fw-bold">Ganancias</h5>
+            <span className="small text-body-secondary">(precio de venta - costo) x cantidad</span>
+          </div>
+          {ventas?.ganancias?.lineas_sin_costo > 0 && (
+            <div className="alert alert-warning py-2 small">
+              <i className="fa-solid fa-triangle-exclamation me-1"></i>
+              {ventas.ganancias.lineas_sin_costo} producto(s) vendido(s) no tienen costo registrado
+              (facturas antiguas) y no se incluyen en el calculo de ganancias.
+            </div>
+          )}
+          <CRow className="g-3 mb-3">
+            <CCol xs={12} sm={6} lg={3}>
+              <KPICard title="Ganancia Bruta" value={ViewDollar(ventas?.ganancias?.ganancia || 0)}
+                icon="fa-solid fa-sack-dollar"
+                color={(ventas?.ganancias?.ganancia || 0) >= 0 ? '#2eb85c' : '#e55353'} />
+            </CCol>
+            <CCol xs={12} sm={6} lg={3}>
+              <KPICard title="Ventas (con costo)" value={ViewDollar(ventas?.ganancias?.ventas || 0)}
+                icon="fa-solid fa-tags" color="#3399ff" />
+            </CCol>
+            <CCol xs={12} sm={6} lg={3}>
+              <KPICard title="Costo de Ventas" value={ViewDollar(ventas?.ganancias?.costo || 0)}
+                icon="fa-solid fa-boxes-stacked" color="#f9b115" />
+            </CCol>
+            <CCol xs={12} sm={6} lg={3}>
+              <KPICard title="Margen" value={`${(ventas?.ganancias?.margen || 0).toFixed(1)}%`}
+                subtitle="ganancia / ventas"
+                icon="fa-solid fa-percent" color="#6f42c1" />
+            </CCol>
+          </CRow>
+
+          <CRow className="g-3 mb-3">
+            <CCol xs={12} lg={7}>
+              <CCard className="h-100">
+                <CCardHeader className="bg-white border-bottom"><strong>Ganancia por dia</strong></CCardHeader>
+                <CCardBody>
+                  {ventas?.ganancias?.por_dia?.length > 0 ? (
+                    <CChartLine height={260}
+                      data={{
+                        labels: ventas.ganancias.por_dia.map((d) => d.fecha),
+                        datasets: [
+                          {
+                            label: 'Ventas',
+                            borderColor: '#3399ff',
+                            backgroundColor: 'rgba(51, 153, 255, 0.05)',
+                            pointRadius: 3, tension: 0.3,
+                            data: ventas.ganancias.por_dia.map((d) => d.ventas),
+                          },
+                          {
+                            label: 'Costo',
+                            borderColor: '#f9b115',
+                            backgroundColor: 'rgba(249, 177, 21, 0.05)',
+                            pointRadius: 3, tension: 0.3,
+                            data: ventas.ganancias.por_dia.map((d) => d.costo),
+                          },
+                          {
+                            label: 'Ganancia',
+                            borderColor: '#2eb85c',
+                            backgroundColor: 'rgba(46, 184, 92, 0.12)',
+                            pointRadius: 4, fill: true, tension: 0.3,
+                            data: ventas.ganancias.por_dia.map((d) => d.ganancia),
+                          },
+                        ],
+                      }}
+                      options={{
+                        maintainAspectRatio: false,
+                        plugins: {
+                          legend: { position: 'bottom' },
+                          tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ViewDollar(ctx.raw)}` } },
+                        },
+                        scales: { y: { beginAtZero: true, ticks: { callback: (v) => ViewDollar(v) } } },
+                      }}
+                    />
+                  ) : <div className="text-center text-muted py-4">Sin datos</div>}
+                </CCardBody>
+              </CCard>
+            </CCol>
+            <CCol xs={12} lg={5}>
+              <CCard className="h-100">
+                <CCardHeader className="bg-white border-bottom"><strong>Productos con mas ganancia</strong></CCardHeader>
+                <CCardBody>
+                  {ventas?.ganancias?.top_productos?.length > 0 ? (
+                    <CTable hover responsive small>
+                      <CTableHead>
+                        <CTableRow>
+                          <CTableHeaderCell>Producto</CTableHeaderCell>
+                          <CTableHeaderCell className="text-center">Cant.</CTableHeaderCell>
+                          <CTableHeaderCell className="text-end">Ganancia</CTableHeaderCell>
+                          <CTableHeaderCell className="text-end">Margen</CTableHeaderCell>
+                        </CTableRow>
+                      </CTableHead>
+                      <CTableBody>
+                        {ventas.ganancias.top_productos.map((p, i) => (
+                          <CTableRow key={i}>
+                            <CTableDataCell>{p.name || '-'}</CTableDataCell>
+                            <CTableDataCell className="text-center">{p.cantidad}</CTableDataCell>
+                            <CTableDataCell className={`text-end fw-semibold ${p.ganancia >= 0 ? 'text-success' : 'text-danger'}`}>
+                              {ViewDollar(p.ganancia)}
+                            </CTableDataCell>
+                            <CTableDataCell className="text-end">{p.margen.toFixed(1)}%</CTableDataCell>
+                          </CTableRow>
+                        ))}
+                      </CTableBody>
+                    </CTable>
+                  ) : <div className="text-center text-muted py-4">Sin datos</div>}
+                </CCardBody>
+              </CCard>
+            </CCol>
+          </CRow>
+
           {/* Tablas */}
           <CRow className="g-3">
             <CCol xs={12} lg={6}>
