@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import FacturaPage from './facturas/FacturaPage'
 import FacturasHoyPage from './facturas-hoy/FacturasHoyPage'
+import FacturasPendientesPage from './facturas-pendientes/FacturasPendientesPage'
 import DetalleFactura from './facturas/components/DetalleFactura'
 import FormPagosFactura from './facturas/components/FormPagosFactura'
 
@@ -58,6 +59,19 @@ export default function FacturasMainPage() {
           <Tabs defaultActiveKey="facturas_hoy" id="uncontrolled-tab-example">
             <Tab eventKey="facturas_hoy" title="Facturas de Hoy">
               <FacturasHoyPage
+                draw={draw}
+                onViewFactura={(factura) => {
+                  setCotiSelecionada(factura)
+                  setShowView(true)
+                }}
+                onPayment={(factura) => {
+                  setShowPago(true)
+                  setCotiSelecionada(factura)
+                }}
+              />
+            </Tab>
+            <Tab eventKey="facturas_pendientes" title="Facturas Pendientes" mountOnEnter>
+              <FacturasPendientesPage
                 draw={draw}
                 onViewFactura={(factura) => {
                   setCotiSelecionada(factura)
