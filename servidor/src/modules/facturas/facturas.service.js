@@ -188,6 +188,7 @@ export const create = async (data, token) => {
   return {
     message: "Factura creada",
     factura: response.body,
+    numero_factura: data.numero_factura,
   };
 };
 

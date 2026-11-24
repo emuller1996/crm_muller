@@ -57,7 +57,9 @@ export const useFacturaTicket = () => {
     }
   }
 
-  const imprimirTicket = async (factura, ancho = 80) => {
+  // targetWindow (opcional): ventana abierta de antemano en el click del usuario,
+  // para que el navegador no bloquee el popup cuando hay esperas (await) antes de imprimir
+  const imprimirTicket = async (factura, ancho = 80, targetWindow = null) => {
     try {
       const empresa = await fetchEmpresa()
       const logo = empresa?.logo ? await logoToPng(empresa.logo) : null
@@ -209,9 +211,15 @@ export const useFacturaTicket = () => {
 
       // Imprimir
       doc.autoPrint()
-      window.open(doc.output('bloburl'))
+      const url = doc.output('bloburl')
+      if (targetWindow && !targetWindow.closed) {
+        targetWindow.location.href = url
+      } else {
+        window.open(url)
+      }
     } catch (error) {
       console.log(error)
+      if (targetWindow && !targetWindow.closed) targetWindow.close()
       toast.error('Error al generar el ticket')
     }
   }
