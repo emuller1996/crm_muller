@@ -61,6 +61,7 @@ export const useFacturaTicket = () => {
   // para que el navegador no bloquee el popup cuando hay esperas (await) antes de imprimir
   const imprimirTicket = async (factura, ancho = 80, targetWindow = null) => {
     try {
+      
       const empresa = await fetchEmpresa()
       const logo = empresa?.logo ? await logoToPng(empresa.logo) : null
 
@@ -77,6 +78,7 @@ export const useFacturaTicket = () => {
         item: small ? 7 : 8,
         total: small ? 10 : 12,
       }
+
       const lh = small ? 3 : 3.5 // alto de linea base
 
       const productos = factura?.productos ?? []
@@ -100,8 +102,8 @@ export const useFacturaTicket = () => {
       h += lh // razon social
       h += lh * 3 // documento + direccion + contacto (aprox)
       h += 2 // separador
-      h += lh // titulo FACTURA
-      h += lh * 4 // fecha, cliente, estado, metodo/atendio
+      h += lh * 2 // titulo FACTURA + numero
+      h += lh * 5 // fecha, cliente, estado, metodo, atendio
       h += 2 // separador
       productos.forEach((_, i) => {
         h += nombreLines[i].length * lh // nombre(s)
@@ -115,7 +117,15 @@ export const useFacturaTicket = () => {
       h += margin
 
       // --- Doc real ---
-      const doc = new jsPDF({ unit: 'mm', format: [W, Math.max(h, 40)] })
+      // La orientacion se fija explicitamente: jsPDF por defecto es 'portrait' e
+      // intercambia ancho y alto cuando el ticket es mas corto que ancho (pocos productos),
+      // lo que dejaba la pagina girada y el texto de la derecha cortado.
+      const H = Math.max(h, 40)
+      const doc = new jsPDF({
+        unit: 'mm',
+        format: [W, H],
+        orientation: W > H ? 'landscape' : 'portrait',
+      })
       let y = margin
 
       const center = (text, size, style = 'normal') => {
@@ -165,7 +175,12 @@ export const useFacturaTicket = () => {
         y += lh
       }
       left('Fecha', `${fecha.toLocaleDateString()} ${fecha.toLocaleTimeString()}`)
-      left('Cliente', factura?.client?.name ?? '-')
+      left(
+        'Cliente',
+        factura?.client_id === 'cliente_mostrador'
+          ? 'CLIENTE DE MOSTRADOR'
+          : factura?.client?.name ?? '-',
+      )
       left('Estado', factura?.status ?? '-')
       left('Metodo pago', factura?.metodo_pago ?? '-')
       if (factura?.user_create?.name) left('Atendio', factura.user_create.name)
@@ -190,6 +205,7 @@ export const useFacturaTicket = () => {
       sep()
 
       // Total
+       y += 1
       doc.setFontSize(fs.total)
       doc.setFont('helvetica', 'bold')
       doc.text('TOTAL', margin, y)
