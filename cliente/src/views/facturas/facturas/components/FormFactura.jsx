@@ -16,6 +16,8 @@ import moment from 'moment-timezone'
 import SelectMiCaja from '../../../cajas/components/SelectMiCaja'
 import { useProductos } from '../../../../hooks/useProductos'
 import FormClientes from '../../../clientes/components/FormClientes'
+import ModalCobroFactura from './ModalCobroFactura'
+import { useFacturaTicket } from '../../../../hooks/useFacturaTicket'
 
 export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) {
   FormFactura.propTypes = {
@@ -107,9 +109,12 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
     }
   }
 
+  // Cobro: el formulario validado se guarda aqui y se confirma desde el modal de cobro
+  const { imprimirTicket } = useFacturaTicket()
+  const [facturaPendiente, setFacturaPendiente] = useState(null)
+  const [cobrando, setCobrando] = useState(false)
+
   const onSubmit = async (data) => {
-    console.log(ProductoCotizacion);
-    
     if (ProductoCotizacion.length === 0) {
       toast.error(`Selecione al menos un producto a la Factura`)
       return
@@ -119,13 +124,43 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
     data.total_monto = ProductoCotizacion?.reduce((preVal, currentVal) => {
       return preVal + currentVal.price * currentVal.cantidad
     }, 0)
+    setFacturaPendiente(data)
+  }
+
+  const confirmarCobro = async (imprimir) => {
+    if (!facturaPendiente || cobrando) return
+    // La ventana se abre en el mismo click para que el navegador no la bloquee
+    const ventana = imprimir ? window.open('', '_blank') : null
+    setCobrando(true)
     try {
-      await crearFactura(data)
+      const res = await crearFactura(facturaPendiente)
       toast.success(`Factura Creada`)
+
+      if (imprimir) {
+        const clienteNombre =
+          facturaPendiente.client_id === 'cliente_mostrador'
+            ? 'CLIENTE DE MOSTRADOR'
+            : (clienteOption?.label ?? '').split(' - ')[0]
+        await imprimirTicket(
+          {
+            ...facturaPendiente,
+            numero_factura: res?.data?.numero_factura,
+            createdTime: Date.now(),
+            client: { name: clienteNombre },
+          },
+          Number(localStorage.getItem('ticket_ancho_mm')) || 80,
+          ventana,
+        )
+      }
+
+      setFacturaPendiente(null)
       getAllFactura()
     } catch (error) {
       console.log(error)
-      toast.error('Error al crear la factura')
+      if (ventana && !ventana.closed) ventana.close()
+      toast.error(error.response?.data?.message || 'Error al crear la factura')
+    } finally {
+      setCobrando(false)
     }
   }
 
@@ -162,6 +197,9 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
 
   useEffect(() => {
     const handleKeyDown = (event) => {
+      // Con el modal de cobro abierto no se usan los atajos del formulario
+      if (facturaPendiente) return
+
       // F3 keyCode = 114, F4 keyCode = 115
       if (event.key === 'F3') {
         event.preventDefault(); // Evita comportamiento por defecto del navegador
@@ -185,7 +223,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleSubmit, onSubmit, ProductoCotizacion]);
+  }, [handleSubmit, onSubmit, ProductoCotizacion, facturaPendiente]);
 
   return (
     <>
@@ -518,6 +556,16 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
           </Button>
         </div>
       </form>
+
+      {/* Modal de cobro (total, cambio y opciones de impresion) */}
+      <ModalCobroFactura
+        show={!!facturaPendiente}
+        total={facturaPendiente?.total_monto ?? 0}
+        metodoPago={facturaPendiente?.metodo_pago}
+        saving={cobrando}
+        onHide={() => setFacturaPendiente(null)}
+        onConfirm={confirmarCobro}
+      />
 
       {/* Modal para crear cliente (fuera del form de la factura para no anidar formularios) */}
       <Modal
