@@ -146,7 +146,7 @@ export const useFacturaTicket = () => {
         const logoW = small ? 16 : 20
         const logoH = (logo.h / logo.w) * logoW
         doc.addImage(logo.dataUrl, 'PNG', cx - logoW / 2, y, logoW, logoH)
-        y += logoH + 2
+        y += logoH + 4
       }
 
       // Encabezado empresa
