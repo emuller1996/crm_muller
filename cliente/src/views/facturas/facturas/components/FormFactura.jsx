@@ -52,7 +52,10 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
 
   // Cliente seleccionado (controlado para poder seleccionar uno recien creado)
   const [clienteOption, setClienteOption] = useState(
-    FacturaSelect ? { value: FacturaSelect?.client?.id, label: FacturaSelect?.client?.name } : null,
+    FacturaSelect ? { value: FacturaSelect?.client?.id, label: FacturaSelect?.client?.name } : {
+        label: 'CLIENTE DE MOSTRADORA',
+        value: 'cliente_mostrador',
+      },
   )
   const [showClienteModal, setShowClienteModal] = useState(false)
 
@@ -241,7 +244,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
               name="client_id"
               rules={{ required: true }}
               control={control}
-              defaultValue={FacturaSelect ? FacturaSelect.client_id : undefined}
+              defaultValue={FacturaSelect ? FacturaSelect.client_id : "cliente_mostrador"}
               render={({ field: { name, onChange, ref } }) => (
                 <div className="d-flex gap-2">
                   <div className="flex-grow-1">

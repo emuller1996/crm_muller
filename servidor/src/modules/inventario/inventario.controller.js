@@ -8,6 +8,14 @@ export const getResumenInventario = async (req, res) => {
   }
 };
 
+export const getTotalesInventario = async (req, res) => {
+  try {
+    res.json(await service.getTotalesInventario({ empresa_id: req.empresaId }));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getStockByProducto = async (req, res) => {
   try {
     res.json(await service.getStockByProducto(req.params.id));

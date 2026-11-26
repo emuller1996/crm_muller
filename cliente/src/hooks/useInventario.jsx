@@ -9,6 +9,7 @@ import {
   getMovimientosByProductoService,
   postRegistrarMovimientoService,
   patchAnularMovimientoService,
+  getTotalesInventarioService,
 } from '../services/inventario.services'
 
 export const useInventario = () => {
@@ -76,6 +77,10 @@ export const useInventario = () => {
     return patchAnularMovimientoService(Token, id)
   }
 
+  const getTotalesInventario = async () => {
+    return getTotalesInventarioService(Token)
+  }
+
   return {
     resumen,
     movimientos,
@@ -90,5 +95,6 @@ export const useInventario = () => {
     getMovimientosByProducto,
     registrarMovimiento,
     anularMovimiento,
+    getTotalesInventario,
   }
 }

@@ -1,7 +1,11 @@
 /* eslint-disable prettier/prettier */
 import axios from 'axios'
 
-export const getResumenInventarioService = async (token, ...params) => {
+export const getTotalesInventarioService = (token) => {
+  return axios.get('/inventario/totales', { headers: { 'access-token': token } })
+}
+
+export const getResumenInventarioService =async (token, ...params) => {
   const searchs = new URLSearchParams()
 
   if (params[0]) {
