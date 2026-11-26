@@ -17,6 +17,7 @@ import SelectMiCaja from '../../../cajas/components/SelectMiCaja'
 import { useProductos } from '../../../../hooks/useProductos'
 import FormClientes from '../../../clientes/components/FormClientes'
 import ModalCobroFactura from './ModalCobroFactura'
+import ModalEditarProductoFactura from './ModalEditarProductoFactura'
 import { useFacturaTicket } from '../../../../hooks/useFacturaTicket'
 
 export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) {
@@ -34,6 +35,8 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
     FacturaSelect ? FacturaSelect.productos : [],
   )
   const [showProductosModal, setShowProductosModal] = useState(false)
+  // Indice de la linea de producto que se esta editando (cantidad / precio)
+  const [editIndex, setEditIndex] = useState(null)
 
   const { crearFactura } = useFacturas()
   const {
@@ -49,9 +52,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
 
   // Cliente seleccionado (controlado para poder seleccionar uno recien creado)
   const [clienteOption, setClienteOption] = useState(
-    FacturaSelect
-      ? { value: FacturaSelect?.client?.id, label: FacturaSelect?.client?.name }
-      : null,
+    FacturaSelect ? { value: FacturaSelect?.client?.id, label: FacturaSelect?.client?.name } : null,
   )
   const [showClienteModal, setShowClienteModal] = useState(false)
 
@@ -127,6 +128,10 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
     setFacturaPendiente(data)
   }
 
+  useEffect(() => {
+    inputScan.current?.focus()
+  }, [])
+
   const confirmarCobro = async (imprimir) => {
     if (!facturaPendiente || cobrando) return
     // La ventana se abre en el mismo click para que el navegador no la bloquee
@@ -198,32 +203,32 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
   useEffect(() => {
     const handleKeyDown = (event) => {
       // Con el modal de cobro abierto no se usan los atajos del formulario
-      if (facturaPendiente) return
+      if (facturaPendiente || editIndex !== null) return
 
       // F3 keyCode = 114, F4 keyCode = 115
       if (event.key === 'F3') {
-        event.preventDefault(); // Evita comportamiento por defecto del navegador
+        event.preventDefault() // Evita comportamiento por defecto del navegador
         setShowProductosModal(true)
       }
 
-      if (event.key === 'F2' ) {
-        event.preventDefault(); // Evita comportamiento por defecto del navegador
+      if (event.key === 'F2') {
+        event.preventDefault() // Evita comportamiento por defecto del navegador
         setShowProductosModal(false)
       }
 
       if (event.key === 'F4') {
-        event.preventDefault(); // Evita comportamiento por defecto del navegador
+        event.preventDefault() // Evita comportamiento por defecto del navegador
         handleSubmit(onSubmit)()
       }
-    };
+    }
 
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown)
 
     // Cleanup
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleSubmit, onSubmit, ProductoCotizacion, facturaPendiente]);
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [handleSubmit, onSubmit, ProductoCotizacion, facturaPendiente, editIndex])
 
   return (
     <>
@@ -370,8 +375,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
                     border: '1px solid',
                     borderRadius: '0.4em',
                     cursor: 'pointer',
-                    borderColor:
-                      watch().metodo_pago === 'transferencia' ? '#436efd' : '#acacac',
+                    borderColor: watch().metodo_pago === 'transferencia' ? '#436efd' : '#acacac',
                     color: watch().metodo_pago === 'transferencia' ? '#436efd' : '#303030',
                   }}
                   htmlFor="transferencia"
@@ -381,12 +385,12 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
                 </Form.Check.Label>
               </Form.Check>
             </div>
-            <div className='col-8'>
-            {errors?.metodo_pago && (
-              <Alert variant={'warning'} className="mt-2 py-1 px-2 small">
-                Elige un Metodo de Pago.
-              </Alert>
-            )}
+            <div className="col-8">
+              {errors?.metodo_pago && (
+                <Alert variant={'warning'} className="mt-2 py-1 px-2 small">
+                  Elige un Metodo de Pago.
+                </Alert>
+              )}
             </div>
           </div>
 
@@ -406,10 +410,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
             <div className="col-md-6">
               <Form.Group controlId="fecha_vencimiento">
                 <Form.Label>Fecha de Vencimiento</Form.Label>
-                <Form.Control
-                  {...register('fecha_vencimiento', { required: true })}
-                  type="date"
-                />
+                <Form.Control {...register('fecha_vencimiento', { required: true })} type="date" />
               </Form.Group>
             </div>
           )}
@@ -462,20 +463,30 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
             columns={[
               {
                 name: '',
-                width: '50px',
-                cell: (row) => (
-                  <button
-                    onClick={() => {
-                      setProductoCotizacion((status) =>
-                        status.filter((ele) => ele.product_id !== row.product_id),
-                      )
-                    }}
-                    type="button"
-                    title="Remover Producto."
-                    className="btn btn-danger btn-sm me-2 text-white"
-                  >
-                    <i className="fa-solid fa-trash"></i>
-                  </button>
+                width: '100px',
+                cell: (row, index) => (
+                  <div className="d-flex gap-1">
+                    <button
+                      onClick={() => setEditIndex(index)}
+                      type="button"
+                      title="Modificar cantidad y precio."
+                      className="btn btn-primary btn-sm"
+                    >
+                      <i className="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setProductoCotizacion((status) =>
+                          status.filter((ele) => ele.product_id !== row.product_id),
+                        )
+                      }}
+                      type="button"
+                      title="Remover Producto."
+                      className="btn btn-danger btn-sm text-white"
+                    >
+                      <i className="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
                 ),
               },
               {
@@ -567,6 +578,18 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
         onConfirm={confirmarCobro}
       />
 
+      {/* Modal para modificar cantidad y precio de un producto agregado */}
+      <ModalEditarProductoFactura
+        producto={editIndex !== null ? ProductoCotizacion[editIndex] : null}
+        onHide={() => setEditIndex(null)}
+        onSave={({ cantidad, price }) => {
+          setProductoCotizacion((status) =>
+            status.map((p, i) => (i === editIndex ? { ...p, cantidad, price } : p)),
+          )
+          setEditIndex(null)
+        }}
+      />
+
       {/* Modal para crear cliente (fuera del form de la factura para no anidar formularios) */}
       <Modal
         backdrop="static"
@@ -576,10 +599,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
         onHide={() => setShowClienteModal(false)}
       >
         <Modal.Body>
-          <FormClientes
-            onHide={() => setShowClienteModal(false)}
-            onCreated={onClienteCreado}
-          />
+          <FormClientes onHide={() => setShowClienteModal(false)} onCreated={onClienteCreado} />
         </Modal.Body>
       </Modal>
 
@@ -598,10 +618,14 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FormProductoCotizacion setProductoCotizacion={setProductoCotizacion} isVenta={true}  />
+          <FormProductoCotizacion setProductoCotizacion={setProductoCotizacion} isVenta={true} />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="success" className="text-white" onClick={() => setShowProductosModal(false)}>
+          <Button
+            variant="success"
+            className="text-white"
+            onClick={() => setShowProductosModal(false)}
+          >
             <i className="fa-solid fa-check me-1"></i>
             Listo [{ProductoCotizacion.length} productos] (F2)
           </Button>
