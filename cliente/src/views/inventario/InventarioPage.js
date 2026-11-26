@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import { paginationComponentOptions } from '../../utils/optionsConfig'
 import { useInventario } from '../../hooks/useInventario'
 import FormMovimientoInventario from './components/FormMovimientoInventario'
+import TotalesInventario from './components/TotalesInventario'
 import PropTypes from 'prop-types'
 
 const origenLabels = {
@@ -25,6 +26,7 @@ const InventarioPage = () => {
   return (
     <div className="">
       <CContainer fluid>
+        <TotalesInventario draw={draw} />
         <div className="card">
           <div className="card-body">
             <div className="my-2">
@@ -141,10 +143,13 @@ function ResumenTab({ draw }) {
               name: 'Estado',
               width: '130px',
               cell: (row) => {
-                if (row.stock_actual <= 0)
-                  return <Badge bg="danger">Sin Stock</Badge>
+                if (row.stock_actual <= 0) return <Badge bg="danger">Sin Stock</Badge>
                 if (row.stock_actual <= 5)
-                  return <Badge bg="warning" className="text-dark">Stock Bajo</Badge>
+                  return (
+                    <Badge bg="warning" className="text-dark">
+                      Stock Bajo
+                    </Badge>
+                  )
                 return <Badge bg="success">Disponible</Badge>
               },
             },
