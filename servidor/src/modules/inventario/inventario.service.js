@@ -302,6 +302,112 @@ export const anularMovimiento = async (movimientoId) => {
 };
 
 /**
+ * Totales del inventario de la empresa: unidades en stock y valor de la
+ * mercancia al costo y al precio de venta. Solo el stock positivo suma valor.
+ */
+export const getTotalesInventario = async ({ empresa_id = "" } = {}) => {
+  // 1. Todos los productos de la empresa (con su precio y costo)
+  const productosResult = await client.search({
+    index: INDEX_ES_MAIN,
+    size: 10000,
+    body: {
+      _source: ["name", "price", "cost"],
+      query: {
+        bool: {
+          filter: [
+            { term: { "type.keyword": "producto" } },
+            ...(empresa_id ? [{ term: { "empresa_id.keyword": empresa_id } }] : []),
+          ],
+        },
+      },
+    },
+  });
+  const productos = productosResult.body.hits.hits;
+
+  const totales = {
+    total_productos: productos.length,
+    productos_con_stock: 0,
+    productos_sin_stock: 0,
+    productos_stock_bajo: 0,
+    productos_sin_costo: 0,
+    unidades_totales: 0,
+    valor_costo: 0,
+    valor_venta: 0,
+    ganancia_potencial: 0,
+    margen: 0,
+  };
+
+  if (productos.length === 0) return totales;
+
+  // 2. Entradas y salidas activas agrupadas por producto, en una sola query
+  const prodIds = productos.map((p) => p._id);
+  const aggsResult = await client.search({
+    index: INDEX_ES_MAIN,
+    size: 0,
+    body: {
+      query: {
+        bool: {
+          must: [
+            { term: { "type.keyword": "movimiento_inventario" } },
+            { terms: { "producto_id.keyword": prodIds } },
+            { term: { "estado.keyword": "activo" } },
+          ],
+        },
+      },
+      aggs: {
+        por_producto: {
+          terms: { field: "producto_id.keyword", size: prodIds.length },
+          aggs: {
+            entradas: {
+              filter: { term: { "tipo.keyword": "entrada" } },
+              aggs: { suma: { sum: { field: "cantidad" } } },
+            },
+            salidas: {
+              filter: { term: { "tipo.keyword": "salida" } },
+              aggs: { suma: { sum: { field: "cantidad" } } },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const stockMap = {};
+  for (const bucket of aggsResult.body.aggregations.por_producto.buckets) {
+    stockMap[bucket.key] =
+      (bucket.entradas.suma.value || 0) - (bucket.salidas.suma.value || 0);
+  }
+
+  // 3. Acumular por producto
+  for (const p of productos) {
+    const stock = stockMap[p._id] || 0;
+    if (stock <= 0) {
+      totales.productos_sin_stock += 1;
+      continue;
+    }
+
+    totales.productos_con_stock += 1;
+    if (stock <= 5) totales.productos_stock_bajo += 1;
+    totales.unidades_totales += stock;
+
+    const price = Number(p._source.price) || 0;
+    const cost = Number(p._source.cost);
+    if (Number.isNaN(cost) || p._source.cost === undefined || p._source.cost === null) {
+      totales.productos_sin_costo += 1;
+    } else {
+      totales.valor_costo += stock * cost;
+    }
+    totales.valor_venta += stock * price;
+  }
+
+  totales.ganancia_potencial = totales.valor_venta - totales.valor_costo;
+  totales.margen =
+    totales.valor_venta > 0 ? (totales.ganancia_potencial / totales.valor_venta) * 100 : 0;
+
+  return totales;
+};
+
+/**
  * Resumen de inventario paginado.
  * Primero obtiene los productos paginados, luego en una sola query
  * agrega entradas/salidas agrupadas por producto_id.
