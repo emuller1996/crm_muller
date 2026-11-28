@@ -44,7 +44,8 @@ export const create = async (req, res) => {
     );
     res.status(201).json(result);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // error.status = 400 para errores de validacion (p. ej. detalle de pago mixto)
+    res.status(error.status || 500).json({ message: error.message });
   }
 };
 

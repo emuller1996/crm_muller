@@ -104,6 +104,12 @@ export const useFacturaTicket = () => {
       h += 2 // separador
       h += lh * 2 // titulo FACTURA + numero
       h += lh * 5 // fecha, cliente, estado, metodo, atendio
+      // Desglose del pago mixto: una linea por metodo
+      const detallePago =
+        factura?.metodo_pago === 'mixto' && Array.isArray(factura?.detalle_pago)
+          ? factura.detalle_pago
+          : []
+      h += detallePago.length * lh
       h += 2 // separador
       productos.forEach((_, i) => {
         h += nombreLines[i].length * lh // nombre(s)
@@ -183,6 +189,11 @@ export const useFacturaTicket = () => {
       )
       left('Estado', factura?.status ?? '-')
       left('Metodo pago', factura?.metodo_pago ?? '-')
+      detallePago.forEach((d) => {
+        doc.text(`  - ${d.metodo_pago}`, margin, y)
+        doc.text(ViewDollar(Number(d.valor) || 0), W - margin, y, { align: 'right' })
+        y += lh
+      })
       if (factura?.user_create?.name) left('Atendio', factura.user_create.name)
 
       sep()

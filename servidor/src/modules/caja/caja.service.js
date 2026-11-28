@@ -8,6 +8,7 @@ import {
 import { INDEX_ES_MAIN } from "../../config.js";
 import { jwtDecode } from "jwt-decode";
 import { buildMovimiento } from "./caja.helpers.js";
+import { lineasDePago } from "../../utils/detallePago.js";
 
 /**
  * Tipos de movimiento:
@@ -373,27 +374,31 @@ export const anular = async (id) => {
 
 // ─── Integracion con facturas ────────────────────────────
 
+// Un movimiento por cada metodo del detalle de pago (pago mixto = varios movimientos)
 export const registrarMovimientoFactura = async (factura, token) => {
   const decoded = jwtDecode(token);
+  const esMixto = factura.metodo_pago === "mixto";
 
-  const movimiento = {
-    tipo: "ingreso",
-    monto: factura.total_monto,
-    metodo_pago: factura.metodo_pago || "efectivo",
-    descripcion: `Venta - Factura #${factura.numero_factura}`,
-    nota: factura.nota || "",
-    fecha: factura.dia_venta || new Date().toISOString().split("T")[0],
-    hora: new Date().toLocaleTimeString("es-CO", { hour12: false }),
-    origen: "factura_venta",
-    referencia_id: factura._id,
-    referencia: `Factura #${factura.numero_factura}`,
-    estado: "activo",
-    empresa_id: factura.empresa_id,
-    caja_id: factura.caja_id,
-    user_create_id: decoded?._id,
-  };
+  for (const linea of lineasDePago(factura)) {
+    const movimiento = {
+      tipo: "ingreso",
+      monto: linea.valor,
+      metodo_pago: linea.metodo_pago || "efectivo",
+      descripcion: `Venta - Factura #${factura.numero_factura}`,
+      nota: esMixto ? `Pago mixto. ${factura.nota || ""}`.trim() : factura.nota || "",
+      fecha: factura.dia_venta || new Date().toISOString().split("T")[0],
+      hora: new Date().toLocaleTimeString("es-CO", { hour12: false }),
+      origen: "factura_venta",
+      referencia_id: factura._id,
+      referencia: `Factura #${factura.numero_factura}`,
+      estado: "activo",
+      empresa_id: factura.empresa_id,
+      caja_id: factura.caja_id,
+      user_create_id: decoded?._id,
+    };
 
-  await crearElasticByType(movimiento, "movimiento_caja");
+    await crearElasticByType(movimiento, "movimiento_caja");
+  }
 };
 
 export const registrarMovimientoPago = async (pago, facturaId, token) => {
@@ -420,26 +425,29 @@ export const registrarMovimientoPago = async (pago, facturaId, token) => {
   await crearElasticByType(movimiento, "movimiento_caja");
 };
 
+// Un egreso por cada metodo del detalle de pago, para revertir cada uno
 export const registrarMovimientoAnulacion = async (facturaId, token) => {
   const decoded = jwtDecode(token);
   const factura = await getDocumentById(facturaId);
 
-  const movimiento = {
-    tipo: "egreso",
-    monto: factura?.total_monto || 0,
-    metodo_pago: factura?.metodo_pago || "efectivo",
-    descripcion: `Anulacion - Factura #${factura?.numero_factura || ""}`,
-    nota: "Movimiento generado por anulacion de factura",
-    fecha: new Date().toISOString().split("T")[0],
-    hora: new Date().toLocaleTimeString("es-CO", { hour12: false }),
-    origen: "anulacion",
-    referencia_id: facturaId,
-    referencia: `Factura #${factura?.numero_factura || ""}`,
-    estado: "activo",
-    empresa_id: factura?.empresa_id,
-    caja_id: factura?.caja_id,
-    user_create_id: decoded?._id,
-  };
+  for (const linea of lineasDePago(factura)) {
+    const movimiento = {
+      tipo: "egreso",
+      monto: linea.valor,
+      metodo_pago: linea.metodo_pago || "efectivo",
+      descripcion: `Anulacion - Factura #${factura?.numero_factura || ""}`,
+      nota: "Movimiento generado por anulacion de factura",
+      fecha: new Date().toISOString().split("T")[0],
+      hora: new Date().toLocaleTimeString("es-CO", { hour12: false }),
+      origen: "anulacion",
+      referencia_id: facturaId,
+      referencia: `Factura #${factura?.numero_factura || ""}`,
+      estado: "activo",
+      empresa_id: factura?.empresa_id,
+      caja_id: factura?.caja_id,
+      user_create_id: decoded?._id,
+    };
 
-  await crearElasticByType(movimiento, "movimiento_caja");
+    await crearElasticByType(movimiento, "movimiento_caja");
+  }
 };
