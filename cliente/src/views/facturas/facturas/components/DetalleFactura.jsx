@@ -57,6 +57,16 @@ export default function DetalleFactura({ Factura }) {
             <div className="col-md-6">
               <p className="m-0">Metodo de pago.</p>
               <p className="m-0 fs-5 text-uppercase">{Factura?.metodo_pago}</p>
+              {Factura?.metodo_pago === 'mixto' && Factura?.detalle_pago?.length > 0 && (
+                <ul className="list-unstyled small mb-0 mt-1">
+                  {Factura.detalle_pago.map((d, i) => (
+                    <li key={i} className="d-flex justify-content-between" style={{ maxWidth: '260px' }}>
+                      <span className="text-capitalize">{d.metodo_pago}</span>
+                      <span className="fw-semibold">{ViewDollar(d.valor)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
             {Factura?.fecha_vencimiento && (
               <div className="col-md-6">

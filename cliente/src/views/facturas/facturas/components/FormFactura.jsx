@@ -135,13 +135,17 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
     inputScan.current?.focus()
   }, [])
 
-  const confirmarCobro = async (imprimir) => {
+  // detallePago: lineas { metodo_pago, valor } cuando el metodo es mixto (null en otro caso)
+  const confirmarCobro = async (imprimir, detallePago) => {
     if (!facturaPendiente || cobrando) return
+    const factura = detallePago
+      ? { ...facturaPendiente, detalle_pago: detallePago }
+      : facturaPendiente
     // La ventana se abre en el mismo click para que el navegador no la bloquee
     const ventana = imprimir ? window.open('', '_blank') : null
     setCobrando(true)
     try {
-      const res = await crearFactura(facturaPendiente)
+      const res = await crearFactura(factura)
       toast.success(`Factura Creada`)
 
       if (imprimir) {
@@ -151,7 +155,7 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
             : (clienteOption?.label ?? '').split(' - ')[0]
         await imprimirTicket(
           {
-            ...facturaPendiente,
+            ...factura,
             numero_factura: res?.data?.numero_factura,
             createdTime: Date.now(),
             client: { name: clienteNombre },
@@ -385,6 +389,31 @@ export default function FormFactura({ getAllFactura, onCancel, FacturaSelect }) 
                 >
                   Transferencia
                   <i className="fa-xl fa-solid fa-money-bill-transfer ms-2"></i>
+                </Form.Check.Label>
+              </Form.Check>
+              <Form.Check className="p-0">
+                <Form.Check.Input
+                  {...register('metodo_pago', { required: true })}
+                  type={'radio'}
+                  id={`mixto`}
+                  name="metodo_pago"
+                  value={'mixto'}
+                  hidden
+                />
+                <Form.Check.Label
+                  className="p-2"
+                  style={{
+                    border: '1px solid',
+                    borderRadius: '0.4em',
+                    cursor: 'pointer',
+                    borderColor: watch().metodo_pago === 'mixto' ? '#436efd' : '#acacac',
+                    color: watch().metodo_pago === 'mixto' ? '#436efd' : '#303030',
+                  }}
+                  htmlFor="mixto"
+                  title="Pagar con 2 o mas metodos"
+                >
+                  Mixto
+                  <i className="fa-xl fa-solid fa-layer-group ms-2"></i>
                 </Form.Check.Label>
               </Form.Check>
             </div>

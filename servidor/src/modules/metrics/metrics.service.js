@@ -1,5 +1,6 @@
 import { client } from "../../db.js";
 import { INDEX_ES_MAIN } from "../../config.js";
+import { lineasDePago } from "../../utils/detallePago.js";
 
 /**
  * Helpers de fechas
@@ -535,7 +536,7 @@ export const getMetricasVentas = async ({
           must_not: [{ term: { "status.keyword": "Anulada" } }],
         },
       },
-      _source: ["dia_venta", "total_monto", "metodo_pago", "client_id", "productos"],
+      _source: ["dia_venta", "total_monto", "metodo_pago", "detalle_pago", "client_id", "productos"],
     },
   });
 
@@ -602,10 +603,14 @@ export const getMetricasVentas = async ({
       gananciaProductoMap[key].ganancia += ganancia;
     }
 
-    const m = f.metodo_pago || "sin-metodo";
-    if (!porMetodoMap[m]) porMetodoMap[m] = { metodo: m, total: 0, count: 0 };
-    porMetodoMap[m].total += Number(f.total_monto) || 0;
-    porMetodoMap[m].count += 1;
+    // Por metodo: se usa el detalle de pago, asi una factura mixta se reparte
+    // entre los metodos reales (count = facturas en las que aparece el metodo)
+    for (const linea of lineasDePago(f)) {
+      const m = linea.metodo_pago || "sin-metodo";
+      if (!porMetodoMap[m]) porMetodoMap[m] = { metodo: m, total: 0, count: 0 };
+      porMetodoMap[m].total += linea.valor;
+      porMetodoMap[m].count += 1;
+    }
 
     const c = f.client_id || "cliente_mostrador";
     if (!porClienteMap[c]) porClienteMap[c] = { client_id: c, total: 0, count: 0 };

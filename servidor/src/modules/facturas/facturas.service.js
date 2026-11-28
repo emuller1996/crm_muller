@@ -8,6 +8,7 @@ import {
 import { client } from "../../db.js";
 import { INDEX_ES_MAIN } from "../../config.js";
 import { jwtDecode } from "jwt-decode";
+import { normalizarDetallePago } from "../../utils/detallePago.js";
 
 import {
   buildFactura,
@@ -136,6 +137,9 @@ export const getPerDay = async (date, empresaId) => {
 
 export const create = async (data, token) => {
   if (!data.status) data.status = "Pendiente";
+
+  // Detalle de pago: valida el pago mixto o arma una linea con el total
+  data.detalle_pago = normalizarDetallePago(data);
 
   const decoded = jwtDecode(token);
   data.user_create_id = decoded?._id;
