@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { CContainer } from '@coreui/react'
 import { Alert, Button, Form, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import DataTable from 'react-data-table-component'
@@ -27,7 +27,6 @@ const ProductosPage = () => {
 
   const [showImport, setShowImport] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
-  const [Draw, setDraw] = useState(1)
   const [dataFilter, setdataFilter] = useState({
     perPage: 10,
     search: '',
@@ -41,6 +40,18 @@ const ProductosPage = () => {
   const { getAllProductos, getAllProductosPagination, dataP, loading, error } = useProductos()
   const [ProductoSelecionado, setProductoSelecionado] = useState(null)
   const { getAllCategorias, data: ListCategorias } = useCategorias()
+
+  // El hook deja dataP en undefined mientras carga; se conserva el ultimo total
+  // para que el paginador no pierda el numero de paginas durante la carga.
+  const totalRowsRef = useRef(0)
+  if (dataP?.total !== undefined) totalRowsRef.current = dataP.total
+
+  // Al cambiar un filtro se vuelve a la pagina 1 tambien en el paginador de la tabla
+  const [resetPage, setResetPage] = useState(false)
+  const updateFilter = (changes) => {
+    setdataFilter((status) => ({ ...status, ...changes, page: 1 }))
+    setResetPage((r) => !r)
+  }
 
   useEffect(() => {
     getAllProductosPagination(dataFilter)
@@ -84,12 +95,7 @@ const ProductosPage = () => {
                 <Select
                   name={'category'}
                   placeholder=""
-                  onChange={(e) => {
-                    console.log(e)
-                    setdataFilter((status) => {
-                      return { ...status, category: e?.value ?? '', page: 1 }
-                    })
-                  }}
+                  onChange={(e) => updateFilter({ category: e?.value ?? '' })}
                   styles={stylesSelect}
                   theme={themeSelect}
                   options={
@@ -110,11 +116,7 @@ const ProductosPage = () => {
               <Select
                 name={'status'}
                 placeholder=""
-                onChange={(e) => {
-                  setdataFilter((status) => {
-                    return { ...status, published: e?.value ?? '', page: 1 }
-                  })
-                }}
+                onChange={(e) => updateFilter({ published: e?.value ?? '' })}
                 styles={stylesSelect}
                 theme={themeSelect}
                 options={[
@@ -135,11 +137,7 @@ const ProductosPage = () => {
                     type="text"
                     aria-label="First name"
                     className="form-control"
-                    onChange={(e) => {
-                      setdataFilter((status) => {
-                        return { ...status, search: e.target.value, page: 1 }
-                      })
-                    }}
+                    onChange={(e) => updateFilter({ search: e.target.value })}
                   />
                 </div>
               </div>
@@ -153,137 +151,137 @@ const ProductosPage = () => {
           </div>
         )}
 
-        {dataP && (
-          <div className="rounded overflow-hidden border border-ligth shadow-sm mt-3">
-            <DataTable
-              className="MyDataTableEvent"
-              striped
-              columns={[
-                {
-                  name: 'Acciones',
-                  cell: (row) => {
-                    return (
-                      <>
-                        <button
-                          onClick={() => {
-                            setProductoSelecionado(row)
-                            handleShow()
-                          }}
-                          title="Editar Producto."
-                          className="btn btn-primary btn-sm me-2"
-                        >
-                          <i className="fa-solid fa-pen-to-square"></i>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setProductoSelecionado(row)
-                            setShowDelete(true)
-                          }}
-                          title="Eliminar Producto."
-                          className="btn btn-danger btn-sm text-white"
-                        >
-                          <i className="fa-solid fa-trash"></i>
-                        </button>
-                      </>
-                    )
-                  },
+        {/* La tabla queda siempre montada: si se desmonta mientras carga,
+            el paginador vuelve a la pagina 1 */}
+        <div className="rounded overflow-hidden border border-ligth shadow-sm mt-3">
+          <DataTable
+            className="MyDataTableEvent"
+            striped
+            columns={[
+              {
+                name: 'Acciones',
+                cell: (row) => {
+                  return (
+                    <>
+                      <button
+                        onClick={() => {
+                          setProductoSelecionado(row)
+                          handleShow()
+                        }}
+                        title="Editar Producto."
+                        className="btn btn-primary btn-sm me-2"
+                      >
+                        <i className="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setProductoSelecionado(row)
+                          setShowDelete(true)
+                        }}
+                        title="Eliminar Producto."
+                        className="btn btn-danger btn-sm text-white"
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </>
+                  )
                 },
-                //{ name: 'Id', selector: (row) => row._id, width: '100px' },
-                { name: 'Nombre', selector: (row) => row?.name ?? '', minWidth: '250px' },
-                {
-                  name: 'Precio',
-                  selector: (row) => row?.price ?? '',
-                  format: (row) => ViewDollar(row?.price) ?? '',
-                  width: '150px',
-                },
-                { name: 'Costo', selector: (row) => ViewDollar(row?.cost) ?? '', width: '150px' },
-                {
-                  name: 'Categoria',
-                  selector: (row) => row?.categoria?.name ?? '',
-                  width: '150px',
-                },
-                { name: 'Codigo', selector: (row) => row?.code ?? '', width: '120px' },
-                {
-                  name: 'Genero',
-                  selector: (row) => row?.gender ?? '',
-                  width: '100px',
-                  cell: (row) => {
-                    let html = ``
-                    let htmlText = ``
+              },
+              //{ name: 'Id', selector: (row) => row._id, width: '100px' },
+              { name: 'Nombre', selector: (row) => row?.name ?? '', minWidth: '250px' },
+              {
+                name: 'Precio',
+                selector: (row) => row?.price ?? '',
+                format: (row) => ViewDollar(row?.price) ?? '',
+                width: '150px',
+              },
+              { name: 'Costo', selector: (row) => ViewDollar(row?.cost) ?? '', width: '150px' },
+              {
+                name: 'Categoria',
+                selector: (row) => row?.categoria?.name ?? '',
+                width: '150px',
+              },
+              { name: 'Codigo', selector: (row) => row?.code ?? '', width: '120px' },
+              {
+                name: 'Genero',
+                selector: (row) => row?.gender ?? '',
+                width: '100px',
+                cell: (row) => {
+                  let html = ``
+                  let htmlText = ``
 
-                    if (row?.gender === 'men') {
-                      html += `<i class="fa-solid fa-mars me-2 fa-xl" style="color: #2a95ff;"></i>`
-                      htmlText += `Hombre`
-                    }
-                    if (row?.gender === 'women') {
-                      html += `<i class="fa-solid fa-venus me-2 fa-xl" style="color: #ff2a8b;"></i>`
-                      htmlText += `Mujer / Dama`
-                    }
-                    if (row?.gender === 'kid') {
-                      html += `<i class="fa-solid fa-children me-2 fa-xl" style="color:#a869e4;"></i>`
-                      htmlText += `Niño / Niña`
-                    }
-                    return (
-                      <>
-                        <OverlayTrigger
-                          key={'top'}
-                          placement={'top'}
-                          overlay={<Tooltip id={`tooltip`}>{htmlText}</Tooltip>}
-                        >
-                          <div dangerouslySetInnerHTML={{ __html: html }} />
-                        </OverlayTrigger>
-                      </>
-                    )
-                  },
+                  if (row?.gender === 'men') {
+                    html += `<i class="fa-solid fa-mars me-2 fa-xl" style="color: #2a95ff;"></i>`
+                    htmlText += `Hombre`
+                  }
+                  if (row?.gender === 'women') {
+                    html += `<i class="fa-solid fa-venus me-2 fa-xl" style="color: #ff2a8b;"></i>`
+                    htmlText += `Mujer / Dama`
+                  }
+                  if (row?.gender === 'kid') {
+                    html += `<i class="fa-solid fa-children me-2 fa-xl" style="color:#a869e4;"></i>`
+                    htmlText += `Niño / Niña`
+                  }
+                  return (
+                    <>
+                      <OverlayTrigger
+                        key={'top'}
+                        placement={'top'}
+                        overlay={<Tooltip id={`tooltip`}>{htmlText}</Tooltip>}
+                      >
+                        <div dangerouslySetInnerHTML={{ __html: html }} />
+                      </OverlayTrigger>
+                    </>
+                  )
                 },
-                {
-                  name: 'Fecha de Creacion.',
-                  selector: (row) =>
-                    `${new Date(row?.createdTime).toLocaleDateString() ?? ''} ${new Date(row?.createdTime).toLocaleTimeString() ?? ''}`,
-                  width: '160px',
-                },
-                {
-                  name: 'Fecha de Actua',
-                  selector: (row) =>
-                    `${new Date(row?.updatedTime).toLocaleDateString() ?? ''} ${new Date(row?.updatedTime).toLocaleTimeString() ?? ''}`,
-                  width: '160px',
-                },
-
-              ]}
-              data={dataP?.data}
-              pagination
-              paginationServer
-              progressPending={loading}
-              progressComponent={
-                <div className="d-flex justify-content-center my-5">
-                  <div
-                    className="spinner-border text-primary"
-                    style={{ width: '3em', height: '3em' }}
-                    role="status"
-                  >
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
+              },
+              {
+                name: 'Fecha de Creacion.',
+                selector: (row) =>
+                  `${new Date(row?.createdTime).toLocaleDateString() ?? ''} ${new Date(row?.createdTime).toLocaleTimeString() ?? ''}`,
+                width: '160px',
+              },
+              {
+                name: 'Fecha de Actua',
+                selector: (row) =>
+                  `${new Date(row?.updatedTime).toLocaleDateString() ?? ''} ${new Date(row?.updatedTime).toLocaleTimeString() ?? ''}`,
+                width: '160px',
+              },
+            ]}
+            data={dataP?.data ?? []}
+            pagination
+            paginationServer
+            paginationPerPage={dataFilter.perPage}
+            paginationResetDefaultPage={resetPage}
+            progressPending={loading}
+            progressComponent={
+              <div className="d-flex justify-content-center my-5">
+                <div
+                  className="spinner-border text-primary"
+                  style={{ width: '3em', height: '3em' }}
+                  role="status"
+                >
+                  <span className="visually-hidden">Loading...</span>
                 </div>
-              }
-              paginationTotalRows={dataP?.total}
-              paginationComponentOptions={paginationComponentOptions}
-              noDataComponent={
-                <div className="d-flex justify-content-center my-5">No hay productos.</div>
-              }
-              onChangeRowsPerPage={(perPage, page) => {
-                console.log(perPage, page)
-                setdataFilter((status) => {
-                  return { ...status, perPage }
-                })
-              }}
-              onChangePage={(page) => {
-                setdataFilter((status) => {
-                  return { ...status, page }
-                })
-              }}
-            />
-          </div>
-        )}
+              </div>
+            }
+            paginationTotalRows={totalRowsRef.current}
+            paginationComponentOptions={paginationComponentOptions}
+            noDataComponent={
+              <div className="d-flex justify-content-center my-5">No hay productos.</div>
+            }
+            onChangeRowsPerPage={(perPage, page) => {
+              setdataFilter((status) => {
+                return { ...status, perPage, page }
+              })
+            }}
+            onChangePage={(page) => {
+              setdataFilter((status) => {
+                return { ...status, page }
+              })
+            }}
+          />
+        </div>
         <Modal backdrop={'static'} size="lg" centered show={show} onHide={handleClose}>
           <Modal.Body>
             <FormProducto
@@ -322,7 +320,7 @@ const ProductosPage = () => {
           <Modal.Body>
             <FormImportProductos
               onHide={() => setShowImport(false)}
-              onSuccess={() => setDraw((status) => ++status)}
+              onSuccess={() => updateFilter({ draw: Date.now() })}
             />
           </Modal.Body>
         </Modal>
